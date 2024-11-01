@@ -28,7 +28,7 @@ class Repo:
     def attach(self, objId, user):
         objIdAsString = f'{objId}'
         
-        if objIdAsString not in self.attachmentnts:
+        if objIdAsString not in self.attachments:
             self.attachments[objIdAsString] = set()
         
         self.attachments[objIdAsString].add(user)
@@ -49,7 +49,7 @@ class Repo:
             del self.attachments[objIdAsString]
      
     def listInUse(self):
-        return[objId for objId in self.attachements]
+        return[objId for objId in self.attachments]
 
     def delete(self, objId):
         objIdAsString = f'{objId}'
