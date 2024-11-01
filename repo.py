@@ -7,6 +7,7 @@ class Repo:
             cls._instance = super(Repo, cls).__new__(cls)
             cls._instance.objects = {}
             cls._instance.components = Component()
+            cls._instance.attachments = {}
         return cls._instance
     
     def create(self, **kwargs):
@@ -25,10 +26,37 @@ class Repo:
         return objList
 
     def attach(self, objId, user):
-        pass
+        objIdAsString = f'{objId}'
+        
+        if objIdAsString not in self.attachmentnts:
+            self.attachments[objIdAsString] = set()
+        
+        self.attachments[objIdAsString].add(user)
+
+        return self.objects[objIdAsString]
+
+
+    def listAttached(self, user):
+        return [self.objects[objId] for objId, users in self.attachments.items() if user in users]
        
+    def detach(self, objId, user):
+        objIdAsString = f'{objId}'
+        if objIdAsString in self.attachments:
+            if user in self.attachments[objIdAsString]:
+                self.attachments[objIdAsString].remove(user)
+        
+        if not self.attachments[objIdAsString]:
+            del self.attachments[objIdAsString]
      
-     
+    def listInUse(self):
+        return[objId for objId in self.attachements]
+
+    def delete(self, objId):
+        objIdAsString = f'{objId}'
+        if objIdAsString not in self.attachments:
+            del self.objects[objIdAsString] 
+
+    
 
 class Map:
     def __init__(self, description, cols, rows, cellsize, bgcolor):
