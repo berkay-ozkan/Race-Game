@@ -28,7 +28,8 @@ print(f'a {r.listInUse()}')
 r.detach(1, 'vusal')
 r.detach(2, 'vusal') 
 print(f'a {r.listInUse()}')
-
+ugi[(1, 0)] = 'f'
+print(ugi.grid[1][0])
 
 lii = r.listAttached('vusal')
 for a in lii:
