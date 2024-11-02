@@ -1,5 +1,6 @@
 from repo import Repo
 
+
 r = Repo()
 r.create(description = "map1", cols = 4, rows = 4, cellsize = 64, bgcolor = 'green')
 r.create(description = "map2", cols = 4, rows = 4, cellsize = 64, bgcolor = 'green')
