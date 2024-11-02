@@ -1,4 +1,5 @@
 from mapp import Map
+from component import Component
 
 class Repo:
     _instance = None
@@ -62,5 +63,4 @@ class Repo:
 
 
 
-class Component:
-    pass
+
