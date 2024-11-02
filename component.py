@@ -1,6 +1,8 @@
 from typing import Any, Type
-from typing_extensions import Self
-
+try:
+  from typing import Self
+except:
+  from typing_extensions import Self
 
 class Component():
     # Component class variables

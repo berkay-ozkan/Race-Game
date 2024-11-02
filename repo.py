@@ -1,6 +1,9 @@
 from mapp import Map
 from component import Component
 
+
+#decorator
+
 class Repo:
     _instance = None
     _idCounter = 1
@@ -24,12 +27,12 @@ class Repo:
         Repo._idCounter += 1
         return mapId
 
-    def list(self):
+    def list(self): #change name to listsomething
         objList = [(objId, obj.description) for objId, obj in self.objects.items()]
         return objList
 
     def attach(self, objId, user):
-        objIdAsString = f'{objId}'
+        objIdAsString = f'{objId}' #change redundancies
         
         if objIdAsString not in self.attachments:
             self.attachments[objIdAsString] = set()
