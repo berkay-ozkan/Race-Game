@@ -5,3 +5,8 @@ class Map:
         self.rows = rows
         self. cellsize = cellsize
         self.bgcolor = bgcolor
+        
+    def __getitem__(row, col):
+        pass
+
+    
