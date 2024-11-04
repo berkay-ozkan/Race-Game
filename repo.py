@@ -1,18 +1,12 @@
 from mapp import Map
 from component import Component
-
+from singleton import Singleton
 
 #decorator
 
-def singleton(cls):
-    instances = {}  
-    def get_instance(*args, **kwargs):
-        if cls not in instances:
-            instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-    return get_instance
 
-@singleton
+
+@Singleton
 class Repo:
     
     def __init__(self):
@@ -21,7 +15,6 @@ class Repo:
         self.components = Component()
         self.attachments = {}
         
-    
     def create(self, **kwargs):
         description = kwargs.get('description')
         map_id = self._id_counter
@@ -38,7 +31,6 @@ class Repo:
         return obj_list
 
     def attach(self, obj_id, user):
-        
         if obj_id not in self.attachments:
             self.attachments[obj_id] = set()
         
@@ -46,12 +38,10 @@ class Repo:
 
         return self.objects[obj_id]
 
-
     def list_attached(self, user):
         return [self.objects[obj_id] for obj_id, users in self.attachments.items() if user in users]
        
     def detach(self, obj_id, user):
-        
         if obj_id in self.attachments:
             if user in self.attachments[obj_id]:
                 self.attachments[obj_id].remove(user)
@@ -63,7 +53,6 @@ class Repo:
         return[obj_id for obj_id in self.attachments]
 
     def delete(self, obj_id):
-        
         if obj_id not in self.attachments:
             del self.objects[obj_id] 
 
