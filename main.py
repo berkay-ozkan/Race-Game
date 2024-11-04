@@ -82,6 +82,7 @@ for i in range(2,8):
 rt = r.components.create('turn90')
 ogr[(8,1)] = rt
 rt.rotation = 3
+ogr.remove(rt)
 for j in range(2,8):
     ogr[(8,j)] = r.components.create('straight')
     ogr[(8,j)].rotation = 0

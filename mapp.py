@@ -31,10 +31,15 @@ class Map:
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
+                    component.row = None
+                    component.col = None
     
     def __deliten__(self, pos):
         row = pos[0] - 1
         col = pos[1] - 1
+        for obj in self.grid[row][col]:
+            obj.row = None
+            obj.col = None 
         self.grid[row][col].clear()
 
     def get_y_x(self, y, x):
