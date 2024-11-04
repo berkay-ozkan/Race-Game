@@ -1,5 +1,5 @@
 from repo import Repo
-from road_components import turn90, straight
+from road_components import turn90, straight, diagonal
 from mapp import Map
 from cell import Cell
 
@@ -72,6 +72,8 @@ for j in range(2,8):
 dt = r.components.create('turn90')
 dt.rotation = 1
 ogr[(1,8)] = dt
+r.components.register('diagonal', diagonal)
+diag = r.components.create('diagonal')
 for i in range(2,8):
     ogr[(i,1)] = r.components.create('straight')
     ogr[(i,8)] = r.components.create('straight')
@@ -86,4 +88,5 @@ for j in range(2,8):
 dt = r.components.create('turn90')
 dt.rotation = 2
 ogr[(8,8)] = dt
+
 print(ogr.draw())
