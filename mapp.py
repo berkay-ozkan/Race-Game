@@ -1,10 +1,10 @@
 class Map:
-    def __init__(self, description, cols, rows, cellsize, bgcolor):
+    def __init__(self, description, cols, rows, cell_size, bg_color):
         self.description = description
         self.cols = cols
         self.rows = rows
-        self. cellsize = cellsize
-        self.bgcolor = bgcolor
+        self. cell_size = cell_size
+        self.bg_color = bg_color
         self.grid = [[[]] for _ in range(cols) for _ in  range(rows)]
 
     def __setitem__(self, pos, component):

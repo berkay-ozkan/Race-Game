@@ -18,20 +18,21 @@ uu = r.attach(2, 'vusal' )
 u.description
 ugr = r.attach(1, 'berkay')
 ugi = r.attach(6, 'berkay')
-lii = r.listAttached('vusal')
+
+
+
+r2 = Repo()
+
+lii = r2.list_attached('vusal')
 for a in lii:
-    print(a.description)
-
-print(f'a {r.listInUse()}')
-
-
+    print(a.description + '2')
 r.detach(1, 'vusal')
 r.detach(2, 'vusal') 
 print(f'a {r.listInUse()}')
 ugi[(1, 0)] = 'f'
 print(ugi.grid[1][0])
 
-lii = r.listAttached('vusal')
+lii = r.list_attached('vusal')
 for a in lii:
     print(a.description)
 r.delete(2)
