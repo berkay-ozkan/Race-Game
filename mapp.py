@@ -54,6 +54,20 @@ class Map:
         self.grid[row][col].append(obj)
         obj.row = row
         obj.col = col
+    
+    def view(self, y, x, height, width):
+            view_description = 'view of ' + self.description
+            map_view = Map(view_description, width, height, self.cell_size, self.bg_color)
+            
+            for row in range(height):
+                for col in range(width):
+                    map_row = y + row 
+                    map_col = x + col 
+                    if map_row < self.rows and map_col < self.cols:
+                        map_view.grid[row][col] = self.grid[map_row][map_col]
+
+            return map_view
+
 
     def draw(self) -> str:
         map_representation = ""
@@ -69,5 +83,8 @@ class Map:
             map_representation += row_representation + "\n"
 
         return map_representation
+
+        
+
 
        

@@ -79,15 +79,19 @@ for i in range(2,8):
     ogr[(i,8)] = r.components.create('straight')
     ogr[(i,1)].rotation = 1
     ogr[(i,8)].rotation = 1
-rt = r.components.create('turn90')
-ogr[(8,1)] = rt
+#rt = r.components.create('turn90')
+#ogr[(8,1)] = rt
 rt.rotation = 3
-ogr.remove(rt)
+#ogr.remove(rt)
+print(rt.col)
 for j in range(2,8):
     ogr[(8,j)] = r.components.create('straight')
     ogr[(8,j)].rotation = 0
 dt = r.components.create('turn90')
 dt.rotation = 2
 ogr[(8,8)] = dt
-
+ogw = ogr.view(0, 0, 5, 5)
+ogw.remove(rt)
+print(ogr.draw())
+print(ogw.draw())
 print(ogr.draw())
