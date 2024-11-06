@@ -14,16 +14,16 @@ class Cell(Component):
                 
             elif self._type == 'booster':
                 car.speed += 47
-                if car.speed > car.max_speed:
-                    car.speed = car.max_speed
+                if car.speed > car.top_speed:
+                    car.speed = car.top_speed
 
             elif self._type == 'obstacle':
                 car.speed = 0
 
             elif self.type == 'fuel':
                  car.fuel += 10
-                 if car.fuel > car.max_fuel:
-                      car.fuel = car.max_fuel 
+                 if car.fuel > car.top_fuel:
+                      car.fuel = car.top_fuel 
 
             
                 
