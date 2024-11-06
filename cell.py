@@ -10,10 +10,10 @@ class Cell(Component):
         def interact(self,car, y, x):
               
             if self._type == 'road':
-                car.speed = car.speed * 0.97 # reduce speed due to friction
+                car.speed *= 0.97 # reduce speed due to friction
                 
             elif self._type == 'booster':
-                car.speed = car.speed + 47
+                car.speed += 47
                 if car.speed > car.max_speed:
                     car.speed = car.max_speed
 
