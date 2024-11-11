@@ -1,8 +1,9 @@
+import sys
 from copy import copy
 from typing import Any, Type
-try:
+if sys.version_info >= (3, 11):
     from typing import Self
-except:
+else:
     from typing_extensions import Self
 
 
