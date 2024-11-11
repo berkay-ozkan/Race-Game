@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Any, Type
 try:
     from typing import Self
@@ -41,9 +42,8 @@ class Component():
     def type_name(self: Self) -> str:
         return self._type_name
 
-    # TODO: Confirm return type
-    def attributes(self: Self) -> list[tuple[str, str]]:
-        return list(self._attributes.items())
+    def attributes(self: Self) -> dict[str, str]:
+        return copy(self._attributes)
 
     def __getattr__(self: Self, name: str) -> Any:
         if name not in self._attributes:
