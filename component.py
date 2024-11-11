@@ -1,8 +1,9 @@
 from typing import Any, Type
 try:
-  from typing import Self
+    from typing import Self
 except:
-  from typing_extensions import Self
+    from typing_extensions import Self
+
 
 class Component():
     # Component class variables
