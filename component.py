@@ -18,7 +18,7 @@ class Component():
     _type_name: str
 
     @classmethod
-    def list_types(cls: Type[Self]) -> dict[str, str]:
+    def list(cls: Type[Self]) -> dict[str, str]:
         return {
             subclass._type_name: subclass._description
             for subclass in cls._registered_subclasses.values()
