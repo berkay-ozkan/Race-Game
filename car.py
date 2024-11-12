@@ -35,10 +35,10 @@ class Car(Component):
         if self.model == 'Ferrari':
             self.top_sepeed = 370
         elif self.model == 'BMW':
-            self.top_sepeed = 305
+            self.top_sepeed = 305  
         elif self.model == 'Mercedes-Benz':
             self.top_sepeed = 310
-        elif self.model == 'Bugatti':
+        elif self.model == 'Bugatti':    
             self.top_sepeed = 485
         elif self.model == 'Koenigsegg':
             self.top_sepeed = 490
