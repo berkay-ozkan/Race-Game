@@ -64,7 +64,7 @@ class Component():
         else:
            raise AttributeError(f"Attribute does not exist: '{name}'")
 
-            
+            #
     def draw(self: Self) -> str:
         type_symbols = {"turn90": ["┏", "┓", "┛", "┗"], "straight": ["━", "┃"], "diagonal": ["╱", "╲"]}
         symbols = type_symbols.get(self._type_name)
