@@ -36,8 +36,6 @@ class Car(Component):
     }
     _MOVEMENT_UNIT: float
 
-    _running_car_count: int = 0
-
     # TODO: Initialize instance variables
     def __init__(self) -> None:
         self._MODEL: str
@@ -71,20 +69,10 @@ class Car(Component):
         self._running: bool = False
 
     def start(self) -> None:
-        if Car._running_car_count == 0:
-            # TODO: Start the race
-            pass
-
-        Car._running_car_count += 1
         self._running = True
 
     def stop(self) -> None:
-        Car._running_car_count -= 1
         self._running = False
-
-        if Car._running_car_count == 0:
-            # TODO: Stop the race
-            pass
 
     def accelerate(self) -> None:
         self._accelerate = True
