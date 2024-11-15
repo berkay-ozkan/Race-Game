@@ -39,7 +39,8 @@ class Car(Component):
     # TODO: Initialize instance variables
     def __init__(self) -> None:
         self._MODEL: str
-        self._MAP: Map
+        # None until placed
+        self._MAP: None | Map = None
         self._DRIVER: str
 
         self._ACCELERATION_UNIT: float = Car._MODEL_INFORMATION[
