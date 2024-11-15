@@ -41,7 +41,7 @@ class Car(Component):
     # TODO: Initialize instance variables
     def __init__(self) -> None:
         self._MODEL: str
-        self._MAP: Map  # TODO: Is Car.map supposed to be a Map instance?
+        self._MAP: Map
         self._DRIVER: str
 
         self._ACCELERATION_UNIT: float = Car._MODEL_INFORMATION[
