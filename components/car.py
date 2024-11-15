@@ -64,7 +64,7 @@ class Car(Component):
         self._turn_clockwise: bool = False
         self._turn_counterclockwise: bool = False
 
-        self._stop: bool = True
+        self._running: bool = False
 
     def start(self) -> None:
         if Car._running_car_count == 0:
@@ -72,11 +72,11 @@ class Car(Component):
             pass
 
         Car._running_car_count += 1
-        self._running = False
+        self._running = True
 
     def stop(self) -> None:
         Car._running_car_count -= 1
-        self._running = True
+        self._running = False
 
         if Car._running_car_count == 0:
             # TODO: Stop the race
