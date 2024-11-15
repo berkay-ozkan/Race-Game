@@ -54,7 +54,8 @@ class Car(Component):
             self._MODEL]["max_speed"]
         self._MAX_FUEL: float
 
-        self._position: tuple[float, float]
+        # None until placed, (y, x) coordinates afterwards
+        self._position: None | tuple[float, float] = None
         # Measured in radians, follows the counterclockwise
         # angle convention, and a value of 0 corresponds to east
         self._angle: float
