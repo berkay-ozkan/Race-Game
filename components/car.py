@@ -61,7 +61,7 @@ class Car(Component):
         # angle convention, and a value of 0 corresponds to east
         self._angle: None | float = None
         self._speed: float = 0
-        self._fuel: float
+        self._fuel: float = self._MAX_FUEL
 
         self._accelerate: bool = False
         self._brake: bool = False
