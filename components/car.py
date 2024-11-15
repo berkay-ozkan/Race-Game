@@ -113,12 +113,13 @@ class Car(Component):
 
     def _process_input(self) -> None:
         # TODO: Should be affected by the cell the car is on
-        if self._accelerate and self._fuel:
+        if not self._running or self._brake:
+            self._speed = max(0, self._speed - self._SLOW_DOWN_UNIT)
+        elif self._accelerate and self._fuel:
             self._speed = min(self._MAX_SPEED,
                               self._speed + self._ACCELERATION_UNIT)
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_UNIT)
-        if self._brake or not self._running:
-            self._speed = max(0, self._speed - self._SLOW_DOWN_UNIT)
+
         if self._turn_clockwise:
             self._angle += self._TURN_UNIT
         if self._turn_counterclockwise:
