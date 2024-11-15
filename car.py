@@ -4,6 +4,36 @@ from math import cos, sin
 
 
 class Car(Component):
+    _MODEL_INFORMATION: dict[str, dict] = {
+        "BMW": {
+            "acceleration_unit": 44,
+            "max_speed": 305
+        },
+        "Bugatti": {
+            "acceleration_unit": 61,
+            "max_speed": 485
+        },
+        "Ferrari": {
+            "acceleration_unit": 50,
+            "max_speed": 370
+        },
+        "Koenigsegg": {
+            "acceleration_unit": 63,
+            "max_speed": 490
+        },
+        "Lamborghini": {
+            "acceleration_unit": 51,
+            "max_speed": 350
+        },
+        "McLaren": {
+            "acceleration_unit": 50,
+            "max_speed": 400
+        },
+        "Mercedes-Benz": {
+            "acceleration_unit": 43,
+            "max_speed": 310
+        }
+    }
     _MOVEMENT_UNIT: float
 
     _running_car_count: int = 0
@@ -14,12 +44,14 @@ class Car(Component):
         self._MAP: Map  # TODO: Is Car.map supposed to be a Map instance?
         self._DRIVER: str
 
-        self._ACCELERATION_UNIT: float
+        self._ACCELERATION_UNIT: float = Car._MODEL_INFORMATION[
+            self._MODEL]["acceleration_unit"]
         self._FUEL_CONSUMPTION_UNIT: float
         self._SLOW_DOWN_UNIT: float
         self._TURN_UNIT: float
 
-        self._MAX_SPEED: float
+        self._MAX_SPEED: float = Car._MODEL_INFORMATION[
+            self._MODEL]["max_speed"]
         self._MAX_FUEL: float
 
         self._position: tuple[float, float]
@@ -33,36 +65,6 @@ class Car(Component):
         self._turn_counterclockwise: bool = False
 
         self._stop: bool = True
-
-        if self._MODEL == 'Ferrari':
-            self._ACCELERATION_UNIT = 50
-        elif self._MODEL == 'BMW':
-            self._ACCELERATION_UNIT = 44
-        elif self._MODEL == 'Mercedes-Benz':
-            self._ACCELERATION_UNIT = 43
-        elif self._MODEL == 'Bugatti':
-            self._ACCELERATION_UNIT = 61
-        elif self._MODEL == 'Koenigsegg':
-            self._ACCELERATION_UNIT = 63
-        elif self._MODEL == 'Lamborghini':
-            self._ACCELERATION_UNIT = 51
-        elif self._MODEL == "McLaren":
-            self._ACCELERATION_UNIT = 50
-
-        if self._MODEL == 'Ferrari':
-            self._MAX_SPEED = 370
-        elif self._MODEL == 'BMW':
-            self._MAX_SPEED = 305
-        elif self._MODEL == 'Mercedes-Benz':
-            self._MAX_SPEED = 310
-        elif self._MODEL == 'Bugatti':
-            self._MAX_SPEED = 485
-        elif self._MODEL == 'Koenigsegg':
-            self._MAX_SPEED = 490
-        elif self._MODEL == 'Lamborghini':
-            self._MAX_SPEED = 350
-        elif self._MODEL == "McLaren":
-            self._MAX_SPEED = 400
 
     def start(self) -> None:
         if Car._running_car_count == 0:
