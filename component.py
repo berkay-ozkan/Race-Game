@@ -2,7 +2,7 @@ class Component():
     # Component class variables
     _registered_subclasses: dict = {}
 
-    #Subclass class variables
+    # Subclass class variables
     _attributes: dict[str, str]
     _description: str
     _representation: str
