@@ -56,9 +56,10 @@ class Car(Component):
         # None until placed, (y, x) coordinates afterwards
         # Follows the Cartesian coordinate system
         self._position: None | tuple[float, float] = None
+        # None until placed
         # Measured in radians, follows the counterclockwise
         # angle convention, and a value of 0 corresponds to east
-        self._angle: float
+        self._angle: None | float = None
         self._speed: float = 0
         self._fuel: float
 
