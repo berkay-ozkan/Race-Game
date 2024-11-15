@@ -1,18 +1,13 @@
-import sys
 from component import Component
 from mapp import Map
 from math import cos, sin
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
 
 
 class Car(Component):
     _MOVEMENT_UNIT: float
 
     # TODO: Initialize instance variables
-    def __init__(self: Self) -> None:
+    def __init__(self) -> None:
         self._MODEL: str
         self._MAP: Map  # TODO: Is Car.map supposed to be a Map instance?
         self._DRIVER: str
@@ -35,13 +30,45 @@ class Car(Component):
         self._turn_clockwise: bool = False
         self._turn_counterclockwise: bool = False
 
-    # TODO: Is this function supposed to do anything?
-    def start(self) -> None:
-        pass
+        self._stop: bool = True
 
-    # TODO: Is this function supposed to do anything?
+        if self._MODEL == 'Ferrari':
+            self._ACCELERATION_UNIT = 50
+        elif self._MODEL == 'BMW':
+            self._ACCELERATION_UNIT = 44
+        elif self._MODEL == 'Mercedes-Benz':
+            self._ACCELERATION_UNIT = 43
+        elif self._MODEL == 'Bugatti':
+            self._ACCELERATION_UNIT = 61
+        elif self._MODEL == 'Koenigsegg':
+            self._ACCELERATION_UNIT = 63
+        elif self._MODEL == 'Lamborghini':
+            self._ACCELERATION_UNIT = 51
+        elif self._MODEL == "McLaren":
+            self._ACCELERATION_UNIT = 50
+
+        if self._MODEL == 'Ferrari':
+            self._MAX_SPEED = 370
+        elif self._MODEL == 'BMW':
+            self._MAX_SPEED = 305
+        elif self._MODEL == 'Mercedes-Benz':
+            self._MAX_SPEED = 310
+        elif self._MODEL == 'Bugatti':
+            self._MAX_SPEED = 485
+        elif self._MODEL == 'Koenigsegg':
+            self._MAX_SPEED = 490
+        elif self._MODEL == 'Lamborghini':
+            self._MAX_SPEED = 350
+        elif self._MODEL == "McLaren":
+            self._MAX_SPEED = 400
+
+    # TODO: Start the race if no cars were running before
+    def start(self) -> None:
+        self._stop = False
+
+    # TODO: Stop the race if this was the only car running
     def stop(self) -> None:
-        pass
+        self._stop = True
 
     def accelerate(self) -> None:
         self._accelerate = True

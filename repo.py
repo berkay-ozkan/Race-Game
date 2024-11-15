@@ -1,66 +1,60 @@
 from mapp import Map
 from component import Component
-
+from singleton import Singleton
 
 #decorator
 
-class Repo:
-    _instance = None
-    _idCounter = 1
 
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(Repo, cls).__new__(cls)
-            cls._instance.objects = {}
-            cls._instance.components = Component()
-            cls._instance.attachments = {}
-        return cls._instance
+
+@Singleton
+class Repo:
     
+    def __init__(self):
+        self._id_counter = 1
+        self.objects = {}
+        self.components = Component()
+        self.attachments = {}
+        
     def create(self, **kwargs):
         description = kwargs.get('description')
-        mapId = f'{Repo._idCounter}'
+        map_id = self._id_counter
         cols = kwargs.get('cols')
         rows = kwargs.get('rows')
-        cellSize = kwargs.get('cellsize')
-        bgColor = kwargs.get('bgcolor')
-        self.objects[mapId] = Map(description ,cols, rows, cellSize, bgColor)
-        Repo._idCounter += 1
-        return mapId
+        cell_size = kwargs.get('cellsize')
+        bg_color = kwargs.get('bgcolor')
+        self.objects[map_id] = Map(description ,cols, rows, cell_size, bg_color)
+        self._id_counter += 1
+        return map_id
 
     def list(self): #change name to listsomething
-        objList = [(objId, obj.description) for objId, obj in self.objects.items()]
-        return objList
+        obj_list = [(objId, obj.description) for objId, obj in self.objects.items()]
+        return obj_list
 
-    def attach(self, objId, user):
-        objIdAsString = f'{objId}' #change redundancies
+    def attach(self, obj_id, user):
+        if obj_id not in self.attachments:
+            self.attachments[obj_id] = set()
         
-        if objIdAsString not in self.attachments:
-            self.attachments[objIdAsString] = set()
-        
-        self.attachments[objIdAsString].add(user)
+        self.attachments[obj_id].add(user)
 
-        return self.objects[objIdAsString]
+        return self.objects[obj_id]
 
-
-    def listAttached(self, user):
-        return [self.objects[objId] for objId, users in self.attachments.items() if user in users]
+    def list_attached(self, user):
+        return [self.objects[obj_id] for obj_id, users in self.attachments.items() if user in users]
        
-    def detach(self, objId, user):
-        objIdAsString = f'{objId}'
-        if objIdAsString in self.attachments:
-            if user in self.attachments[objIdAsString]:
-                self.attachments[objIdAsString].remove(user)
+    def detach(self, obj_id, user):
+        if obj_id in self.attachments:
+            if user in self.attachments[obj_id]:
+                self.attachments[obj_id].remove(user)
         
-        if not self.attachments[objIdAsString]:
-            del self.attachments[objIdAsString]
+        if not self.attachments[obj_id]:
+            del self.attachments[obj_id]
      
     def listInUse(self):
-        return[objId for objId in self.attachments]
+        return[obj_id for obj_id in self.attachments]
 
-    def delete(self, objId):
-        objIdAsString = f'{objId}'
-        if objIdAsString not in self.attachments:
-            del self.objects[objIdAsString] 
+    def delete(self, obj_id):
+        if obj_id not in self.attachments:
+            del self.objects[obj_id] 
 
     
 
