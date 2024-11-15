@@ -55,6 +55,7 @@ class Car(Component):
         self._MAX_FUEL: float
 
         # None until placed, (y, x) coordinates afterwards
+        # Follows the Cartesian coordinate system
         self._position: None | tuple[float, float] = None
         # Measured in radians, follows the counterclockwise
         # angle convention, and a value of 0 corresponds to east
@@ -103,12 +104,12 @@ class Car(Component):
         self._process_input()
 
     def _update_position(self) -> None:
-        self._position = (
-            self._position[0] +
-            cos(self._angle) * self._speed * Car._MOVEMENT_UNIT,
-            self._position[1] +
-            sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
-        )
+        if self._position:
+            self._position = (
+                self._position[0] +
+                sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
+                self._position[1] +
+                cos(self._angle) * self._speed * Car._MOVEMENT_UNIT)
 
     def _process_input(self) -> None:
         # TODO: Should be affected by the cell the car is on
