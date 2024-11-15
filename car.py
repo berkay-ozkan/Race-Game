@@ -6,6 +6,8 @@ from math import cos, sin
 class Car(Component):
     _MOVEMENT_UNIT: float
 
+    _running_car_count: int = 0
+
     # TODO: Initialize instance variables
     def __init__(self) -> None:
         self._MODEL: str
@@ -62,13 +64,21 @@ class Car(Component):
         elif self._MODEL == "McLaren":
             self._MAX_SPEED = 400
 
-    # TODO: Start the race if no cars were running before
     def start(self) -> None:
-        self._stop = False
+        if Car._running_car_count == 0:
+            # TODO: Start the race
+            pass
 
-    # TODO: Stop the race if this was the only car running
+        Car._running_car_count += 1
+        self._running = False
+
     def stop(self) -> None:
-        self._stop = True
+        Car._running_car_count -= 1
+        self._running = True
+
+        if Car._running_car_count == 0:
+            # TODO: Stop the race
+            pass
 
     def accelerate(self) -> None:
         self._accelerate = True
@@ -101,7 +111,7 @@ class Car(Component):
             self._speed = min(self._MAX_SPEED,
                               self._speed + self._ACCELERATION_UNIT)
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_UNIT)
-        if self._brake:
+        if self._brake or not self._running:
             self._speed = max(0, self._speed - self._SLOW_DOWN_UNIT)
         if self._turn_clockwise:
             self._angle += self._TURN_UNIT
