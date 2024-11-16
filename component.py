@@ -18,11 +18,14 @@ class Component():
     @classmethod
     def create(cls, component_type_name: str) -> "Component":
         component_class = cls._registered_subclasses.get(component_type_name)
+       
         if component_class is None:
+            
             raise ValueError(
                 f"Component type '{component_type_name}' is not registered.")
-
+        
         instance = component_class()
+        print(component_class)
         object.__setattr__(instance, "_type_name", component_type_name)
 
         return instance
@@ -41,9 +44,8 @@ class Component():
     def type_name(self) -> str:
         return self._type_name
 
-    # TODO: Confirm return type
-    def attributes(self) -> list[tuple[str, str]]:
-        return list(self._attributes.items())
+    def attributes(self) -> dict[str, str]:
+        return {key: value for key, value in self._attributes.items()}
 
     def __getattr__(self, name: str):
         if name in self._attributes:

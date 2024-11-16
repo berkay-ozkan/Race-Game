@@ -4,6 +4,7 @@ from components.roads import Diagonal, Straight, Turn90
 class Map:
 
     def __init__(self, description, cols, rows, cell_size, bg_color):
+        #print(cell_size)
         self.description = description
         self.cols = cols
         self.rows = rows
@@ -58,14 +59,19 @@ class Map:
         obj.col = col
 
     def view(self, y, x, height, width):
+        #print(self.cell_size)
+        y_floor =  y // self.cell_size - 1
+        x_floor = x // self.cell_size - 1
+        height_floor = height // self.cell_size
+        width_floor = width // self.cell_size
         view_description = 'view of ' + self.description
-        map_view = Map(view_description, width, height, self.cell_size,
+        map_view = Map(view_description, width_floor, height_floor, self.cell_size,
                        self.bg_color)
 
-        for row in range(height):
-            for col in range(width):
-                map_row = y + row
-                map_col = x + col
+        for row in range(height_floor):
+            for col in range(width_floor):
+                map_row = y_floor + row
+                map_col = x_floor + col
                 if map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
 
