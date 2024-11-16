@@ -4,20 +4,18 @@ from math import cos, sin
 
 class Car(Component):
     # Car class variables
-    _MOVEMENT_UNIT: float
-
     _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
 
     # Subclass class variables
     _MODEL: str
 
-    _ACCELERATION_RATE: float  # Measured in mph^2
-    _FUEL_CONSUMPTION_RATE: float  # Measured in gallons/m
-    _DECELERATION_RATE: float  # Measured in mph^2
-    _STEER_RATE: float  # Measured in radians/s
+    _ACCELERATION_RATE: float
+    _FUEL_CONSUMPTION_RATE: float
+    _DECELERATION_RATE: float
+    _STEER_RATE: float
 
-    _MAX_SPEED: float  # Measured in mph
-    _MAX_FUEL: float  # Measured in gallons
+    _MAX_SPEED: float
+    _MAX_FUEL: float
 
     _attributes = {
         "_MODEL": "str",
@@ -93,10 +91,8 @@ class Car(Component):
         self._process_input()
 
     def _update_position(self) -> None:
-        self._position = (self._position[0] +
-                          sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
-                          self._position[1] +
-                          cos(self._angle) * self._speed * Car._MOVEMENT_UNIT)
+        self._position = (self._position[0] + sin(self._angle) * self._speed,
+                          self._position[1] + cos(self._angle) * self._speed)
 
         if self._speed:
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
