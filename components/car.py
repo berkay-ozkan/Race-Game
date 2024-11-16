@@ -113,8 +113,7 @@ class Car(Component):
         if self._turn_counterclockwise:
             self._angle -= self._STEER_RATE
 
-        # TODO: No need to create list after get_y_x starts to return a list
-        components_below = [self._MAP.get_y_x(*self._position)]
+        components_below = self._MAP.get_y_x(*self._position)
         if not components_below:
             self._speed = min(
                 self._speed,
