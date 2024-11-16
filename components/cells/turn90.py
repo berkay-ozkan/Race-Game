@@ -7,3 +7,5 @@ class Turn90(Cell):
         super().__init__()
         object.__setattr__(self, "_type_name", "turn90")
         object.__setattr__(self, "_type", "road")
+        object.__setattr__(self, "_description", "A 90 degree turn")
+        object.__setattr__(self, "_representation", ["┏", "┓", "┛", "┗"])

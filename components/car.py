@@ -70,6 +70,8 @@ class Car(Component):
     _MOVEMENT_UNIT: float
     _type: str = "car"
     _type_name: str = "Ferrari"
+    _description: str = 'A fast car for racing'
+    _representation: str = ">"
 
     _attributes = {
         "_MODEL": "str",

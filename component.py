@@ -55,13 +55,4 @@ class Component():
 
         #
     def draw(self) -> str:
-        type_symbols = {
-            "turn90": ["┏", "┓", "┛", "┗"],
-            "straight": ["━", "┃"],
-            "diagonal": ["╱", "╲"]
-        }
-        symbols = type_symbols.get(self._type_name)
-        if symbols:
-            if self._type_name in {"straight", "diagonal"}:
-                return symbols[self.rotation % 2]
-            return symbols[self.rotation % 4]
+        return self._representation[self.rotation]
