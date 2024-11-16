@@ -41,9 +41,8 @@ class Component():
     def type_name(self) -> str:
         return self._type_name
 
-    # TODO: Confirm return type
-    def attributes(self) -> list[tuple[str, str]]:
-        return list(self._attributes.items())
+    def attributes(self) -> dict[str, str]:
+        return {key: value for key, value in self._attributes.items()}
 
     def __getattr__(self, name: str):
         if name in self._attributes:
