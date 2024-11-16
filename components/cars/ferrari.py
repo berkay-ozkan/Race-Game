@@ -2,6 +2,8 @@ from components import Car
 
 
 class Ferrari(Car):
+    _MODEL: str = "Ferrari"
+
     # Data source: ChatGPT
     _ACCELERATION_RATE: float = 19
     _FUEL_CONSUMPTION_RATE: float = 0.06

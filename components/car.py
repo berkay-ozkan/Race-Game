@@ -7,6 +7,8 @@ class Car(Component):
     _MOVEMENT_UNIT: float
 
     # Subclass class variables
+    _MODEL: str
+
     _ACCELERATION_RATE: float  # Measured in mph^2
     _FUEL_CONSUMPTION_RATE: float  # Measured in gallons/m
     _DECELERATION_RATE: float  # Measured in mph^2
@@ -42,7 +44,6 @@ class Car(Component):
 
     # TODO: Initialize instance variables
     def __init__(self) -> None:
-        self._MODEL: str = "Ferrari"
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: str
