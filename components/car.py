@@ -44,7 +44,6 @@ class Car(Component):
         "_running": "float",
     }
 
-    # TODO: Initialize instance variables
     def __init__(self) -> None:
         # None until placed, Map afterwards
         self._MAP = None
