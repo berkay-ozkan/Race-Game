@@ -1,3 +1,4 @@
+from components.cars.ferrari import Ferrari
 from repo import Repo
 from components.cells import Turn90, Straight, Diagonal, Rock, Fuel, Booster
 from components import Car
@@ -23,7 +24,7 @@ r.components.register("diagonal", Diagonal)
 r.components.register('rock', Rock)
 r.components.register("fuel", Fuel)
 r.components.register("booster", Booster)
-r.components.register("Ferrari", Car)
+r.components.register("Ferrari", Ferrari)
 rt = r.components.create('turn90')
 
 ogr[(1, 1)] = rt

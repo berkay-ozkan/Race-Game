@@ -3,71 +3,17 @@ from math import cos, sin
 
 
 class Car(Component):
-    # Data source: ChatGPT
-    _MODEL_INFORMATION: dict[str, dict] = {
-        # Acceleration and deceleration rate are measured in mph^2
-        # Fuel consumption rate is measured in gallons/m
-        # Maximum fuel amount is measured in gallons
-        # Maximum speed is measured in mph
-        # Steer rate is measured in radians/s
-        "BMW": {
-            "acceleration_rate": 7,
-            "deceleration_rate": 7,
-            "fuel_consumption_rate": 0.04,
-            "max_fuel": 16,
-            "max_speed": 160,
-            "steer_rate": 0.28
-        },
-        "Bugatti": {
-            "acceleration_rate": 22,
-            "deceleration_rate": 28,
-            "fuel_consumption_rate": 0.13,
-            "max_fuel": 26,
-            "max_speed": 260,
-            "steer_rate": 0.24
-        },
-        "Ferrari": {
-            "acceleration_rate": 19,
-            "deceleration_rate": 26,
-            "fuel_consumption_rate": 0.06,
-            "max_fuel": 23,
-            "max_speed": 210,
-            "steer_rate": 0.25
-        },
-        "Koenigsegg": {
-            "acceleration_rate": 22,
-            "deceleration_rate": 31,
-            "fuel_consumption_rate": 0.08,
-            "max_fuel": 21,
-            "max_speed": 270,
-            "steer_rate": 0.25
-        },
-        "Lamborghini": {
-            "acceleration_rate": 19,
-            "deceleration_rate": 24,
-            "fuel_consumption_rate": 0.07,
-            "max_fuel": 23,
-            "max_speed": 200,
-            "steer_rate": 0.25
-        },
-        "McLaren": {
-            "acceleration_rate": 21,
-            "deceleration_rate": 26,
-            "fuel_consumption_rate": 0.06,
-            "max_fuel": 20,
-            "max_speed": 210,
-            "steer_rate": 0.27
-        },
-        "Mercedes-Benz": {
-            "acceleration_rate": 7,
-            "deceleration_rate": 7,
-            "fuel_consumption_rate": 0.04,
-            "max_fuel": 17,
-            "max_speed": 160,
-            "steer_rate": 0.26
-        }
-    }
+    # Car class variables
     _MOVEMENT_UNIT: float
+
+    # Subclass class variables
+    _ACCELERATION_RATE: float  # Measured in mph^2
+    _FUEL_CONSUMPTION_RATE: float  # Measured in gallons/m
+    _DECELERATION_RATE: float  # Measured in mph^2
+    _STEER_RATE: float  # Measured in radians/s
+
+    _MAX_SPEED: float  # Measured in mph
+    _MAX_FUEL: float  # Measured in gallons
 
     _attributes = {
         "_MODEL": "str",
@@ -100,19 +46,6 @@ class Car(Component):
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: str
-
-        self._ACCELERATION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["acceleration_rate"]
-        self._FUEL_CONSUMPTION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["fuel_consumption_rate"]
-        self._DECELERATION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["deceleration_rate"]
-        self._STEER_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["steer_rate"]
-
-        self._MAX_SPEED: float = Car._MODEL_INFORMATION[
-            self._MODEL]["max_speed"]
-        self._MAX_FUEL: float = Car._MODEL_INFORMATION[self._MODEL]["max_fuel"]
 
         # None until placed, (y, x) coordinates afterwards
         # Follows the Cartesian coordinate system
