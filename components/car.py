@@ -86,17 +86,18 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
+        if not self._angle or not self._MAP or not self._position:
+            return
+
         # Euler integration
         self._update_position()
         self._process_input()
 
     def _update_position(self) -> None:
-        if self._position:
-            self._position = (
-                self._position[0] +
-                sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
-                self._position[1] +
-                cos(self._angle) * self._speed * Car._MOVEMENT_UNIT)
+        self._position = (self._position[0] +
+                          sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
+                          self._position[1] +
+                          cos(self._angle) * self._speed * Car._MOVEMENT_UNIT)
 
         if self._speed:
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
