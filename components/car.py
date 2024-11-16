@@ -48,7 +48,7 @@ class Car(Component):
     def __init__(self) -> None:
         # None until placed, Map afterwards
         self._MAP = None
-        self._DRIVER: str
+        self._DRIVER: None | str = None
 
         # None until placed, (y, x) coordinates afterwards
         # Follows the Cartesian coordinate system
