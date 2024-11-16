@@ -68,6 +68,8 @@ class Car(Component):
         }
     }
     _MOVEMENT_UNIT: float
+    _type: str = "car"
+    _type_name: str = "Ferrari"
 
     _attributes = {
         "_MODEL": "str",
