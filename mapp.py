@@ -60,8 +60,8 @@ class Map:
 
     def view(self, y, x, height, width):
         #print(self.cell_size)
-        y_floor =  y // self.cell_size
-        x_floor = x // self.cell_size
+        y_floor =  y // self.cell_size - 1
+        x_floor = x // self.cell_size - 1
         height_floor = height // self.cell_size
         width_floor = width // self.cell_size
         view_description = 'view of ' + self.description

@@ -1,6 +1,7 @@
 from repo import Repo
 from components.roads import Turn90, Straight, Diagonal, Rock, Fuel, Booster
 from components.car import Car
+from components.cell import Cell
 
 r = Repo()
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
@@ -21,7 +22,7 @@ r.components.register("straight", Straight)
 r.components.register("diagonal", Diagonal)
 r.components.register('rock', Rock)
 r.components.register("fuel", Fuel)
-r.components.register("booster", Diagonal)
+r.components.register("booster", Booster)
 r.components.register("Ferrari", Car)
 rt = r.components.create('turn90')
 
@@ -54,10 +55,17 @@ ogr[(8,9)] = r.components.create('rock')
 ogr[(0,8)] = r.components.create('rock')
 ogr[(1,0)] = r.components.create('rock')
 ogr[(7,1)] = r.components.create('fuel')
-frr = r.components.create('Ferrari')
-#frr.driver = "Alonso"
-#print(frr.mode, frr.pos, frr.topspeed, frr.topfuel)
 
+temp = r.components.create('rock')
+frr = r.components.create('Ferrari')
+frr._DRIVER = "Alonso"
+print(frr._DRIVER)
+frr._speed = 100 
+frr._position = (1 , 1)
+print(frr._speed)
+print(frr._position, frr._MAX_SPEED, frr._MAX_FUEL)
+temp.interact(frr, 0 ,0)
+print(frr._speed)
 print(ogr.draw())
 cv = ogr.view(200,200,600,600)
 print(cv.draw())

@@ -4,6 +4,8 @@ from math import cos, sin
 
 
 class Car(Component):
+   
+
     _MODEL_INFORMATION: dict[str, dict] = {
         "BMW": {
             "acceleration_unit": 44,
@@ -38,6 +40,24 @@ class Car(Component):
 
     # TODO: Initialize instance variables
     def __init__(self) -> None:
+        object.__setattr__(self, "_MODEL", 'Ferrari')
+        object.__setattr__(self, "_MAP", None)
+        object.__setattr__(self, "_DRIVER", 'Me')
+        object.__setattr__(self, "_ACCELERATION_UNIT", 50)
+        object.__setattr__(self, "_FUEL_CONSUMPTION_UNIT", 0)
+        object.__setattr__(self, "_SLOW_DOWN_UNIT", 0)
+        object.__setattr__(self, "_MAX_SPEED", 300)
+        object.__setattr__(self, "_TURN_UNIT", 0)
+        object.__setattr__(self, "_MAX_FUEL", 100)
+        object.__setattr__(self, "_position", (0, 0))
+        object.__setattr__(self, "_angle", 0)
+        object.__setattr__(self, "_accelerate", False)
+        object.__setattr__(self, "_brake", False)
+        object.__setattr__(self, "_speed", 0)
+        object.__setattr__(self, "_turn_clockwise", False)
+        object.__setattr__(self, "_turn_counterclockwise", False)
+        object.__setattr__(self, "_running", False)
+        
         self._MODEL: str
         self._MAP: Map
         self._DRIVER: str

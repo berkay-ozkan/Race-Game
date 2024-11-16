@@ -15,7 +15,7 @@ class Cell(Component):
             car._speed *= 0.97  # reduce speed due to friction
 
         elif self._type == 'booster':
-            car.speed += 47
+            car._speed += 47
             if car._speed > car._MAX_SPEED:
                 car._speed = car._MAX_SPEED
 
