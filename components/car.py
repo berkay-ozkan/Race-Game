@@ -3,71 +3,20 @@ from math import cos, sin
 
 
 class Car(Component):
-    # Data source: ChatGPT
-    _MODEL_INFORMATION: dict[str, dict] = {
-        # Acceleration and deceleration rate are measured in mph^2
-        # Fuel consumption rate is measured in gallons/m
-        # Maximum fuel amount is measured in gallons
-        # Maximum speed is measured in mph
-        # Steer rate is measured in radians/s
-        "BMW": {
-            "acceleration_rate": 7,
-            "deceleration_rate": 7,
-            "fuel_consumption_rate": 0.04,
-            "max_fuel": 16,
-            "max_speed": 160,
-            "steer_rate": 0.28
-        },
-        "Bugatti": {
-            "acceleration_rate": 22,
-            "deceleration_rate": 28,
-            "fuel_consumption_rate": 0.13,
-            "max_fuel": 26,
-            "max_speed": 260,
-            "steer_rate": 0.24
-        },
-        "Ferrari": {
-            "acceleration_rate": 19,
-            "deceleration_rate": 26,
-            "fuel_consumption_rate": 0.06,
-            "max_fuel": 23,
-            "max_speed": 210,
-            "steer_rate": 0.25
-        },
-        "Koenigsegg": {
-            "acceleration_rate": 22,
-            "deceleration_rate": 31,
-            "fuel_consumption_rate": 0.08,
-            "max_fuel": 21,
-            "max_speed": 270,
-            "steer_rate": 0.25
-        },
-        "Lamborghini": {
-            "acceleration_rate": 19,
-            "deceleration_rate": 24,
-            "fuel_consumption_rate": 0.07,
-            "max_fuel": 23,
-            "max_speed": 200,
-            "steer_rate": 0.25
-        },
-        "McLaren": {
-            "acceleration_rate": 21,
-            "deceleration_rate": 26,
-            "fuel_consumption_rate": 0.06,
-            "max_fuel": 20,
-            "max_speed": 210,
-            "steer_rate": 0.27
-        },
-        "Mercedes-Benz": {
-            "acceleration_rate": 7,
-            "deceleration_rate": 7,
-            "fuel_consumption_rate": 0.04,
-            "max_fuel": 17,
-            "max_speed": 160,
-            "steer_rate": 0.26
-        }
-    }
-    _MOVEMENT_UNIT: float
+    # Car class variables
+    _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
+
+    # Subclass class variables
+    _MODEL: str
+
+    _ACCELERATION_RATE: float
+    _FUEL_CONSUMPTION_RATE: float
+    _DECELERATION_RATE: float
+    _STEER_RATE: float
+
+    _MAX_SPEED: float
+    _MAX_FUEL: float
+
     _type: str = "car"
     _type_name: str = "Ferrari"
     _description: str = 'A fast car for racing'
@@ -98,25 +47,10 @@ class Car(Component):
         "_running": "float",
     }
 
-    # TODO: Initialize instance variables
     def __init__(self) -> None:
-        self._MODEL: str = "Ferrari"
         # None until placed, Map afterwards
         self._MAP = None
-        self._DRIVER: str
-
-        self._ACCELERATION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["acceleration_rate"]
-        self._FUEL_CONSUMPTION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["fuel_consumption_rate"]
-        self._DECELERATION_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["deceleration_rate"]
-        self._STEER_RATE: float = Car._MODEL_INFORMATION[
-            self._MODEL]["steer_rate"]
-
-        self._MAX_SPEED: float = Car._MODEL_INFORMATION[
-            self._MODEL]["max_speed"]
-        self._MAX_FUEL: float = Car._MODEL_INFORMATION[self._MODEL]["max_fuel"]
+        self._DRIVER: None | str = None
 
         # None until placed, (y, x) coordinates afterwards
         # Follows the Cartesian coordinate system
@@ -154,31 +88,40 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
+        if not self._angle or not self._MAP or not self._position:
+            return
+
         # Euler integration
         self._update_position()
         self._process_input()
 
     def _update_position(self) -> None:
-        if self._position:
-            self._position = (
-                self._position[0] +
-                sin(self._angle) * self._speed * Car._MOVEMENT_UNIT,
-                self._position[1] +
-                cos(self._angle) * self._speed * Car._MOVEMENT_UNIT)
+        self._position = (self._position[0] + sin(self._angle) * self._speed,
+                          self._position[1] + cos(self._angle) * self._speed)
+
+        if self._speed:
+            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
     def _process_input(self) -> None:
-        # TODO: Should be affected by the cell the car is on
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
             self._speed = min(self._MAX_SPEED,
                               self._speed + self._ACCELERATION_RATE)
-            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
         if self._turn_clockwise:
             self._angle += self._STEER_RATE
         if self._turn_counterclockwise:
             self._angle -= self._STEER_RATE
+
+        components_below = self._MAP.get_y_x(*self._position)
+        if not components_below:
+            self._speed = min(
+                self._speed,
+                self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
+        else:
+            for cell in components_below:
+                cell.interact(self, *self._position)
 
         self._accelerate = False
         self._brake = False
