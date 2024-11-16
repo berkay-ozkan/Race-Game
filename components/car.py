@@ -100,7 +100,10 @@ class Car(Component):
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
     def _process_input(self) -> None:
-        # TODO: Should be affected by the cell the car is on
+        # TODO: No need to create list after get_y_x starts to return a list
+        for cell in [self._MAP.get_y_x(*self._position)]:
+            cell.interact(self, *self._position)
+
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
