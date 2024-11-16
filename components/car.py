@@ -6,6 +6,8 @@ class Car(Component):
     # Car class variables
     _MOVEMENT_UNIT: float
 
+    _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
+
     # Subclass class variables
     _MODEL: str
 
@@ -100,10 +102,6 @@ class Car(Component):
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
     def _process_input(self) -> None:
-        # TODO: No need to create list after get_y_x starts to return a list
-        for cell in [self._MAP.get_y_x(*self._position)]:
-            cell.interact(self, *self._position)
-
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
@@ -114,6 +112,16 @@ class Car(Component):
             self._angle += self._STEER_RATE
         if self._turn_counterclockwise:
             self._angle -= self._STEER_RATE
+
+        # TODO: No need to create list after get_y_x starts to return a list
+        components_below = [self._MAP.get_y_x(*self._position)]
+        if not components_below:
+            self._speed = min(
+                self._speed,
+                self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
+        else:
+            for cell in components_below:
+                cell.interact(self, *self._position)
 
         self._accelerate = False
         self._brake = False
