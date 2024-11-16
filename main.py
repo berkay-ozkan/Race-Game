@@ -1,5 +1,6 @@
 from repo import Repo
-from components.roads import Turn90, Straight, Diagonal
+from components.roads import Turn90, Straight, Diagonal, Rock, Fuel, Booster
+from components.car import Car
 
 r = Repo()
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
@@ -9,8 +10,8 @@ r.create(description="map4", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map5", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
 
-r.create(description = "F571", rows = 10,cols =10, cell_size = 64,bg_color = 'green')
-r.list() # F571 will be listed with an id
+r.create(description = "F571", rows = 10,cols =10, cellsize = 64,bg_color = 'green')
+print(r.list()) # F571 will be listed with an id
 ogr = r.attach(7, "onur")
 tgr = r.attach(7, "tolga") # these two are the same object
 r.components.list() # lists the available components
@@ -18,6 +19,10 @@ r.components.list() # lists the available components
 r.components.register('turn90', Turn90)
 r.components.register("straight", Straight)
 r.components.register("diagonal", Diagonal)
+r.components.register('rock', Rock)
+r.components.register("fuel", Fuel)
+r.components.register("booster", Diagonal)
+r.components.register("Ferrari", Car)
 rt = r.components.create('turn90')
 
 ogr[(1,1)] = rt
@@ -49,21 +54,23 @@ ogr[(8,9)] = r.components.create('rock')
 ogr[(0,8)] = r.components.create('rock')
 ogr[(1,0)] = r.components.create('rock')
 ogr[(7,1)] = r.components.create('fuel')
-frr = ogr.components.create('Ferrari')
-frr.driver = "Alonso"
-print(frr.mode, frr.pos, frr.topspeed, frr.topfuel)
-4
-ogr.draw()
-cv = ogr.view(500,500,200,200)
-cv.draw()
-frr.start()
-frr.tick()
-frr.accel()
-frr.left()
-frr.tick()
-frr.right()
-frr.accell()
-frr.tick()
-frr.stop()
-cv.draw()
-ogr.draw()
+frr = r.components.create('Ferrari')
+#frr.driver = "Alonso"
+#print(frr.mode, frr.pos, frr.topspeed, frr.topfuel)
+
+print(ogr.draw())
+cv = ogr.view(200,200,600,600)
+print(cv.draw())
+cv.remove(dt)
+#frr.start()
+#frr.tick()
+#frr.accel()
+#frr.left()
+#frr.tick()
+#frr.right()
+#frr.accell()
+#frr.tick()
+#frr.stop()
+print(cv.draw())
+
+print(ogr.draw())

@@ -12,17 +12,17 @@ class Cell(Component):
     def interact(self, car, y, x):
 
         if self._type == 'road':
-            car.speed *= 0.97  # reduce speed due to friction
+            car._speed *= 0.97  # reduce speed due to friction
 
         elif self._type == 'booster':
             car.speed += 47
-            if car.speed > car.top_speed:
-                car.speed = car.top_speed
+            if car._speed > car._MAX_SPEED:
+                car._speed = car._MAX_SPEED
 
         elif self._type == 'obstacle':
-            car.speed = 0
+            car._speed = 0
 
-        elif self.type == 'fuel':
-            car.fuel += 10
-            if car.fuel > car.top_fuel:
-                car.fuel = car.top_fuel
+        elif self._type == 'fuel':
+            car._fuel += 10
+            if car._fuel > car._MAX_FUEL:
+                car._fuel = car._MAX_FUEL
