@@ -1,4 +1,4 @@
-from components.roads import Diagonal, Straight, Turn90
+from components.cells import Diagonal, Straight, Turn90
 
 
 class Map:
@@ -60,13 +60,13 @@ class Map:
 
     def view(self, y, x, height, width):
         #print(self.cell_size)
-        y_floor =  y // self.cell_size - 1
+        y_floor = y // self.cell_size - 1
         x_floor = x // self.cell_size - 1
         height_floor = height // self.cell_size
         width_floor = width // self.cell_size
         view_description = 'view of ' + self.description
-        map_view = Map(view_description, width_floor, height_floor, self.cell_size,
-                       self.bg_color)
+        map_view = Map(view_description, width_floor, height_floor,
+                       self.cell_size, self.bg_color)
 
         for row in range(height_floor):
             for col in range(width_floor):
