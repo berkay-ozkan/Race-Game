@@ -57,7 +57,7 @@ class Map:
         row = int (y // self.cell_size)
         col = int(x // self.cell_size)
         self.grid[row][col].append(obj)
-        obj._position = (row, col)
+        obj._position = (y, x)
 
     def view(self, y, x, height, width):
 
