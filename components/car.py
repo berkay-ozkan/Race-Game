@@ -4,54 +4,109 @@ from math import cos, sin
 
 
 class Car(Component):
+    # Data source: ChatGPT
     _MODEL_INFORMATION: dict[str, dict] = {
+        # Acceleration and deceleration rate are measured in mph^2
+        # Fuel consumption rate is measured in gallons/m
+        # Maximum fuel amount is measured in gallons
+        # Maximum speed is measured in mph
+        # Steer rate is measured in radians/s
         "BMW": {
-            "acceleration_unit": 44,
-            "max_speed": 305
+            "acceleration_rate": 7,
+            "deceleration_rate": 7,
+            "fuel_consumption_rate": 0.04,
+            "max_fuel": 16,
+            "max_speed": 160,
+            "steer_rate": 0.28
         },
         "Bugatti": {
-            "acceleration_unit": 61,
-            "max_speed": 485
+            "acceleration_rate": 22,
+            "deceleration_rate": 28,
+            "fuel_consumption_rate": 0.13,
+            "max_fuel": 26,
+            "max_speed": 260,
+            "steer_rate": 0.24
         },
         "Ferrari": {
-            "acceleration_unit": 50,
-            "max_speed": 370
+            "acceleration_rate": 19,
+            "deceleration_rate": 26,
+            "fuel_consumption_rate": 0.06,
+            "max_fuel": 23,
+            "max_speed": 210,
+            "steer_rate": 0.25
         },
         "Koenigsegg": {
-            "acceleration_unit": 63,
-            "max_speed": 490
+            "acceleration_rate": 22,
+            "deceleration_rate": 31,
+            "fuel_consumption_rate": 0.08,
+            "max_fuel": 21,
+            "max_speed": 270,
+            "steer_rate": 0.25
         },
         "Lamborghini": {
-            "acceleration_unit": 51,
-            "max_speed": 350
+            "acceleration_rate": 19,
+            "deceleration_rate": 24,
+            "fuel_consumption_rate": 0.07,
+            "max_fuel": 23,
+            "max_speed": 200,
+            "steer_rate": 0.25
         },
         "McLaren": {
-            "acceleration_unit": 50,
-            "max_speed": 400
+            "acceleration_rate": 21,
+            "deceleration_rate": 26,
+            "fuel_consumption_rate": 0.06,
+            "max_fuel": 20,
+            "max_speed": 210,
+            "steer_rate": 0.27
         },
         "Mercedes-Benz": {
-            "acceleration_unit": 43,
-            "max_speed": 310
+            "acceleration_rate": 7,
+            "deceleration_rate": 7,
+            "fuel_consumption_rate": 0.04,
+            "max_fuel": 17,
+            "max_speed": 160,
+            "steer_rate": 0.26
         }
     }
     _MOVEMENT_UNIT: float
 
     # TODO: Initialize instance variables
     def __init__(self) -> None:
+        object.__setattr__(self, "_MODEL", 'Ferrari')
+        object.__setattr__(self, "_MAP", None)
+        object.__setattr__(self, "_DRIVER", 'Me')
+        object.__setattr__(self, "_ACCELERATION_RATE", 50)
+        object.__setattr__(self, "_FUEL_CONSUMPTION_RATE", 0)
+        object.__setattr__(self, "_DECELERATION_RATE", 0)
+        object.__setattr__(self, "_MAX_SPEED", 300)
+        object.__setattr__(self, "_STEER_RATE", 0)
+        object.__setattr__(self, "_MAX_FUEL", 100)
+        object.__setattr__(self, "_position", (0, 0))
+        object.__setattr__(self, "_angle", 0)
+        object.__setattr__(self, "_accelerate", False)
+        object.__setattr__(self, "_brake", False)
+        object.__setattr__(self, "_speed", 0)
+        object.__setattr__(self, "_turn_clockwise", False)
+        object.__setattr__(self, "_turn_counterclockwise", False)
+        object.__setattr__(self, "_running", False)
+
         self._MODEL: str
         # None until placed
         self._MAP: None | Map = None
         self._DRIVER: str
 
-        self._ACCELERATION_UNIT: float = Car._MODEL_INFORMATION[
-            self._MODEL]["acceleration_unit"]
-        self._FUEL_CONSUMPTION_UNIT: float
-        self._SLOW_DOWN_UNIT: float
-        self._TURN_UNIT: float
+        self._ACCELERATION_RATE: float = Car._MODEL_INFORMATION[
+            self._MODEL]["acceleration_rate"]
+        self._FUEL_CONSUMPTION_RATE: float = Car._MODEL_INFORMATION[
+            self._MODEL]["fuel_consumption_rate"]
+        self._DECELERATION_RATE: float = Car._MODEL_INFORMATION[
+            self._MODEL]["deceleration_rate"]
+        self._STEER_RATE: float = Car._MODEL_INFORMATION[
+            self._MODEL]["steer_rate"]
 
         self._MAX_SPEED: float = Car._MODEL_INFORMATION[
             self._MODEL]["max_speed"]
-        self._MAX_FUEL: float
+        self._MAX_FUEL: float = Car._MODEL_INFORMATION[self._MODEL]["max_fuel"]
 
         # None until placed, (y, x) coordinates afterwards
         # Follows the Cartesian coordinate system
@@ -104,16 +159,16 @@ class Car(Component):
     def _process_input(self) -> None:
         # TODO: Should be affected by the cell the car is on
         if not self._running or self._brake:
-            self._speed = max(0, self._speed - self._SLOW_DOWN_UNIT)
+            self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
             self._speed = min(self._MAX_SPEED,
-                              self._speed + self._ACCELERATION_UNIT)
-            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_UNIT)
+                              self._speed + self._ACCELERATION_RATE)
+            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
         if self._turn_clockwise:
-            self._angle += self._TURN_UNIT
+            self._angle += self._STEER_RATE
         if self._turn_counterclockwise:
-            self._angle -= self._TURN_UNIT
+            self._angle -= self._STEER_RATE
 
         self._accelerate = False
         self._brake = False
