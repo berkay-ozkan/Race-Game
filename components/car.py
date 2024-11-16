@@ -1,5 +1,4 @@
 from component import Component
-from mapp import Map
 from math import cos, sin
 
 
@@ -98,8 +97,8 @@ class Car(Component):
     # TODO: Initialize instance variables
     def __init__(self) -> None:
         self._MODEL: str = "Ferrari"
-        # None until placed
-        self._MAP: None | Map = None
+        # None until placed, Map afterwards
+        self._MAP = None
         self._DRIVER: str
 
         self._ACCELERATION_RATE: float = Car._MODEL_INFORMATION[

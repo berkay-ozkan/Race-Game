@@ -1,7 +1,7 @@
 from repo import Repo
 from components.cells import Turn90, Straight, Diagonal, Rock, Fuel, Booster
-from components.car import Car
-from components.cell import Cell
+from components import Car
+from components import Cell
 
 r = Repo()
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
