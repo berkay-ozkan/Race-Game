@@ -63,7 +63,7 @@ class Map:
 
     def view(self, y, x, height, width):
 
-        if(self._id == None):
+        if (self._id == None):
             print("view of a view cannot be created")
             return
         #print(self.cell_size)
@@ -85,15 +85,27 @@ class Map:
         return map_view
 
     def draw(self) -> str:
+        all_players_information: list[list[str]] = []
         map_representation = ""
         for row in self.grid:
             row_representation = ""
             for cell in row:
-                car_component = next((comp for comp in cell if hasattr(comp, '_type') and comp._type == 'car'), None)
+                car_component = next(
+                    (comp for comp in cell
+                     if hasattr(comp, '_type') and comp._type == 'car'), None)
                 if car_component:
                     row_representation += car_component._representation
+                    player_information = []
+                    for attribute in car_component._attributes:
+                        player_information.append(
+                            f"{attribute}: {getattr(car_component, attribute)}"
+                        )
+                    all_players_information.append(player_information)
                 else:
-                    road_component = next((comp for comp in cell if hasattr(comp, '_type') and comp._type == "road"), None)
+                    road_component = next(
+                        (comp for comp in cell
+                         if hasattr(comp, '_type') and comp._type == "road"),
+                        None)
 
                     if road_component:
                         row_representation += road_component.draw()
@@ -101,7 +113,11 @@ class Map:
                         row_representation += " "
             map_representation += row_representation + "\n"
 
+        for player_information in all_players_information:
+            for attribute in player_information:
+                map_representation += attribute + '\n'
+            map_representation += '\n'
         return map_representation
-    
+
     def get_id(self):
         return self._id
