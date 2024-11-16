@@ -18,12 +18,12 @@ class Component():
     @classmethod
     def create(cls, component_type_name: str) -> "Component":
         component_class = cls._registered_subclasses.get(component_type_name)
-       
+
         if component_class is None:
-            
+
             raise ValueError(
                 f"Component type '{component_type_name}' is not registered.")
-        
+
         instance = component_class()
         print(component_class)
         object.__setattr__(instance, "_type_name", component_type_name)
@@ -47,20 +47,13 @@ class Component():
     def attributes(self) -> dict[str, str]:
         return {key: value for key, value in self._attributes.items()}
 
-    def __getattr__(self, name: str):
-        if name in self._attributes:
-            return self._attributes[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'")
-
     def __setattr__(self, name: str, value) -> None:
-        if name in self.__dict__ or ("_attributes" in self.__dict__
-                                     and name in self._attributes):
-            super().__setattr__(name, value)
-        else:
-            raise AttributeError(f"Attribute does not exist: '{name}'")
+        if name not in type(self)._attributes:
+            raise AttributeError(
+                f"'{type(self)}' object has no attribute '{name}'")
+        return super().__setattr__(name, value)
 
-            #
+        #
     def draw(self) -> str:
         type_symbols = {
             "turn90": ["┏", "┓", "┛", "┗"],

@@ -70,27 +70,34 @@ class Car(Component):
     }
     _MOVEMENT_UNIT: float
 
+    _attributes = {
+        "_MODEL": "str",
+        "_MAP": "Map",
+        "_DRIVER": "Map",
+        "_ACCELERATION_RATE": "float",
+        "_FUEL_CONSUMPTION_RATE": "float",
+        "_DECELERATION_RATE": "float",
+        "_STEER_RATE": "float",
+        "_MAX_SPEED": "float",
+        "_MAX_FUEL": "float",
+        "_MODEL": "str",
+        "_MAP": "Map",
+        "_ACCELERATION_RATE": "float",
+        "_FUEL_CONSUMPTION_RATE": "float",
+        "_position": "float",
+        "_angle": "float",
+        "_speed": "float",
+        "_fuel": "float",
+        "_accelerate": "float",
+        "_brake": "float",
+        "_turn_clockwise": "float",
+        "_turn_counterclockwise": "float",
+        "_running": "float",
+    }
+
     # TODO: Initialize instance variables
     def __init__(self) -> None:
-        object.__setattr__(self, "_MODEL", 'Ferrari')
-        object.__setattr__(self, "_MAP", None)
-        object.__setattr__(self, "_DRIVER", 'Me')
-        object.__setattr__(self, "_ACCELERATION_RATE", 50)
-        object.__setattr__(self, "_FUEL_CONSUMPTION_RATE", 0)
-        object.__setattr__(self, "_DECELERATION_RATE", 0)
-        object.__setattr__(self, "_MAX_SPEED", 300)
-        object.__setattr__(self, "_STEER_RATE", 0)
-        object.__setattr__(self, "_MAX_FUEL", 100)
-        object.__setattr__(self, "_position", (0, 0))
-        object.__setattr__(self, "_angle", 0)
-        object.__setattr__(self, "_accelerate", False)
-        object.__setattr__(self, "_brake", False)
-        object.__setattr__(self, "_speed", 0)
-        object.__setattr__(self, "_turn_clockwise", False)
-        object.__setattr__(self, "_turn_counterclockwise", False)
-        object.__setattr__(self, "_running", False)
-
-        self._MODEL: str
+        self._MODEL: str = "Ferrari"
         # None until placed
         self._MAP: None | Map = None
         self._DRIVER: str
