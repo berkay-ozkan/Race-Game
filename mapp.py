@@ -11,6 +11,7 @@ class Map:
         self.cell_size = cell_size
         self.bg_color = bg_color
         self.grid = [[[] for _ in range(cols)] for _ in range(rows)]
+        self._id = None
 
     def __setitem__(self, pos, component):
         row = pos[0] - 1
@@ -34,8 +35,11 @@ class Map:
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                    component.row = None
-                    component.col = None
+                    if component._type == "car":
+                        component._position = None
+                    else:
+                        component.row = None
+                        component.col = None
 
     def __deliten__(self, pos):
         row = pos[0] - 1
@@ -46,28 +50,31 @@ class Map:
         self.grid[row][col].clear()
 
     def get_y_x(self, y, x):
-        row = y // self.cell_size - 1
-        col = x // self.cell_size - 1
+        row = y // self.cell_size
+        col = x // self.cell_size
 
         return self.grid[row][col]
 
     def place(self, obj, y, x):
-        row = y // self.cell_size - 1
-        col = x // self.cell_size - 1
+        row = y // self.cell_size
+        col = x // self.cell_size
         self.grid[row][col].append(obj)
-        obj.row = row
-        obj.col = col
+        obj._position = (row, col)
 
     def view(self, y, x, height, width):
+
+        if(self._id == None):
+            print("view of a view cannot be created")
+            return
         #print(self.cell_size)
-        y_floor = y // self.cell_size - 1
-        x_floor = x // self.cell_size - 1
+        y_floor = y // self.cell_size
+        x_floor = x // self.cell_size
         height_floor = height // self.cell_size
         width_floor = width // self.cell_size
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_floor, height_floor,
                        self.cell_size, self.bg_color)
-
+        map_view.id = None
         for row in range(height_floor):
             for col in range(width_floor):
                 map_row = y_floor + row
@@ -82,14 +89,19 @@ class Map:
         for row in self.grid:
             row_representation = ""
             for cell in row:
-                road_component = next(
-                    (comp for comp in cell
-                     if hasattr(comp, '_type') and comp._type == "road"), None)
-
-                if road_component:
-                    row_representation += road_component.draw()
+                car_component = next((comp for comp in cell if hasattr(comp, '_type') and comp._type == 'car'), None)
+                if car_component:
+                    row_representation += car_component._representation
                 else:
-                    row_representation += " "
+                    road_component = next((comp for comp in cell if hasattr(comp, '_type') and comp._type == "road"), None)
+
+                    if road_component:
+                        row_representation += road_component.draw()
+                    else:
+                        row_representation += " "
             map_representation += row_representation + "\n"
 
         return map_representation
+    
+    def get_id(self):
+        return self._id

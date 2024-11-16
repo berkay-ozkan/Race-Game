@@ -23,6 +23,7 @@ class Repo:
         bg_color = kwargs.get('bgcolor')
         self.objects[map_id] = Map(description, cols, rows, cell_size,
                                    bg_color)
+        self.objects[map_id]._id = map_id
         self._id_counter += 1
         return map_id
 

@@ -7,3 +7,5 @@ class Rock(Cell):
         super().__init__()
         object.__setattr__(self, "_type_name", "rock")
         object.__setattr__(self, "_type", "obstacle")
+        object.__setattr__(self, "_description", "A random rock that stops the car")
+        object.__setattr__(self, "_representation", "o")
