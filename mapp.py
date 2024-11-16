@@ -30,16 +30,13 @@ class Map:
         return road_component
 
     def remove(self, component):
+        print("THIS VIS A REM")
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                    if component._type == "car":
-                        component._position = None
-                    else:
-                        component.row = None
-                        component.col = None
+                   
 
     def __deliten__(self, pos):
         row = pos[0] - 1
@@ -50,14 +47,15 @@ class Map:
         self.grid[row][col].clear()
 
     def get_y_x(self, y, x):
-        row = y // self.cell_size
-        col = x // self.cell_size
+        row = int(y // self.cell_size)
+        col = int(x // self.cell_size)
 
         return self.grid[row][col]
 
     def place(self, obj, y, x):
-        row = y // self.cell_size
-        col = x // self.cell_size
+        obj._MAP = self
+        row = int (y // self.cell_size)
+        col = int(x // self.cell_size)
         self.grid[row][col].append(obj)
         obj._position = (row, col)
 

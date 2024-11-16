@@ -88,12 +88,17 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
-        if not self._angle or not self._MAP or not self._position:
+        print(self._MAP.get_id())
+        if not self._angle is not None or not self._MAP or not self._position:
+            
             return
 
         # Euler integration
+        self._MAP.remove(self)
         self._update_position()
         self._process_input()
+        pos_y, pos_x = self._position
+        self._MAP.place(self, pos_y, pos_x)
 
     def _update_position(self) -> None:
         self._position = (self._position[0] + sin(self._angle) * self._speed,

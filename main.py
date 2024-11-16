@@ -58,29 +58,34 @@ ogr[(7, 1)] = r.components.create('fuel')
 temp = r.components.create('rock')
 frr = r.components.create('Ferrari')
 frr._DRIVER = "Alonso"
-print(frr._DRIVER)
+
 frr._speed = 100
-frr._position = (1, 1)
-print(frr._speed)
-print(frr._position, frr._MAX_SPEED, frr._MAX_FUEL)
+
+
+
 temp.interact(frr, 0, 0)
 ogr.place(frr, 0, 128)
-print(frr._speed)
+frr._position = (0, 128)
+frr._angle = 0
+frr._speed = 200
+
 print(ogr.draw())
-ogr.remove(frr)
+
 cv = ogr.view(200, 200, 600, 600)
 cd = cv.view(200, 200 , 600, 600)
-print(cv.draw())
-cv.remove(dt)
-#frr.start()
-#frr.tick()
-#frr.accel()
-#frr.left()
-#frr.tick()
-#frr.right()
-#frr.accell()
-#frr.tick()
-#frr.stop()
-print(cv.draw())
+#print(cv.draw())
 
+frr.start()
+frr.tick()
+frr.accelerate()
+print(frr._position)
+
+#frr.turn_counterclockwise()
+frr.tick()
+frr.turn_clockwise()
+frr.accelerate()
+frr.tick()
+frr.stop()
+#print(cv.draw())
+print(frr._position)
 print(ogr.draw())
