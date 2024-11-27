@@ -1,6 +1,6 @@
 from components.cars import Ferrari
-from repo import Repo
 from components.cells import Turn90, Straight, Diagonal, Rock, Fuel, Booster
+from repo import Repo
 
 r = Repo()
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
@@ -61,8 +61,6 @@ frr._DRIVER = "Alonso"
 
 frr._speed = 100
 
-
-
 temp.interact(frr, 0, 0)
 ogr.place(frr, 0, 128)
 frr._position = (0, 128)
@@ -72,7 +70,7 @@ frr._speed = 200
 print(ogr.draw())
 
 cv = ogr.view(200, 200, 600, 600)
-cd = cv.view(200, 200 , 600, 600)
+cd = cv.view(200, 200, 600, 600)
 #print(cv.draw())
 
 frr.start()
