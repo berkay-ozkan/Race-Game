@@ -7,10 +7,10 @@ from singleton import singleton
 class Repo:
 
     def __init__(self):
+        self._attachments = {}
         self._id_counter = 1
         self._objects = {}
         self.components = Component()
-        self._attachments = {}
 
     def create(self, **kwargs):
         description = kwargs.get('description')
