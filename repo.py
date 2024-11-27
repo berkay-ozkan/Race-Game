@@ -2,8 +2,6 @@ from mapp import Map
 from component import Component
 from singleton import singleton
 
-#decorator
-
 
 @singleton
 class Repo:
