@@ -25,7 +25,7 @@ class Component():
                 f"Component type '{component_type_name}' is not registered.")
 
         instance = component_class()
-        print(component_class)
+        
         object.__setattr__(instance, "_type_name", component_type_name)
 
         return instance

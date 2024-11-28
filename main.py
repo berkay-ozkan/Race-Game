@@ -65,7 +65,7 @@ temp.interact(frr, 0, 0)
 ogr.place(frr, 0, 128)
 frr._position = (0, 128)
 frr._angle = 0
-frr._speed = 200
+frr._speed = 64
 
 print(ogr.draw())
 
@@ -76,7 +76,6 @@ cd = cv.view(200, 200, 600, 600)
 frr.start()
 frr.tick()
 frr.accelerate()
-print(frr._position)
 
 #frr.turn_counterclockwise()
 frr.tick()
@@ -84,6 +83,8 @@ frr.turn_clockwise()
 frr.accelerate()
 frr.tick()
 frr.stop()
-#print(cv.draw())
-print(frr._position)
+
+print(ogr.draw())
+frr.tick()
+
 print(ogr.draw())

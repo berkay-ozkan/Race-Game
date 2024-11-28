@@ -88,7 +88,7 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
-        print(self._MAP.get_id())
+        
         if not self._angle is not None or not self._MAP or not self._position:
             
             return

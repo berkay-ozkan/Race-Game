@@ -30,7 +30,7 @@ class Map:
         return road_component
 
     def remove(self, component):
-        print("THIS VIS A REM")
+        
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
@@ -64,7 +64,7 @@ class Map:
         if (self._id == None):
             print("view of a view cannot be created")
             return
-        #print(self.cell_size)
+     
         y_floor = y // self.cell_size
         x_floor = x // self.cell_size
         height_floor = height // self.cell_size
