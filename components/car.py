@@ -89,16 +89,12 @@ class Car(Component):
         self._position = (self._position[0] + cos(self._angle) * self._speed,
                           self._position[1] - sin(self._angle) * self._speed)
 
-        if self._speed:
-            self._fuel = max(
-                0, self._fuel -
-                (self._speed / self._MAX_SPEED) * self._FUEL_CONSUMPTION_RATE)
-
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
             self._speed = min(self._MAX_SPEED,
                               self._speed + self._ACCELERATION_RATE)
+            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
         if self._turn_clockwise:
             self._angle -= self._STEER_RATE
