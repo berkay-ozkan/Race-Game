@@ -56,5 +56,5 @@ class Component():
                 f"'{type(self)}' object has no attribute '{name}'")
         return super().__setattr__(name, value)
 
-    def draw(self) -> str:
+    def representation(self) -> str:
         return self._representation

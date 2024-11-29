@@ -1,3 +1,4 @@
+from component import Component
 from components import Car
 from components.cells import Road
 from math import ceil, floor
@@ -5,14 +6,15 @@ from math import ceil, floor
 
 class Map:
 
-    def __init__(self, description, cols, rows, cell_size, bg_color):
+    def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
         #print(cell_size)
         self.description = description
         self.cols = cols
         self.rows = rows
         self.cell_size = cell_size
         self.bg_color = bg_color
-        self.grid = [[[] for _ in range(cols)] for _ in range(rows)]
+        self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
+                                                  for _ in range(rows)]
         self._id = None
 
     def __setitem__(self, pos, component):
@@ -97,7 +99,7 @@ class Map:
                     continue
 
                 topmost_component = cell[-1]
-                print(topmost_component.draw(), end="")
+                print(topmost_component.representation(), end="")
 
                 if isinstance(topmost_component, Car):
                     player_information = []

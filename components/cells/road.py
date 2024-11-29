@@ -10,7 +10,7 @@ class Road(Cell):
         super()
         self.rotation: int
 
-    def draw(self) -> str:
+    def representation(self) -> str:
         return self._representation[self.rotation]
 
     def interact(self, car):
