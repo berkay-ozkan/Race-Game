@@ -83,7 +83,7 @@ class Map:
             for col in range(width_ceil):
                 map_row = y_floor + row
                 map_col = x_floor + col
-                if map_row < self.rows and map_col < self.cols:
+                if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
 
         return map_view
