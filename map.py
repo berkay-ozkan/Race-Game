@@ -16,12 +16,13 @@ class Map:
                                                   for _ in range(rows)]
         self._id = None
 
-    def __setitem__(self, pos, component):
+    # For adding Cell components
+    def __setitem__(self, pos, cell: Cell):
         row = pos[0]
         col = pos[1]
-        self.grid[row][col].append(component)
-        component.row = row
-        component.col = col
+        self.grid[row][col].append(cell)
+        cell.row = row
+        cell.col = col
 
     def __getitem__(self, pos):
         row = pos[0]
@@ -56,6 +57,7 @@ class Map:
             filter(lambda component: isinstance(component, Cell),
                    self.grid[row][col]))
 
+    # For adding Car components
     def place(self, car: Car, y: float, x: float):
         self.remove(car)
 
