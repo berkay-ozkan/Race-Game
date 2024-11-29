@@ -107,7 +107,8 @@ class Car(Component):
                 self._speed,
                 self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
         else:
-            for cell in components_below:
+            # Interact with the most recently added component first
+            for cell in reversed(components_below):
                 cell.interact(self)
 
         self._accelerate = False
