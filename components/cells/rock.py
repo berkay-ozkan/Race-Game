@@ -5,7 +5,6 @@ class Rock(Cell):
 
     def __init__(self):
         super().__init__()
-        self._type_name = "rock"
         self._description = "A random rock that stops the car"
         self._representation = "o"
 

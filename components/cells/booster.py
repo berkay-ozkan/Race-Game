@@ -5,7 +5,6 @@ class Booster(Cell):
 
     def __init__(self):
         super().__init__()
-        self._type_name = "booster"
         self._description = "A little boost to car speed"
         self._representation = '>>'
 

@@ -17,7 +17,6 @@ class Car(Component):
     _MAX_SPEED: float
     _MAX_FUEL: float
 
-    _type_name: str = "Ferrari"
     _description: str = 'A fast car for racing'
     _representation: str = ">"
 

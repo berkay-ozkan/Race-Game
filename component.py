@@ -30,13 +30,12 @@ class Component():
 
         instance = component_class()
 
-        object.__setattr__(instance, "_type_name", component_type_name)
-
         return instance
 
     @classmethod
     def register(cls, component_type_name: str, component_class) -> None:
         cls._registered_subclasses[component_type_name] = component_class
+        component_class._type_name = component_type_name
 
     @classmethod
     def unregister(cls, component_type_name: str) -> None:
