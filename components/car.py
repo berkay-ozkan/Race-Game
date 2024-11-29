@@ -93,6 +93,10 @@ class Car(Component):
         self._MAP.place(self, pos_y, pos_x)
 
     def _update_position(self) -> None:
+        assert self._angle is not None
+        assert self._MAP is not None
+        assert self._position is not None
+
         self._position = (self._position[0] + sin(self._angle) * self._speed,
                           self._position[1] + cos(self._angle) * self._speed)
 
@@ -102,6 +106,10 @@ class Car(Component):
                 (self._speed / self._MAX_SPEED) * self._FUEL_CONSUMPTION_RATE)
 
     def _process_input(self) -> None:
+        assert self._angle is not None
+        assert self._MAP is not None
+        assert self._position is not None
+
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
