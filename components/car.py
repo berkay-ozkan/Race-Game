@@ -120,7 +120,7 @@ class Car(Component):
                 self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
         else:
             for cell in components_below:
-                cell.interact(self, *self._position)
+                cell.interact(self)
 
         self._accelerate = False
         self._brake = False

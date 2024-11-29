@@ -1,4 +1,5 @@
 from component import Component
+from components import Car
 
 
 class Cell(Component):
@@ -14,3 +15,7 @@ class Cell(Component):
 
     def draw(self) -> str:
         return self._representation[self.rotation]
+
+    # Subclass instance functions
+    def interact(self, car: Car) -> None:
+        raise NotImplementedError

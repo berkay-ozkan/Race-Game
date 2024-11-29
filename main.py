@@ -62,7 +62,7 @@ frr._DRIVER = "Alonso"
 
 frr._speed = 100
 
-temp.interact(frr, 0, 0)
+temp.interact(frr)
 ogr.place(frr, 0, 128)
 frr._position = (0, 128)
 frr._angle = 0
