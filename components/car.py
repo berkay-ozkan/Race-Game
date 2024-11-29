@@ -17,7 +17,6 @@ class Car(Component):
     _MAX_SPEED: float
     _MAX_FUEL: float
 
-    _type: str = "car"
     _type_name: str = "Ferrari"
     _description: str = 'A fast car for racing'
     _representation: str = ">"
@@ -88,9 +87,9 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
-        
+
         if not self._angle is not None or not self._MAP or not self._position:
-            
+
             return
 
         # Euler integration

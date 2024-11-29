@@ -1,3 +1,4 @@
+from components import Car
 from components.cells import Road
 
 
@@ -87,8 +88,7 @@ class Map:
             row_representation = ""
             for cell in row:
                 car_component = next(
-                    (comp for comp in cell
-                     if hasattr(comp, '_type') and comp._type == 'car'), None)
+                    (comp for comp in cell if isinstance(comp, Car)), None)
                 if car_component:
                     row_representation += car_component._representation
                     player_information = []
@@ -99,8 +99,7 @@ class Map:
                     all_players_information.append(player_information)
                 else:
                     road_component = next(
-                        (comp for comp in cell
-                         if hasattr(comp, '_type') and comp._type == "road"),
+                        (comp for comp in cell if isinstance(comp, Road)),
                         None)
 
                     if road_component:

@@ -5,4 +5,6 @@ class Road(Cell):
 
     def __init__(self):
         super().__init__()
-        object.__setattr__(self, "_type", "road")
+
+    def interact(self, car, y, x):
+        car._speed *= 0.97  # reduce speed due to friction
