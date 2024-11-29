@@ -4,7 +4,7 @@ from components import Cell
 class Fuel(Cell):
 
     def __init__(self):
-        super().__init__()
+        super()
         self._description = "A little fuel to replenish some fuel of the car"
         self._representation = "+"
 

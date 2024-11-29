@@ -9,7 +9,7 @@ class Cell(Component):
     }
 
     def __init__(self) -> None:
-        super().__init__()
+        super()
         self.rotation: int
 
     def draw(self) -> str:
