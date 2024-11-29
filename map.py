@@ -1,6 +1,5 @@
 from component import Component
 from components import Car, Cell
-from components.cells import Road
 from math import ceil, floor
 
 
@@ -24,13 +23,16 @@ class Map:
         cell.row = row
         cell.col = col
 
+    # For getting Cell components
     def __getitem__(self, pos):
         row = pos[0]
         col = pos[1]
-        components = self.grid[row][col]
-        road_component = next(
-            (comp for comp in components if isinstance(comp, Road)))
-        return road_component
+
+        for component in reversed(self.grid[row][col]):
+            if isinstance(component, Cell):
+                return component
+
+        return None
 
     def remove(self, component):
         for row in range(self.rows):
