@@ -25,7 +25,7 @@ class Repo:
         self._id_counter += 1
         return map_id
 
-    def list(self):  #change name to listsomething
+    def list(self):
         obj_list = [(objId, obj.description)
                     for objId, obj in self._objects.items()]
         return obj_list

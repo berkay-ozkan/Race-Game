@@ -7,7 +7,6 @@ from math import ceil, floor
 class Map:
 
     def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
-        #print(cell_size)
         self.description = description
         self.cols = cols
         self.rows = rows
