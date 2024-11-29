@@ -1,4 +1,5 @@
 from component import Component
+from id_tracker import ID_Tracker
 from map import Map
 from singleton import singleton
 
@@ -8,22 +9,22 @@ class Repo:
 
     def __init__(self):
         self._attachments = {}
-        self._id_counter = 1
         self._objects = {}
         self.components = Component()
 
     def create(self, **kwargs):
         description = kwargs.get('description')
-        map_id = self._id_counter
         cols = kwargs.get('cols')
         rows = kwargs.get('rows')
         cell_size = kwargs.get('cellsize')
         bg_color = kwargs.get('bgcolor')
-        self._objects[map_id] = Map(description, cols, rows, cell_size,
-                                    bg_color)
-        self._objects[map_id]._id = map_id
-        self._id_counter += 1
-        return map_id
+        map = Map(description, cols, rows, cell_size, bg_color)
+
+        id = ID_Tracker()._get_new_id()
+        map._id = id
+        self._objects[id] = map
+
+        return id
 
     def list(self):
         obj_list = [(objId, obj.description)

@@ -1,12 +1,18 @@
+from id_tracker import ID_Tracker
+
+
 class Component():
     # Component class variables
     _registered_subclasses: dict = {}
 
     # Subclass class variables
     _attributes: dict[str, str] = {
+        # Class variables
         "_description": "str",
         "_representation": "str",
-        "_type_name": "str"
+        "_type_name": "str",
+        # Instance variables
+        "_id": "int"
     }
     _description: str
     _representation: str
@@ -29,6 +35,7 @@ class Component():
                 f"Component type '{component_type_name}' is not registered.")
 
         instance = component_class()
+        instance._id = ID_Tracker()._get_new_id()
 
         return instance
 
@@ -40,6 +47,9 @@ class Component():
     @classmethod
     def unregister(cls, component_type_name: str) -> None:
         del cls._registered_subclasses[component_type_name]
+
+    def __init__(self) -> None:
+        self._id: int
 
     def description(self) -> str:
         return self._description
@@ -58,3 +68,6 @@ class Component():
 
     def representation(self) -> str:
         return self._representation
+
+    def get_id(self) -> int:
+        return self._id
