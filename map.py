@@ -41,10 +41,11 @@ class Map:
     def __delitem__(self, pos):
         row = pos[0] - 1
         col = pos[1] - 1
-        for obj in self.grid[row][col]:
-            obj.row = None
-            obj.col = None
-        self.grid[row][col].clear()
+
+        if len(self.grid[row][col] == 0):
+            return
+
+        del self.grid[row][col][-1]
 
     def get_y_x(self, y, x):
         row = int(y // self.cell_size)
