@@ -1,5 +1,5 @@
 from component import Component
-from mapp import Map
+from map import Map
 from singleton import singleton
 
 
