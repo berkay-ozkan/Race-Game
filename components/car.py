@@ -83,8 +83,7 @@ class Car(Component):
 
     def tick(self) -> None:
 
-        if not self._angle is not None or not self._MAP or not self._position:
-
+        if self._angle is None or self._MAP is None or self._position is None:
             return
 
         # Euler integration
