@@ -110,9 +110,9 @@ class Car(Component):
                               self._speed + self._ACCELERATION_RATE)
 
         if self._turn_clockwise:
-            self._angle += self._STEER_RATE
-        if self._turn_counterclockwise:
             self._angle -= self._STEER_RATE
+        if self._turn_counterclockwise:
+            self._angle += self._STEER_RATE
 
         components_below = self._MAP.get_y_x(*self._position)
         if not components_below:
