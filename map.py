@@ -1,6 +1,6 @@
 from components import Car
 from components.cells import Road
-from math import ceil
+from math import ceil, floor
 
 
 class Map:
@@ -53,12 +53,16 @@ class Map:
 
         return self.grid[row][col]
 
-    def place(self, obj, y, x):
-        obj._MAP = self
-        row = int(y // self.cell_size)
-        col = int(x // self.cell_size)
-        self.grid[row][col].append(obj)
-        obj._position = (y, x)
+    def place(self, car: Car, y: float, x: float):
+        self.remove(car)
+
+        row = floor(y / self.cell_size)
+        col = floor(x / self.cell_size)
+        self.grid[row][col].append(car)
+
+        car._MAP = self
+        car._position = (y, x)
+        car._angle = 0
 
     def view(self, y, x, height, width):
 
