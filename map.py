@@ -82,38 +82,30 @@ class Map:
 
         return map_view
 
-    def draw(self) -> str:
+    def draw(self) -> None:
         all_players_information: list[list[str]] = []
-        map_representation = ""
         for row in self.grid:
-            row_representation = ""
             for cell in row:
-                car_component = next(
-                    (comp for comp in cell if isinstance(comp, Car)), None)
-                if car_component:
-                    row_representation += car_component._representation
+                if len(cell) == 0:
+                    print(" ", end="")
+                    continue
+
+                topmost_component = cell[-1]
+                print(topmost_component.draw(), end="")
+
+                if isinstance(topmost_component, Car):
                     player_information = []
-                    for attribute in car_component._attributes:
+                    for attribute in topmost_component._attributes:
                         player_information.append(
-                            f"{attribute}: {getattr(car_component, attribute)}"
+                            f"{attribute}: {getattr(topmost_component, attribute)}"
                         )
                     all_players_information.append(player_information)
-                else:
-                    road_component = next(
-                        (comp for comp in cell if isinstance(comp, Road)),
-                        None)
-
-                    if road_component:
-                        row_representation += road_component.draw()
-                    else:
-                        row_representation += " "
-            map_representation += row_representation + "\n"
+            print()
 
         for player_information in all_players_information:
             for attribute in player_information:
-                map_representation += attribute + '\n'
-            map_representation += '\n'
-        return map_representation
+                print(attribute)
+            print()
 
     def get_id(self):
         return self._id

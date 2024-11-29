@@ -68,11 +68,11 @@ frr._position = (0, 128)
 frr._angle = 0
 frr._speed = 64
 
-print(ogr.draw())
+ogr.draw()
 
 cv = ogr.view(200, 200, 600, 600)
 cd = cv.view(200, 200, 600, 600)
-#print(cv.draw())
+#cv.draw()
 
 frr.start()
 frr.tick()
@@ -85,7 +85,7 @@ frr.accelerate()
 frr.tick()
 frr.stop()
 
-print(ogr.draw())
+ogr.draw()
 frr.tick()
 
-print(ogr.draw())
+ogr.draw()
