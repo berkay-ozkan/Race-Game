@@ -99,7 +99,9 @@ class Car(Component):
                           self._position[1] + cos(self._angle) * self._speed)
 
         if self._speed:
-            self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
+            self._fuel = max(
+                0, self._fuel -
+                (self._speed / self._MAX_SPEED) * self._FUEL_CONSUMPTION_RATE)
 
     def _process_input(self) -> None:
         if not self._running or self._brake:
