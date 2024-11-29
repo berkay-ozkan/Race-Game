@@ -89,6 +89,7 @@ class Map:
 
     def draw(self) -> None:
         all_players_information: list[list[str]] = []
+
         for row in self.grid:
             for cell in row:
                 if len(cell) == 0:
@@ -106,6 +107,7 @@ class Map:
                         )
                     all_players_information.append(player_information)
             print()
+        print()
 
         for player_information in all_players_information:
             for attribute in player_information:
