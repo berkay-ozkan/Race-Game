@@ -20,7 +20,7 @@ class Car(Component):
     _description: str = 'A fast car for racing'
     _representation: str = ">"
 
-    _attributes = {
+    _attributes = Component._attributes | {
         "_MODEL": "str",
         "_MAP": "Map",
         "_DRIVER": "str",
