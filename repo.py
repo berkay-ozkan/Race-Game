@@ -52,9 +52,6 @@ class Repo:
         if not self._attachments[obj_id]:
             del self._attachments[obj_id]
 
-    def listInUse(self):
-        return [obj_id for obj_id in self._attachments]
-
     def delete(self, obj_id):
         if obj_id not in self._attachments:
             del self._objects[obj_id]
