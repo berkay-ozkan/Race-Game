@@ -3,7 +3,11 @@ class Component():
     _registered_subclasses: dict = {}
 
     # Subclass class variables
-    _attributes: dict[str, str]
+    _attributes: dict[str, str] = {
+        "_description": "str",
+        "_representation": "str",
+        "_type_name": "str"
+    }
     _description: str
     _representation: str
     _type_name: str

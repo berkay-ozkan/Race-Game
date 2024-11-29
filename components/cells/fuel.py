@@ -5,10 +5,9 @@ class Fuel(Cell):
 
     def __init__(self):
         super().__init__()
-        object.__setattr__(self, "_type_name", "fuel")
-        object.__setattr__(self, "_description",
-                           "A little fuel to replenish some fuel of the car")
-        object.__setattr__(self, "_representation", "+")
+        self._type_name = "fuel"
+        self._description = "A little fuel to replenish some fuel of the car"
+        self._representation = "+"
 
     def interact(self, car, y, x):
         car._fuel += 10

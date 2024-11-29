@@ -5,9 +5,9 @@ class Booster(Cell):
 
     def __init__(self):
         super().__init__()
-        object.__setattr__(self, "_type_name", "booster")
-        object.__setattr__(self, "_description", "A little boost to car speed")
-        object.__setattr__(self, "_representation", '>>')
+        self._type_name = "booster"
+        self._description = "A little boost to car speed"
+        self._representation = '>>'
 
     def interact(self, car, y, x):
         car._speed += 47
