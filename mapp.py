@@ -36,7 +36,7 @@ class Map:
                 if component in cell:
                     cell.remove(component)
 
-    def __deliten__(self, pos):
+    def __delitem__(self, pos):
         row = pos[0] - 1
         col = pos[1] - 1
         for obj in self.grid[row][col]:
