@@ -6,7 +6,7 @@ class Booster(Cell):
     def __init__(self):
         super()
         self._description = "A little boost to car speed"
-        self._representation = '>>'
+        self._representation = '⚡'
 
     def interact(self, car):
         car._speed += 47

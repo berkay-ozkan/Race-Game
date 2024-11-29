@@ -6,7 +6,7 @@ class Fuel(Cell):
     def __init__(self):
         super()
         self._description = "A little fuel to replenish some fuel of the car"
-        self._representation = "+"
+        self._representation = "⛽"
 
     def interact(self, car):
         car._fuel += 10

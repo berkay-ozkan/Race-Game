@@ -6,7 +6,7 @@ class Rock(Cell):
     def __init__(self):
         super()
         self._description = "A random rock that stops the car"
-        self._representation = "o"
+        self._representation = "🪨"
 
     def interact(self, car):
         car._speed = 0
