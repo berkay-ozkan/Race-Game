@@ -1,5 +1,5 @@
 from component import Component
-from components import Car
+from components import Car, Cell
 from components.cells import Road
 from math import ceil, floor
 
@@ -47,11 +47,14 @@ class Map:
 
         del self.grid[row][col][-1]
 
+    # Returns cells at the row and column corresponding to (y, x)
     def get_y_x(self, y, x):
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
 
-        return self.grid[row][col]
+        return list(
+            filter(lambda component: isinstance(component, Cell),
+                   self.grid[row][col]))
 
     def place(self, car: Car, y: float, x: float):
         self.remove(car)
