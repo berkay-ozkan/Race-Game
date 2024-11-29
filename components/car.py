@@ -81,21 +81,10 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
-
         if self._angle is None or self._MAP is None or self._position is None:
             return
 
-        # Euler integration
         self._MAP.remove(self)
-        self._update_position()
-        self._process_input()
-        pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x)
-
-    def _update_position(self) -> None:
-        assert self._angle is not None
-        assert self._MAP is not None
-        assert self._position is not None
 
         self._position = (self._position[0] + sin(self._angle) * self._speed,
                           self._position[1] + cos(self._angle) * self._speed)
@@ -104,11 +93,6 @@ class Car(Component):
             self._fuel = max(
                 0, self._fuel -
                 (self._speed / self._MAX_SPEED) * self._FUEL_CONSUMPTION_RATE)
-
-    def _process_input(self) -> None:
-        assert self._angle is not None
-        assert self._MAP is not None
-        assert self._position is not None
 
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
@@ -134,3 +118,6 @@ class Car(Component):
         self._brake = False
         self._turn_clockwise = False
         self._turn_counterclockwise = False
+
+        pos_y, pos_x = self._position
+        self._MAP.place(self, pos_y, pos_x)
