@@ -1,5 +1,6 @@
 from components import Car
 from components.cells import Road
+from math import ceil
 
 
 class Map:
@@ -66,14 +67,14 @@ class Map:
 
         y_floor = y // self.cell_size
         x_floor = x // self.cell_size
-        height_floor = height // self.cell_size
-        width_floor = width // self.cell_size
+        height_ceil = ceil(height / self.cell_size)
+        width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
-        map_view = Map(view_description, width_floor, height_floor,
+        map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
         map_view.id = None
-        for row in range(height_floor):
-            for col in range(width_floor):
+        for row in range(height_ceil):
+            for col in range(width_ceil):
                 map_row = y_floor + row
                 map_col = x_floor + col
                 if map_row < self.rows and map_col < self.cols:
