@@ -17,22 +17,21 @@ class Map:
         self._id = None
 
     def __setitem__(self, pos, component):
-        row = pos[0] - 1
-        col = pos[1] - 1
+        row = pos[0]
+        col = pos[1]
         self.grid[row][col].append(component)
         component.row = row
         component.col = col
 
     def __getitem__(self, pos):
-        row = pos[0] - 1
-        col = pos[1] - 1
+        row = pos[0]
+        col = pos[1]
         components = self.grid[row][col]
         road_component = next(
             (comp for comp in components if isinstance(comp, Road)))
         return road_component
 
     def remove(self, component):
-
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
@@ -40,8 +39,8 @@ class Map:
                     cell.remove(component)
 
     def __delitem__(self, pos):
-        row = pos[0] - 1
-        col = pos[1] - 1
+        row = pos[0]
+        col = pos[1]
 
         if len(self.grid[row][col] == 0):
             return
@@ -49,8 +48,8 @@ class Map:
         del self.grid[row][col][-1]
 
     def get_y_x(self, y, x):
-        row = int(y // self.cell_size)
-        col = int(x // self.cell_size)
+        row = floor(y / self.cell_size)
+        col = floor(x / self.cell_size)
 
         return self.grid[row][col]
 
@@ -66,19 +65,19 @@ class Map:
         car._angle = 0
 
     def view(self, y, x, height, width):
-
         if (self._id == None):
             print("view of a view cannot be created")
             return
 
-        y_floor = y // self.cell_size
-        x_floor = x // self.cell_size
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
         map_view.id = None
+
+        y_floor = floor(y / self.cell_size)
+        x_floor = floor(x / self.cell_size)
         for row in range(height_ceil):
             for col in range(width_ceil):
                 map_row = y_floor + row
