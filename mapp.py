@@ -1,4 +1,4 @@
-from components.cells import Diagonal, Straight, Turn90
+from components.cells import Road
 
 
 class Map:
@@ -25,18 +25,16 @@ class Map:
         col = pos[1] - 1
         components = self.grid[row][col]
         road_component = next(
-            (comp for comp in components
-             if isinstance(comp, (Turn90, Straight, Diagonal))))
+            (comp for comp in components if isinstance(comp, Road)))
         return road_component
 
     def remove(self, component):
-        
+
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                   
 
     def __deliten__(self, pos):
         row = pos[0] - 1
@@ -54,7 +52,7 @@ class Map:
 
     def place(self, obj, y, x):
         obj._MAP = self
-        row = int (y // self.cell_size)
+        row = int(y // self.cell_size)
         col = int(x // self.cell_size)
         self.grid[row][col].append(obj)
         obj._position = (y, x)
@@ -64,7 +62,7 @@ class Map:
         if (self._id == None):
             print("view of a view cannot be created")
             return
-     
+
         y_floor = y // self.cell_size
         x_floor = x // self.cell_size
         height_floor = height // self.cell_size

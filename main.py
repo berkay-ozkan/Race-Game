@@ -1,5 +1,6 @@
 from components.cars import Ferrari
-from components.cells import Turn90, Straight, Diagonal, Rock, Fuel, Booster
+from components.cells import Rock, Fuel, Booster
+from components.cells.roads import Turn90, Straight, Diagonal
 from repo import Repo
 
 r = Repo()
