@@ -46,11 +46,11 @@ class Car(Component):
         self._DRIVER: None | str = None
 
         # None until placed, (y, x) coordinates afterwards
-        # Follows the Cartesian coordinate system
+        # x increases to the right, y increases downward
         self._position: None | tuple[float, float] = None
         # None until placed
         # Measured in radians, follows the counterclockwise
-        # angle convention, and a value of 0 corresponds to east
+        # angle convention, and a value of 0 corresponds to the right
         self._angle: None | float = None
         self._speed: float = 0
         self._fuel: float = self._MAX_FUEL
@@ -81,13 +81,13 @@ class Car(Component):
         self._turn_counterclockwise = True
 
     def tick(self) -> None:
-        if self._angle is None or self._MAP is None or self._position is None:
+        if self._angle is None or self._position is None or self._MAP is None:
             return
 
         self._MAP.remove(self)
 
-        self._position = (self._position[0] + sin(self._angle) * self._speed,
-                          self._position[1] + cos(self._angle) * self._speed)
+        self._position = (self._position[0] + cos(self._angle) * self._speed,
+                          self._position[1] - sin(self._angle) * self._speed)
 
         if self._speed:
             self._fuel = max(
