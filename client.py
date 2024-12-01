@@ -1,7 +1,46 @@
 from server import INPUT_SIZE_FORMAT
 from socket import AF_INET, socket, SOCK_STREAM
-from struct import pack
+from struct import pack, unpack
 from sys import argv, exit
+from threading import Thread
+
+
+class WRAgent(Thread):
+
+    def __init__(self, sock):
+        self.sock = sock
+        Thread.__init__(self)
+
+    def run(self):
+        while True:
+            message = input()
+            if not message:
+                break
+
+            self.sock.send(pack(INPUT_SIZE_FORMAT, len(message)))
+            self.sock.send(message.encode())
+
+
+class RDAgent(Thread):
+
+    def __init__(self, sock):
+        self.sock = sock
+        super().__init__()
+
+    def run(self):
+        while True:
+            packed_reply_size = self.sock.recv(
+                4)  # An unsigned int takes 4 bytes
+            if not packed_reply_size:
+                break
+            reply_size = unpack(INPUT_SIZE_FORMAT, packed_reply_size)[0]
+            reply = self.sock.recv(reply_size)
+            if not reply:
+                break
+
+            print(reply.decode())
+        print("peer closed the connection")
+        self.sock.close()
 
 
 def main() -> None:
@@ -14,15 +53,10 @@ def main() -> None:
     c = socket(AF_INET, SOCK_STREAM)
     c.connect((HOST, PORT))
 
-    while True:
-        message = input()
-        c.send(pack(INPUT_SIZE_FORMAT, len(message)))
-        c.send(message.encode())
-
-        reply = c.recv(1024)
-        print(reply.decode())
-
-    c.close()
+    a = RDAgent(c)
+    b = WRAgent(c)
+    a.start()
+    b.start()
 
 
 if __name__ == "__main__":

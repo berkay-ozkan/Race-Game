@@ -1,8 +1,8 @@
 from monitor import Monitor
-from threading import Thread
 from socket import AF_INET, socket, SOCK_STREAM
-from struct import unpack
+from struct import pack, unpack
 from sys import argv, exit
+from threading import Thread
 
 INPUT_SIZE_FORMAT = ">I"
 
@@ -51,7 +51,9 @@ class WRAgent(Thread):
                         str(addr) + ":" + m.strip().decode()
                         for (addr, m) in oldmess
                     ] + [""]
-                    self.sock.send('\n'.join(mlist).encode())
+                    message = '\n'.join(mlist).encode()
+                    self.sock.send(pack(INPUT_SIZE_FORMAT, len(message)))
+                    self.sock.send(message)
                 except Exception:
                     print("Writer terminating")
                     break
