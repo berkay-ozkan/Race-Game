@@ -1,6 +1,6 @@
 from monitor import Monitor
 from threading import Thread
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import AF_INET, socket, SOCK_STREAM
 from struct import unpack
 from sys import argv, exit
 

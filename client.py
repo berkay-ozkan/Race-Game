@@ -1,5 +1,5 @@
 from server import INPUT_SIZE_FORMAT
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import AF_INET, socket, SOCK_STREAM
 from struct import pack
 from sys import argv, exit
 
