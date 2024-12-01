@@ -1,6 +1,9 @@
 from threading import Thread, RLock, Condition
 from socket import socket, AF_INET, SOCK_STREAM
+from struct import unpack
 from sys import argv, exit
+
+INPUT_SIZE_FORMAT = ">I"
 
 
 class Monitor:
@@ -86,10 +89,15 @@ class RDAgent(Thread):
 
     def run(self):
         while True:
-            inp = self.sock.recv(1024)
-            if not inp:
+            packed_input_size = self.sock.recv(
+                4)  # An unsigned int takes 4 bytes
+            if not packed_input_size:
                 break
-            self.chatroom.newmessage((self.addr, inp))
+            input_size = unpack(INPUT_SIZE_FORMAT, packed_input_size)[0]
+            input = self.sock.recv(input_size)
+            if not input:
+                break
+            self.chatroom.newmessage((self.addr, input))
         print("peer closed the connection")
         self.sock.close()
         self.chatroom.newmessage((self.addr, b"bye"))
