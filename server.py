@@ -103,23 +103,28 @@ class RDAgent(Thread):
         self.chatroom.newmessage((self.addr, b"bye"))
 
 
-if len(argv) != 3:
-    print("usage: ", argv[0], "--port", "[PORT]")
-    exit(-1)
+def main() -> None:
+    if len(argv) != 3:
+        print("usage: ", argv[0], "--port", "[PORT]")
+        exit(-1)
 
-HOST = ""
-PORT = int(argv[2])
-s = socket(AF_INET, SOCK_STREAM)
-s.bind((HOST, PORT))
-s.listen(1)
+    HOST = ""
+    PORT = int(argv[2])
+    s = socket(AF_INET, SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(1)
 
-chatroom = Chat()
+    chatroom = Chat()
 
-while True:
-    conn, addr = s.accept()
+    while True:
+        conn, addr = s.accept()
 
-    print("Connected by", addr)
-    a = RDAgent(conn, addr, chatroom)
-    b = WRAgent(conn, addr, chatroom)
-    a.start()
-    b.start()
+        print("Connected by", addr)
+        a = RDAgent(conn, addr, chatroom)
+        b = WRAgent(conn, addr, chatroom)
+        a.start()
+        b.start()
+
+
+if __name__ == "__main__":
+    main()
