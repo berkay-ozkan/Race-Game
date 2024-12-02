@@ -141,7 +141,14 @@ class Map(Monitor):
             for attribute in player_information:
                 print(attribute)
             print()
+            
 
     @Monitor.sync
     def get_id(self):
         return self._id
+    
+    @Monitor.sync
+    def wait(self):
+        self._condition.wait()
+    
+    
