@@ -26,9 +26,11 @@ class Repo:
 
         return id
 
-    def list(self):
-        obj_list = [(objId, obj.description)
-                    for objId, obj in self._objects.items()]
+    def list(self) -> dict:
+        obj_list = {
+            objId: obj.description
+            for objId, obj in self._objects.items()
+        }
         return obj_list
 
     def attach(self, obj_id, user):
