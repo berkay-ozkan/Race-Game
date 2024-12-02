@@ -1,6 +1,5 @@
-from server import INPUT_SIZE_FORMAT
 from socket import AF_INET, socket, SOCK_STREAM
-from struct import pack, unpack
+from socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
 
@@ -16,9 +15,7 @@ class WRAgent(Thread):
             message = input()
             if not message:
                 break
-
-            self.sock.send(pack(INPUT_SIZE_FORMAT, len(message)))
-            self.sock.send(message.encode())
+            write_variable_size(self.sock, message)
 
 
 class RDAgent(Thread):
@@ -29,15 +26,9 @@ class RDAgent(Thread):
 
     def run(self):
         while True:
-            packed_reply_size = self.sock.recv(
-                4)  # An unsigned int takes 4 bytes
-            if not packed_reply_size:
+            reply = read_variable_size(self.sock)
+            if reply is None:
                 break
-            reply_size = unpack(INPUT_SIZE_FORMAT, packed_reply_size)[0]
-            reply = self.sock.recv(reply_size)
-            if not reply:
-                break
-
             print(reply.decode())
         print("peer closed the connection")
         self.sock.close()

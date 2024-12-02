@@ -1,10 +1,8 @@
 from monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
-from struct import pack, unpack
+from socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
-
-INPUT_SIZE_FORMAT = ">I"
 
 
 class Chat(Monitor):
@@ -51,9 +49,8 @@ class WRAgent(Thread):
                         str(addr) + ":" + m.strip().decode()
                         for (addr, m) in oldmess
                     ] + [""]
-                    message = '\n'.join(mlist).encode()
-                    self.sock.send(pack(INPUT_SIZE_FORMAT, len(message)))
-                    self.sock.send(message)
+                    message = '\n'.join(mlist)
+                    write_variable_size(self.sock, message)
                 except Exception:
                     print("Writer terminating")
                     break
@@ -69,13 +66,8 @@ class RDAgent(Thread):
 
     def run(self):
         while True:
-            packed_input_size = self.sock.recv(
-                4)  # An unsigned int takes 4 bytes
-            if not packed_input_size:
-                break
-            input_size = unpack(INPUT_SIZE_FORMAT, packed_input_size)[0]
-            input = self.sock.recv(input_size)
-            if not input:
+            input = read_variable_size(self.sock)
+            if input is None:
                 break
             self.chatroom.newmessage((self.addr, input))
         print("peer closed the connection")
