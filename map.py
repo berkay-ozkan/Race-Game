@@ -2,12 +2,13 @@ from component import Component
 from components import Car, Cell
 from math import ceil, floor
 from monitor import Monitor
-from threading import RLock, Condition
+
 
 
 class Map(Monitor):
 
     def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
+        super().__init__()
         self.description = description
         self.cols = cols
         self.rows = rows
@@ -16,7 +17,7 @@ class Map(Monitor):
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
         self._id = None
-        self._condition = self.CV()
+        self._m_condition = self.CV()
 
 
     # For adding Cell components
@@ -27,8 +28,8 @@ class Map(Monitor):
         self.grid[row][col].append(cell)
         cell.row = row
         cell.col = col
-        with self._condition:
-            self._condition.notify_all()
+        with self._m_condition:
+            self._m_condition.notify_all()
 
     # For getting Cell components
     @Monitor.sync
@@ -49,8 +50,8 @@ class Map(Monitor):
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                    with self._condition:
-                        self._condition.notify_all()
+                    with self._m_condition:
+                        self._m_condition.notify_all()
 
     @Monitor.sync
     def __delitem__(self, pos):
@@ -61,8 +62,8 @@ class Map(Monitor):
             return
 
         del self.grid[row][col][-1]
-        with self._condition:
-            self._condition.notify_all()
+        with self._m_condition:
+            self._m_condition.notify_all()
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor.sync
@@ -86,8 +87,8 @@ class Map(Monitor):
         car._MAP = self
         car._position = (y, x)
         car._angle = 0
-        with self._condition:
-            self._condition.notify_all()
+        with self._m_condition:
+            self._m_condition.notify_all()
 
 
     @Monitor.sync
@@ -149,6 +150,6 @@ class Map(Monitor):
     
     @Monitor.sync
     def wait(self):
-        self._condition.wait()
+        self._m_condition.wait()
     
     
