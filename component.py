@@ -35,7 +35,7 @@ class Component():
                 f"Component type '{component_type_name}' is not registered.")
 
         instance = component_class()
-        instance._id = ID_Tracker()._get_new_id()
+        ID_Tracker()._add_objects(instance)
 
         return instance
 

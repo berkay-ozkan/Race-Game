@@ -9,7 +9,6 @@ class Repo:
 
     def __init__(self):
         self._attachments = {}
-        self._objects = {}
         self.components = Component()
 
     def create(self, **kwargs):
@@ -20,30 +19,26 @@ class Repo:
         bg_color = kwargs.get('bgcolor')
         map = Map(description, cols, rows, cell_size, bg_color)
 
-        id = ID_Tracker()._get_new_id()
-        map._id = id
-        self._objects[id] = map
-
-        return id
+        map_id = ID_Tracker()._add_objects(map)
+        return map_id
 
     def list(self) -> dict:
         obj_list = {
             objId: obj.description
-            for objId, obj in self._objects.items()
+            for objId, obj in ID_Tracker()._objects.items()
         }
         return obj_list
 
     def attach(self, obj_id, user):
         if obj_id not in self._attachments:
             self._attachments[obj_id] = set()
-
         self._attachments[obj_id].add(user)
 
-        return self._objects[obj_id]
+        return ID_Tracker()._objects[obj_id]
 
     def list_attached(self, user):
         return [
-            self._objects[obj_id]
+            ID_Tracker()._objects[obj_id]
             for obj_id, users in self._attachments.items() if user in users
         ]
 
@@ -57,4 +52,4 @@ class Repo:
 
     def delete(self, obj_id):
         if obj_id not in self._attachments:
-            del self._objects[obj_id]
+            del ID_Tracker()._objects[obj_id]
