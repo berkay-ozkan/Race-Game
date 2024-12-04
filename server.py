@@ -64,9 +64,19 @@ class RDAgent(Thread):
 
     def __init__(self, sock, addr, chatroom, repo: Repo):
         self.sock, self.addr, self.chatroom, self.repo = sock, addr, chatroom, repo
+        self.username: str
         super().__init__()
 
+    def read_username(self) -> None:
+        encoded_input = read_variable_size(self.sock)
+        input = encoded_input.decode()  # type: ignore[union-attr]
+
+        username = input[input.find("USER") + 4:]
+        self.username = username
+
     def run(self):
+        self.read_username()
+
         while True:
             encoded_input = read_variable_size(self.sock)
             if encoded_input is None:
@@ -76,7 +86,7 @@ class RDAgent(Thread):
             # TODO: Evaluate commands as required
             reply = eval(input)
             if reply is not None:
-                self.chatroom.newmessage((self.addr, str(reply).encode()))
+                self.chatroom.newmessage((self.username, str(reply).encode()))
 
         print("peer closed the connection")
         self.sock.close()
