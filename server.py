@@ -1,5 +1,7 @@
+from id_tracker import ID_Tracker
 from monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
+from repo import Repo
 from socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
@@ -60,16 +62,32 @@ class WRAgent(Thread):
 
 class RDAgent(Thread):
 
-    def __init__(self, sock, addr, chatroom):
-        self.sock, self.addr, self.chatroom = sock, addr, chatroom
+    def __init__(self, sock, addr, chatroom, repo: Repo):
+        self.sock, self.addr, self.chatroom, self.repo = sock, addr, chatroom, repo
+        self.username: str
         super().__init__()
 
+    def read_username(self) -> None:
+        encoded_input = read_variable_size(self.sock)
+        input = encoded_input.decode()  # type: ignore[union-attr]
+
+        username = input[input.find("USER") + 4:]
+        self.username = username
+
     def run(self):
+        self.read_username()
+
         while True:
-            input = read_variable_size(self.sock)
-            if input is None:
+            encoded_input = read_variable_size(self.sock)
+            if encoded_input is None:
                 break
-            self.chatroom.newmessage((self.addr, input))
+            input = encoded_input.decode()
+
+            # TODO: Evaluate commands as required
+            reply = eval(input)
+            if reply is not None:
+                self.chatroom.newmessage((self.username, str(reply).encode()))
+
         print("peer closed the connection")
         self.sock.close()
         self.chatroom.newmessage((self.addr, b"bye"))
@@ -87,12 +105,13 @@ def main() -> None:
     s.listen(1)
 
     chatroom = Chat()
+    repo = Repo()
 
     while True:
         conn, addr = s.accept()
 
         print("Connected by", addr)
-        a = RDAgent(conn, addr, chatroom)
+        a = RDAgent(conn, addr, chatroom, repo)
         b = WRAgent(conn, addr, chatroom)
         a.start()
         b.start()
