@@ -27,8 +27,6 @@ class Repo(Monitor):
 
         id = ID_Tracker()._add_objects(map)
         map._id = id
-        self._objects[id] = map
-
         with self._create_condition:
             self._create_condition.notify_all()
 
@@ -61,6 +59,12 @@ class Repo(Monitor):
         self._objects[obj_id].register_observer(user)
 
         return self._objects[obj_id]
+    
+    @Monitor.sync
+    def get_map_for_user(self, user_id):
+        for map_id, users in self._attachments.items():
+            if user_id in users:
+                return map_id
 
     @Monitor.sync
     def list_attached(self, user):
