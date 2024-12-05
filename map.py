@@ -2,6 +2,7 @@ from component import Component
 from components import Car, Cell
 from math import ceil, floor
 from monitor import Monitor
+from components.cells.checkpoint import Checkpoint
 
 
 class Map(Monitor):
@@ -17,6 +18,7 @@ class Map(Monitor):
                                                   for _ in range(rows)]
         self._id = None
         self._observers = {}
+        self._checkpoints = {}
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
@@ -94,16 +96,25 @@ class Map(Monitor):
 
     # For adding Car components
     @Monitor.sync
-    def place(self, car: Car, y: float, x: float):
-        self.remove(car)
+    def place(self, obj, y: float, x: float):
+        self.remove(obj)
 
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
-        self.grid[row][col].append(car)
+        self.grid[row][col].append(obj)
 
-        car._MAP = self
-        car._position = (y, x)
-        car._angle = 0
+        if isinstance(obj, Car):
+            obj._MAP = self
+            obj._position = (y, x)
+            obj._angle = 0
+            print(f"Car {obj.get_id()} placed at ({row}, {col}).")
+
+        elif isinstance(obj, Checkpoint):
+            if obj.get_id() not in self._checkpoints:
+                self._checkpoints[obj.get_id()] = obj._order
+                print(f"Checkpoint {obj.get_id()} added with order {obj._order} at ({row}, {col}).")
+
+
         self.notify_observers()
 
     @Monitor.sync

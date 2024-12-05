@@ -25,7 +25,7 @@ class Repo(Monitor):
         bg_color = kwargs.get('bgcolor')
         map = Map(description, cols, rows, cell_size, bg_color)
 
-        id = ID_Tracker()._get_new_id()
+        id = ID_Tracker()._add_objects(map)
         map._id = id
         self._objects[id] = map
 

@@ -38,6 +38,8 @@ class Car(Component):
         "_turn_clockwise": "bool",
         "_turn_counterclockwise": "bool",
         "_running": "bool",
+        "_next_checkpoint" : "int",
+        "_laps_completed" : "int"
     }
 
     def __init__(self) -> None:
@@ -59,8 +61,21 @@ class Car(Component):
         self._brake: bool = False
         self._turn_clockwise: bool = False
         self._turn_counterclockwise: bool = False
-
+        self._laps_completed = 0
+        self._next_checkpoint = 0
         self._running: bool = False
+
+    def update__next_checkpoint(self):
+        if self._MAP is None:
+            return
+        
+        checkpoint_count = len(self._MAP._checkpoints)
+        if self._next_checkpoint + 1 >= checkpoint_count:
+            self._next_checkpoint = 0
+            self._laps_completed += 1
+            print(f'Car{self.get_id()} completed a lap')
+        else:
+            self._next_checkpoint += 1
 
     def start(self) -> None:
         self._running = True
