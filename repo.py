@@ -1,81 +1,168 @@
 from component import Component
-from id_tracker import ID_Tracker
-from map import Map
-from singleton import singleton
+from components import Car, Cell
+from math import ceil, floor
 from monitor import Monitor
 
 
-@singleton
-class Repo(Monitor):
+class Map(Monitor):
 
-    def __init__(self):
+    def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
         super().__init__()
-        self._attachments = {}
-        self.components = Component()
-        self._r_condition = self.CV()
+        self.description = description
+        self.cols = cols
+        self.rows = rows
+        self.cell_size = cell_size
+        self.bg_color = bg_color
+        self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
+                                                  for _ in range(rows)]
+        self._id = None
+        self._observers = {}
+
+    # For adding interested observers to map (When a user is attached to the map in repo)
+    @Monitor.sync
+    def register_observer(self, observer):
+        if observer not in self._observers:
+            self._observers[observer] = self.CV()
+            print(f'user {observer} is now interested in this map')
+
+    #For removing observer from map (When a user is detached form the map in repo)
+    @Monitor.sync
+    def remove_observer(self, observer):
+        if observer in self._observers:
+            del self._observers[observer]
+            print(f'user {observer} is no longer interested in this map')
 
     @Monitor.sync
-    def create(self, **kwargs):
-        description = kwargs.get('description')
-        cols = kwargs.get('cols')
-        rows = kwargs.get('rows')
-        cell_size = kwargs.get('cellsize')
-        bg_color = kwargs.get('bgcolor')
-        map = Map(description, cols, rows, cell_size, bg_color)
+    def notify_observers(self):
+        for observer, condition in self._observers.items():
+            with condition:
+                condition.notify()
+                print(f'{observer} is notified of change')
 
-        map_id = ID_Tracker()._add_objects(map)
 
-        with self._r_condition:
-            self._r_condition.notify_all()
+    # For adding Cell components
+    @Monitor.sync
+    def __setitem__(self, pos, cell: Cell):
+        row = pos[0]
+        col = pos[1]
+        self.grid[row][col].append(cell)
+        cell.row = row
+        cell.col = col
+        self.notify_observers()
 
-        return map_id
+    # For getting Cell components
+    @Monitor.sync
+    def __getitem__(self, pos):
+        row = pos[0]
+        col = pos[1]
+
+        for component in reversed(self.grid[row][col]):
+            if isinstance(component, Cell):
+                return component
+
+        return None
 
     @Monitor.sync
-    def list(self) -> dict:
-        obj_list = {
-            objId: obj.description
-            for objId, obj in ID_Tracker()._objects.items()
-        }
-        return obj_list
+    def remove(self, component):
+        for row in range(self.rows):
+            for col in range(self.cols):
+                cell = self.grid[row][col]
+                if component in cell:
+                    cell.remove(component)
+                    self.notify_observers()
 
     @Monitor.sync
-    def attach(self, obj_id, user):
-        if obj_id not in self._attachments:
-            self._attachments[obj_id] = set()
-        self._attachments[obj_id].add(user)
+    def __delitem__(self, pos):
+        row = pos[0]
+        col = pos[1]
 
-        with self._r_condition:
-            self._r_condition.notify_all()
+        if len(self.grid[row][col] == 0):
+            return
 
-        return ID_Tracker()._objects[obj_id]
+        del self.grid[row][col][-1]
+        self.notify_observers()
+
+    # Returns cells at the row and column corresponding to (y, x)
+    @Monitor.sync
+    def get_y_x(self, y, x):
+        row = floor(y / self.cell_size)
+        col = floor(x / self.cell_size)
+
+        return list(
+            filter(lambda component: isinstance(component, Cell),
+                   self.grid[row][col]))
+
+    # For adding Car components
+    @Monitor.sync
+    def place(self, car: Car, y: float, x: float):
+        self.remove(car)
+
+        row = floor(y / self.cell_size)
+        col = floor(x / self.cell_size)
+        self.grid[row][col].append(car)
+
+        car._MAP = self
+        car._position = (y, x)
+        car._angle = 0
+        self.notify_observers()
 
     @Monitor.sync
-    def list_attached(self, user):
-        return [
-            ID_Tracker()._objects[obj_id]
-            for obj_id, users in self._attachments.items() if user in users
-        ]
+    def view(self, y, x, height, width):
+        if (self._id == None):
+            print("view of a view cannot be created")
+            return
+
+        height_ceil = ceil(height / self.cell_size)
+        width_ceil = ceil(width / self.cell_size)
+        view_description = 'view of ' + self.description
+        map_view = Map(view_description, width_ceil, height_ceil,
+                       self.cell_size, self.bg_color)
+        map_view.id = None
+
+        y_floor = floor(y / self.cell_size)
+        x_floor = floor(x / self.cell_size)
+        for row in range(height_ceil):
+            for col in range(width_ceil):
+                map_row = y_floor + row
+                map_col = x_floor + col
+                if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
+                    map_view.grid[row][col] = self.grid[map_row][map_col]
+
+        return map_view
 
     @Monitor.sync
-    def detach(self, obj_id, user):
-        if obj_id in self._attachments:
-            if user in self._attachments[obj_id]:
-                self._attachments[obj_id].remove(user)
+    def draw(self) -> None:
+        all_players_information: list[list[str]] = []
 
-        if not self._attachments[obj_id]:
-            del self._attachments[obj_id]
+        for row in self.grid:
+            for cell in row:
+                if len(cell) == 0:
+                    print(" ", end="")
+                    continue
 
-        with self._r_condition:
-            self._r_condition.notify_all()
+                topmost_component = cell[-1]
+                print(topmost_component.representation(), end="")
+
+                if isinstance(topmost_component, Car):
+                    player_information = []
+                    for attribute in topmost_component._attributes:
+                        player_information.append(
+                            f"{attribute}: {getattr(topmost_component, attribute)}"
+                        )
+                    all_players_information.append(player_information)
+            print()
+        print()
+
+        for player_information in all_players_information:
+            for attribute in player_information:
+                print(attribute)
+            print()
 
     @Monitor.sync
-    def delete(self, obj_id):
-        if obj_id not in self._attachments:
-            del ID_Tracker()._objects[obj_id]
-        with self._r_condition:
-            self._r_condition.notify_all()
-
+    def get_id(self):
+        return self._id
+    
     @Monitor.sync
-    def wait(self):
-        with self._r_condition:
-            self._r_condition.wait()
+    def wait_for_change(self, observer):
+        with self._observers[observer]:
+            self._observers[observer].wait()
