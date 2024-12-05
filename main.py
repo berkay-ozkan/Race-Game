@@ -2,8 +2,11 @@ from components.cars import Ferrari
 from components.cells import Rock, Fuel, Booster
 from components.cells.roads import Turn90, Straight, Diagonal
 from repo import Repo
+from threading import Thread
+import time
 
 r = Repo()
+'''
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
 r.create(description="map2", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map3", cols=4, rows=4, cellsize=64, bgcolor='green')
@@ -89,3 +92,77 @@ ogr.draw()
 frr.tick()
 
 ogr.draw()
+'''
+
+
+
+
+
+def wait_for_map(repo):
+    repo.create_wait()
+
+
+def wait_for_attach(repo):
+    repo.attach_wait()
+
+r.components.register("Ferrari", Ferrari)
+
+wait_map_thread = Thread(target=wait_for_map, args=(r,))
+wait_attach_thread = Thread(target=wait_for_attach, args=(r,))
+def create_map(description):
+    print(f"Thread starting to create map: {description}")
+    map_id = r.create(description = description, cols = 10, rows = 10, cell_size = 5, bg_color ="green")
+    print(f"Map created: {description} with ID {map_id}")
+
+
+def attach_user(map_id, user):
+    print(f"Thread starting to attach user: {user} to map {map_id}")
+    r.attach(map_id, user)
+    print(f"User {user} attached to Map ID {map_id}")
+
+
+
+wait_map_thread.start()
+wait_attach_thread.start()
+
+attach_thread1 = Thread(target=attach_user, args=(1, "User1"))
+attach_thread2 = Thread(target=attach_user, args=(2, "User2"))
+create_thread1 = Thread(target=create_map, args=("Map 1",))
+create_thread2 = Thread(target=create_map, args=("Map 2",))
+attach_thread1.start()
+attach_thread2.start()
+
+create_thread1.start()
+create_thread2.start()
+
+
+
+
+
+wait_map_thread.join()
+wait_attach_thread.join()
+attach_thread1.join()
+attach_thread2.join()
+
+create_thread1.join()
+create_thread2.join()
+
+print("Final maps in r:", r.list())
+print("User1 attached maps:", [m.description for m in r.list_attached("User1")])
+print("User2 attached maps:", [m.description for m in r.list_attached("User2")])
+
+m = r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
+frr = r.components.create('Ferrari')
+
+def edit_map():
+    time.sleep(1)
+    print("car place")
+    mp.place(frr, 0, 0)
+
+    
+    
+    mp.draw()
+mp = r.attach(m, 'vusal')
+edit_thread = Thread(target=edit_map)
+edit_thread.start()
+edit_thread.join()
