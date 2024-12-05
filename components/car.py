@@ -1,5 +1,5 @@
 from component import Component
-from math import cos, sin
+from math import cos, sin, floor, ceil
 
 
 class Car(Component):
@@ -39,7 +39,9 @@ class Car(Component):
         "_turn_counterclockwise": "bool",
         "_running": "bool",
         "_next_checkpoint" : "int",
-        "_laps_completed" : "int"
+        "_laps_completed" : "int",
+        
+        "_visited_checkpoints" : "int" 
     }
 
     def __init__(self) -> None:
@@ -62,20 +64,29 @@ class Car(Component):
         self._turn_clockwise: bool = False
         self._turn_counterclockwise: bool = False
         self._laps_completed = 0
-        self._next_checkpoint = 0
+        self._next_checkpoint = None
+       
         self._running: bool = False
+        self._visited_checkpoints = 0
 
-    def update__next_checkpoint(self):
-        if self._MAP is None:
-            return
-        
+    def update_next_checkpoint(self):
         checkpoint_count = len(self._MAP._checkpoints)
-        if self._next_checkpoint + 1 >= checkpoint_count:
-            self._next_checkpoint = 0
-            self._laps_completed += 1
-            print(f'Car{self.get_id()} completed a lap')
+        order = self._next_checkpoint._order
+        if(order == 0):
+            if self._visited_checkpoints == checkpoint_count:
+                
+                self._laps_completed  += 1
+            self._next_checkpoint = self._MAP._checkpoints[1]
+            self._visited_checkpoints = 1
+        elif(order == checkpoint_count - 1):
+            
+            self._visited_checkpoints += 1
+            self._next_checkpoint = self._MAP._checkpoints[0]
+        
         else:
-            self._next_checkpoint += 1
+            self._next_checkpoint = self._MAP._checkpoints[order + 1]
+            self._visited_checkpoints += 1
+       
 
     def start(self) -> None:
         self._running = True
@@ -94,6 +105,10 @@ class Car(Component):
 
     def turn_counterclockwise(self) -> None:
         self._turn_counterclockwise = True
+    
+    
+
+
 
     def tick(self) -> None:
         if self._angle is None or self._position is None or self._MAP is None:
@@ -101,14 +116,10 @@ class Car(Component):
 
         self._MAP.remove(self)
 
-        self._position = (self._position[0] + cos(self._angle) * self._speed,
-                          self._position[1] - sin(self._angle) * self._speed)
-
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
-            self._speed = min(self._MAX_SPEED,
-                              self._speed + self._ACCELERATION_RATE)
+            self._speed = min(self._MAX_SPEED, self._speed + self._ACCELERATION_RATE)
             self._fuel = max(0, self._fuel - self._FUEL_CONSUMPTION_RATE)
 
         if self._turn_clockwise:
@@ -116,6 +127,59 @@ class Car(Component):
         if self._turn_counterclockwise:
             self._angle += self._STEER_RATE
 
+        num_of_cells_travelled = floor(self._speed / self._MAP.cell_size)
+        y0, x0 = self._position
+        
+        curr_row = floor(y0 / self._MAP.cell_size)
+        curr_col = floor(x0 / self._MAP.cell_size)
+        print(f"Starting position: row={curr_row}, col={curr_col}")
+        
+        y_speed = -sin(self._angle)  
+        x_speed = cos(self._angle)
+
+        for step in range(num_of_cells_travelled + 1):
+            
+          
+            current_y = y0 + step * (y_speed * self._MAP.cell_size)
+            current_x = x0 + step * (x_speed * self._MAP.cell_size)
+
+            
+            curr_row = floor(current_y / self._MAP.cell_size)
+            curr_col = floor(current_x / self._MAP.cell_size)
+
+            print(f"Step {step}: row={curr_row}, col={curr_col}")
+
+           
+            components_below = self._MAP.grid[curr_row][curr_col]
+            print(components_below)
+            if not components_below:
+                self._speed = min(self._speed, self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
+                print('wrong tuuurn')
+                print(f'STEssssssPS{step}')
+            else:
+               
+                for cell in reversed(components_below):
+                    cell.interact(self)
+                    print(f'this is interacted cell {cell.row}, {cell.col}')
+
+
+       
+        y1 = y0 - sin(self._angle) * self._speed
+        x1 = x0 + cos(self._angle) * self._speed
+        self._position = (y1, x1)
+
+        pos_y, pos_x = self._position
+        print(f"Final position: (y={pos_y}, x={pos_x})")
+        self._MAP.place(self, pos_y, pos_x)
+
+        # Reset movement flags
+        self._accelerate = False
+        self._brake = False
+        self._turn_clockwise = False
+        self._turn_counterclockwise = False
+
+       
+        '''
         components_below = self._MAP.get_y_x(*self._position)
         if not components_below:
             self._speed = min(
@@ -125,11 +189,13 @@ class Car(Component):
             # Interact with the most recently added component first
             for cell in reversed(components_below):
                 cell.interact(self)
-
+        '''
         self._accelerate = False
         self._brake = False
         self._turn_clockwise = False
         self._turn_counterclockwise = False
-
+        self._position = (y1, x1)
         pos_y, pos_x = self._position
+        print(f'{pos_y, pos_x} poooos')
         self._MAP.place(self, pos_y, pos_x)
+        

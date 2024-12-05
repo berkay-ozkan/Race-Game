@@ -1,12 +1,13 @@
 from components.cars import Ferrari
 from components.cells import Rock, Fuel, Booster
+from components.cells.checkpoint import Checkpoint
 from components.cells.roads import Turn90, Straight, Diagonal
 from repo import Repo
 from threading import Thread
 import time
 
 r = Repo()
-'''
+
 r.create(description="map1", cols=16, rows=16, cellsize=64, bgcolor='green')
 r.create(description="map2", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map3", cols=4, rows=4, cellsize=64, bgcolor='green')
@@ -21,6 +22,7 @@ tgr = r.attach(7, "tolga")  # these two are the same object
 r.components.list()  # lists the available components
 # assume all components call Repo.components.register(type, cls)
 r.components.register('turn90', Turn90)
+r.components.register('turn90', Turn90)
 r.components.register("straight", Straight)
 r.components.register("diagonal", Diagonal)
 r.components.register('rock', Rock)
@@ -28,7 +30,15 @@ r.components.register("fuel", Fuel)
 r.components.register("booster", Booster)
 r.components.register("Ferrari", Ferrari)
 rt = r.components.create('turn90')
-
+r.components.register('checkpoint', Checkpoint)
+cp = r.components.create('checkpoint')
+cp1 = r.components.create('checkpoint')
+ogr[(1, 1)] = cp
+ogr[(1, 2)] = cp1
+cp._order = 0
+cp1._order = 1
+ogr._checkpoints[0] = cp
+ogr._checkpoints[1] = cp1
 ogr[(1, 1)] = rt
 rt.rotation = 0
 for j in range(2, 8):
@@ -63,14 +73,14 @@ temp = r.components.create('rock')
 frr = r.components.create('Ferrari')
 frr._DRIVER = "Alonso"
 
-frr._speed = 100
-
-temp.interact(frr)
-ogr.place(frr, 0, 128)
-frr._position = (0, 128)
-frr._angle = 0
 frr._speed = 64
 
+temp.interact(frr)
+ogr.place(frr, 0, 0)
+
+
+frr._angle = 0
+frr._speed = 63
 ogr.draw()
 
 cv = ogr.view(200, 200, 600, 600)
@@ -79,25 +89,32 @@ cd = cv.view(200, 200, 600, 600)
 
 frr.start()
 frr.tick()
-frr.accelerate()
+#ogr.draw()
+#frr.accelerate()
 
 #frr.turn_counterclockwise()
 frr.tick()
-frr.turn_clockwise()
-frr.accelerate()
-frr.tick()
-frr.stop()
 
-ogr.draw()
+#frr.turn_clockwise()
+#frr.accelerate()
+frr.tick()
+frr.tick()
+frr.tick()
+frr.tick()
+frr.tick()
 frr.tick()
 
+frr.tick()
+frr.tick()
 ogr.draw()
+ogr.place(frr, 0,0)
+frr.tick()
+ogr.draw()
+print(frr._next_checkpoint._order)
+print(f'{frr._next_checkpoint._order} THIS IS ORDER OF FRR')
+#print(frr._MAP.grid)
+
 '''
-
-
-
-
-
 def wait_for_map(repo):
     repo.create_wait()
 
@@ -106,7 +123,7 @@ def wait_for_attach(repo):
     repo.attach_wait()
 
 r.components.register("Ferrari", Ferrari)
-
+r.components.register('checkpoint', Checkpoint)
 wait_map_thread = Thread(target=wait_for_map, args=(r,))
 wait_attach_thread = Thread(target=wait_for_attach, args=(r,))
 def create_map(description):
@@ -153,7 +170,7 @@ print("User2 attached maps:", [m.description for m in r.list_attached("User2")])
 
 m = r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
 frr = r.components.create('Ferrari')
-
+cp = r.components.create('checkpoint')
 def edit_map():
     time.sleep(1)
     print("car place")
@@ -166,3 +183,6 @@ mp = r.attach(m, 'vusal')
 edit_thread = Thread(target=edit_map)
 edit_thread.start()
 edit_thread.join()
+print(cp._order)
+mp.place(cp, 0, 0)
+'''

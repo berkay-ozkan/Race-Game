@@ -19,34 +19,36 @@ class Map(Monitor):
         self._id = None
         self._observers = {}
         self._checkpoints = {}
+        self._next_checkpoint_order = 0
+        self._cars = []
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
     def register_observer(self, observer):
         if observer not in self._observers:
             self._observers[observer] = self.CV()
-            print(f'user {observer} is now interested in this map')
+            #print(f'user {observer} is now interested in this map')
 
     #For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
     def remove_observer(self, observer):
         if observer in self._observers:
             del self._observers[observer]
-            print(f'user {observer} is no longer interested in this map')
+            #print(f'user {observer} is no longer interested in this map')
 
     @Monitor.sync
     def notify_observers(self):
         for observer, condition in self._observers.items():
             with condition:
                 condition.notify()
-                print(f'{observer} is notified of change')
+                #print(f'{observer} is notified of change')
 
 
     # For adding Cell components
     @Monitor.sync
     def __setitem__(self, pos, cell: Cell):
-        row = pos[0]
-        col = pos[1]
+        row = pos[0] - 1
+        col = pos[1] - 1
         self.grid[row][col].append(cell)
         cell.row = row
         cell.col = col
@@ -55,8 +57,8 @@ class Map(Monitor):
     # For getting Cell components
     @Monitor.sync
     def __getitem__(self, pos):
-        row = pos[0]
-        col = pos[1]
+        row = pos[0] - 1
+        col = pos[1] - 1
 
         for component in reversed(self.grid[row][col]):
             if isinstance(component, Cell):
@@ -75,8 +77,8 @@ class Map(Monitor):
 
     @Monitor.sync
     def __delitem__(self, pos):
-        row = pos[0]
-        col = pos[1]
+        row = pos[0] - 1
+        col = pos[1] - 1
 
         if len(self.grid[row][col] == 0):
             return
@@ -103,19 +105,22 @@ class Map(Monitor):
         col = floor(x / self.cell_size)
         self.grid[row][col].append(obj)
 
-        if isinstance(obj, Car):
-            obj._MAP = self
-            obj._position = (y, x)
-            obj._angle = 0
-            print(f"Car {obj.get_id()} placed at ({row}, {col}).")
-
-        elif isinstance(obj, Checkpoint):
-            if obj.get_id() not in self._checkpoints:
-                self._checkpoints[obj.get_id()] = obj._order
-                print(f"Checkpoint {obj.get_id()} added with order {obj._order} at ({row}, {col}).")
-
+        obj._MAP = self
+        obj._position = (y, x)
+        obj._angle = 0
+        if obj not in self._cars:
+            self._cars.append(obj)
+            
+        if obj._next_checkpoint == None:
+            if self._checkpoints:
+                obj._next_checkpoint = self._checkpoints[0]
 
         self.notify_observers()
+
+    @Monitor.sync
+    def sort_cars(self):
+       self._cars.sort(key=lambda car: (car._laps_completed, car._next_checkpoint._order), reverse=True)
+        
 
     @Monitor.sync
     def view(self, y, x, height, width):
