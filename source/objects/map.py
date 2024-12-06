@@ -1,10 +1,11 @@
-from threading import Condition
+from threading import Condition, Thread, Event
 from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
 from source.monitor import Monitor
 from source.objects.components.cells.checkpoint import Checkpoint
 from source.id_tracker import ID_Tracker
+from time import time, sleep
 
 
 class Map(Monitor):
@@ -26,6 +27,13 @@ class Map(Monitor):
         self._is_view = False
         self._user_views = {}
         self._view_dimensions = {}
+        self._game_mode_active = False
+        self._start_time = None
+        self._tick_interval = 1.0
+        self._notification_interval = 5
+        self._tick_count = None
+        self._game_thread = None
+        self._stop_event = Event()
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
@@ -51,6 +59,8 @@ class Map(Monitor):
     # For adding Cell components
     @Monitor.sync
     def __setitem__(self, pos, cell: Cell):
+        if self._game_mode_active:
+            return
         row = pos[0] - 1
         col = pos[1] - 1
         self.grid[row][col].append(cell)
@@ -72,6 +82,8 @@ class Map(Monitor):
 
     @Monitor.sync
     def remove(self, component: Component):
+        if self._game_mode_active:
+            return
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
@@ -81,6 +93,8 @@ class Map(Monitor):
 
     @Monitor.sync
     def __delitem__(self, pos):
+        if self._game_mode_active:
+            return
         row = pos[0] - 1
         col = pos[1] - 1
 
@@ -103,6 +117,8 @@ class Map(Monitor):
     # For adding Car components
     @Monitor.sync
     def place(self, obj: Component, y: float, x: float):
+        if self._game_mode_active:
+            return
         self.remove(obj)
 
         row = floor(y / self.cell_size)
@@ -193,3 +209,36 @@ class Map(Monitor):
     def wait_for_change(self, observer: str):
         with self._observers[observer]:
             self._observers[observer].wait()
+
+    #For starting game mode
+    @Monitor.sync
+    def start(self):
+        if self._game_mode_active:
+            return
+
+        self._game_mode_active = True
+        self._start_time = time()
+        self._stop_event.clear()
+        self._tick_count = 0
+        self._game_thread = Thread(target=self.game_controller)
+        self._game_thread.start()
+
+    def game_controller(self):
+        while not self._stop_event.is_set():
+            self._tick_count += 1
+            for car in self._cars:
+                car.tick()
+
+            if self._tick_count % self._notification_interval == 0:
+                self.notify_observers()
+
+            sleep(self._tick_interval)
+
+    def stop(self):
+        if not self._game_mode_active:
+            return
+
+        self._stop_event.set()
+        self._game_thread.join()
+        self._game_mode_active = False
+        self._start_time = None
