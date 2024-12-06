@@ -7,7 +7,7 @@ class Component(Monitor):
     _registered_subclasses: dict = {}
 
     # Subclass class variables
-    _attributes: dict[str, str] = {
+    _attributes: dict[str, str] = Monitor._attributes | {
         # Class variables
         "_description": "str",
         "_representation": "str",
@@ -19,9 +19,6 @@ class Component(Monitor):
     _representation: str
     _type_name: str
 
-   
-        
-
     @Monitor.sync
     @classmethod
     def list(cls) -> dict[str, str]:
@@ -29,7 +26,7 @@ class Component(Monitor):
             subclass._type_name: subclass._description
             for subclass in cls._registered_subclasses.values()
         }
-    
+
     @Monitor.sync
     @classmethod
     def create(cls, component_type_name: str) -> "Component":
@@ -56,7 +53,6 @@ class Component(Monitor):
         with cls.condition:
             cls.condition.notify_all()
 
-
     @Monitor.sync
     @classmethod
     def unregister(cls, component_type_name: str) -> None:
@@ -66,14 +62,14 @@ class Component(Monitor):
             cls.condition.notify_all()
 
     def __init__(self) -> None:
-        super().__init__()  
+        super().__init__()
         self.condition = self.CV()
         self._id: int
 
     @Monitor.sync
     def description(self) -> str:
         return self._description
-    
+
     @Monitor.sync
     def type_name(self) -> str:
         return self._type_name
@@ -82,7 +78,6 @@ class Component(Monitor):
     def attributes(self) -> dict[str, str]:
         return {key: value for key, value in self._attributes.items()}
 
-    @Monitor.sync
     def __setattr__(self, name: str, value) -> None:
         if name not in type(self)._attributes:
             raise AttributeError(

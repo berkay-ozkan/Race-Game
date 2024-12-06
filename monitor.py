@@ -6,6 +6,13 @@ class Monitor:
 	   call super().__init__()
 	   then decorate sync methods with Monitor.sync """
 
+    # Subclass class variables
+    _attributes: dict[str, str] = {
+        # Instance variables
+        "mlock": "RLock",
+        "condition": "Condition"
+    }
+
     def __init__(self):
         self.mlock = RLock()
 
