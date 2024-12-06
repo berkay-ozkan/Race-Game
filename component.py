@@ -7,7 +7,7 @@ class Component:
     _registered_subclasses: dict = {}
 
     # Subclass class variables
-    _attributes: dict[str, str] = {
+    _attributes: dict[str, str] = Monitor._attributes | {
         # Class variables
         "_description": "str",
         "_representation": "str",
@@ -19,18 +19,15 @@ class Component:
     _representation: str
     _type_name: str
 
-   
-        
-
-    #@Monitor.sync
+    @Monitor.sync
     @classmethod
     def list(cls) -> dict[str, str]:
         return {
             subclass._type_name: subclass._description
             for subclass in cls._registered_subclasses.values()
         }
-    
-    #@Monitor.sync
+
+    @Monitor.sync
     @classmethod
     def create(cls, component_type_name: str) -> "Component":
         component_class = cls._registered_subclasses.get(component_type_name)
@@ -53,28 +50,27 @@ class Component:
         cls._registered_subclasses[component_type_name] = component_class
         component_class._type_name = component_type_name
 
-       # with cls.condition:
-        #    cls.condition.notify_all()
+    # with cls.condition:
+    #    cls.condition.notify_all()
 
-
-    #@Monitor.sync
+    @Monitor.sync
     @classmethod
     def unregister(cls, component_type_name: str) -> None:
         del cls._registered_subclasses[component_type_name]
 
         #with cls.condition:
-         #   cls.condition.notify_all()
+        #   cls.condition.notify_all()
 
     def __init__(self) -> None:
-        super().__init__()  
-        #self.condition = self.CV()
+        super().__init__()
+        self.condition = self.CV()
         self._id: int
 
     #@Monitor.sync
     def description(self) -> str:
         return self._description
-    
-    #@Monitor.sync
+
+    @Monitor.sync
     def type_name(self) -> str:
         return self._type_name
 
@@ -82,7 +78,6 @@ class Component:
     def attributes(self) -> dict[str, str]:
         return {key: value for key, value in self._attributes.items()}
 
-    #@Monitor.sync
     def __setattr__(self, name: str, value) -> None:
         if name not in type(self)._attributes:
             raise AttributeError(
