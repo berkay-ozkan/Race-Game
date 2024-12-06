@@ -2,7 +2,7 @@ from id_tracker import ID_Tracker
 from monitor import Monitor
 
 
-class Component:
+class Component(Monitor):
     # Component class variables
     _registered_subclasses: dict = {}
 
