@@ -132,7 +132,8 @@ class Map(Monitor):
         if (self._is_view == True):
             print("view of a view cannot be created")
             return
-
+        if user in self._user_views:
+            print("Auser can only have one view")
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
