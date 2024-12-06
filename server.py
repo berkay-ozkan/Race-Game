@@ -71,9 +71,9 @@ class RDAgent(Thread):
 
     def read_username(self) -> None:
         encoded_input = read_variable_size(self.sock)
-        input = encoded_input.decode()  # type: ignore[union-attr]
+        input = encoded_input.decode().split()  # type: ignore[union-attr]
 
-        username = input[input.find("USER") + 4:]
+        username = input[1]
         self.username = username
 
     def run_command(self, decoded_input: dict) -> str | None:
