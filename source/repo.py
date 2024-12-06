@@ -1,8 +1,8 @@
-from component import Component
-from id_tracker import ID_Tracker
-from map import Map
-from singleton import singleton
-from monitor import Monitor
+from source.component import Component
+from source.id_tracker import ID_Tracker
+from source.map import Map
+from source.singleton import singleton
+from source.monitor import Monitor
 
 
 @singleton

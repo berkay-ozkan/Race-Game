@@ -1,10 +1,11 @@
 from threading import Thread
-import socket_helpers
+import source.socket_helpers as socket_helpers
 from socket import socket, AF_INET, SOCK_STREAM
-from repo import Repo
+from source.repo import Repo
 
 
 class ClientServer(Thread):
+
     def __init__(self, connection, address, repo):
         super().__init__()
         self.connection = connection
@@ -18,8 +19,9 @@ class ClientServer(Thread):
                 message = message.decode()
                 message_parts_list = message.split()
                 command = message_parts_list[0]
-                args = message_parts_list[1 :]
-                response = socket_helpers.command_handler(command, args, self.repo, "")
+                args = message_parts_list[1:]
+                response = socket_helpers.command_handler(
+                    command, args, self.repo, "")
                 socket_helpers.write_variable_size(self.connection, response)
 
         except Exception as e:
@@ -29,9 +31,8 @@ class ClientServer(Thread):
             print(f'Connection to the address {self.address} is clised')
 
 
-
 def start_server(host, port):
-    repo = Repo() 
+    repo = Repo()
     with socket(AF_INET, SOCK_STREAM) as server_socket:
         server_socket.bind((host, port))
         server_socket.listen(5)

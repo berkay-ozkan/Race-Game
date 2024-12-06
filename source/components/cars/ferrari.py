@@ -1,4 +1,4 @@
-from components import Car
+from source.components import Car
 
 
 class Ferrari(Car):

@@ -1,5 +1,5 @@
-from component import Component
-from components import Car
+from source.component import Component
+from source.components import Car
 
 
 class Cell(Component):

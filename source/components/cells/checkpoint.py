@@ -1,5 +1,5 @@
-from components import Cell
-from component import Component
+from source.components import Cell
+from source.component import Component
 
 
 class Checkpoint(Cell):

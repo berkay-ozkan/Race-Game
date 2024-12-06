@@ -1,8 +1,8 @@
-from component import Component
-from components import Car, Cell
+from source.component import Component
+from source.components import Car, Cell
 from math import ceil, floor
-from monitor import Monitor
-from components.cells.checkpoint import Checkpoint
+from source.monitor import Monitor
+from source.components.cells.checkpoint import Checkpoint
 
 
 class Map(Monitor):

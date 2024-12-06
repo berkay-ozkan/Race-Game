@@ -1,10 +1,11 @@
 from socket import AF_INET, socket, SOCK_STREAM
-from socket_helpers import read_variable_size, write_variable_size
+from source.socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
 
 
 class WRAgent(Thread):
+
     def __init__(self, sock):
         self.sock = sock
         Thread.__init__(self)
@@ -18,6 +19,7 @@ class WRAgent(Thread):
 
 
 class RDAgent(Thread):
+
     def __init__(self, sock):
         self.sock = sock
         super().__init__()

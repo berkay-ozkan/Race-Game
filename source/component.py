@@ -1,5 +1,5 @@
-from id_tracker import ID_Tracker
-from monitor import Monitor
+from source.id_tracker import ID_Tracker
+from source.monitor import Monitor
 
 
 class Component(Monitor):

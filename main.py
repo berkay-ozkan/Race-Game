@@ -1,8 +1,8 @@
-from components.cars import Ferrari
-from components.cells import Rock, Fuel, Booster
-from components.cells.checkpoint import Checkpoint
-from components.cells.roads import Turn90, Straight, Diagonal
-from repo import Repo
+from source.components.cells import Rock, Fuel, Booster
+from source.components.cells.checkpoint import Checkpoint
+from source.components.cells.roads import Turn90, Straight, Diagonal
+from source.components.cars import Ferrari
+from source.repo import Repo
 from threading import Thread
 import time
 
@@ -15,7 +15,11 @@ r.create(description="map4", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map5", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
 
-id = r.create(description="F571", rows=10, cols=10, cellsize=64, bg_color='green')
+id = r.create(description="F571",
+              rows=10,
+              cols=10,
+              cellsize=64,
+              bg_color='green')
 print(r.list())  # F571 will be listed with an id
 ogr = r.attach(id, "onur")
 tgr = r.attach(id, "tolga")  # these two are the same object
@@ -78,7 +82,6 @@ frr._speed = 64
 temp.interact(frr)
 ogr.place(frr, 0, 0)
 
-
 frr._angle = 0
 frr._speed = 63
 ogr.draw()
@@ -107,7 +110,7 @@ frr.tick()
 frr.tick()
 frr.tick()
 ogr.draw()
-ogr.place(frr, 0,0)
+ogr.place(frr, 0, 0)
 frr.tick()
 ogr.draw()
 print(frr._next_checkpoint._order)

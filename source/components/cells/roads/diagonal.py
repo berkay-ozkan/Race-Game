@@ -1,4 +1,4 @@
-from components.cells import Road
+from source.components.cells import Road
 
 
 class Diagonal(Road):

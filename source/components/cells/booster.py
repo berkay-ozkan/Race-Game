@@ -1,4 +1,4 @@
-from components import Cell
+from source.components import Cell
 
 
 class Booster(Cell):

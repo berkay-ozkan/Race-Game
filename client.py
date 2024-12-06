@@ -1,5 +1,5 @@
 from socket import AF_INET, socket, SOCK_STREAM
-from socket_helpers import read_variable_size, write_variable_size
+from source.socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
 
