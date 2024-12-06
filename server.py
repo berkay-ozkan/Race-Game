@@ -50,7 +50,7 @@ class WRAgent(Thread):
                 self.current += len(oldmess)
                 try:
                     mlist = [
-                        str(addr) + ":" + m.strip().decode()
+                        str(addr) + ": " + m.strip().decode()
                         for (addr, m) in oldmess
                     ] + [""]
                     message = '\n'.join(mlist)
