@@ -1,1 +1,0 @@
-from .ferrari import Ferrari

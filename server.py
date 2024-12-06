@@ -3,7 +3,7 @@ from json import loads
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
-from source.objects.components.cars.ferrari import Ferrari
+from source.objects.components import Car
 from source.objects.components.cells.booster import Booster
 from source.objects.components.cells.checkpoint import Checkpoint
 from source.objects.components.cells.fuel import Fuel
@@ -138,7 +138,7 @@ def main() -> None:
     chatroom = Chat()
     repo = Repo()
 
-    repo.components.register("ferrari", Ferrari)
+    repo.components.register("car", Car)
     repo.components.register("diagonal", Diagonal)
     repo.components.register("straight", Straight)
     repo.components.register("turn90", Turn90)

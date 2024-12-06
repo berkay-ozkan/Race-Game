@@ -7,7 +7,7 @@ class Car(Component):
     _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
 
     # Subclass class variables
-    _MODEL: str
+    _MODEL: str | None = None
 
     _ACCELERATION_RATE: float
     _FUEL_CONSUMPTION_RATE: float
@@ -43,12 +43,21 @@ class Car(Component):
         "_visited_checkpoints": "int"
     }
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs: dict) -> None:
         super().__init__()
 
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: None | str = None
+
+        self._MODEL = kwargs.get("_MODEL")
+        self._ACCELERATION_RATE = kwargs["ACCELERATION_RATE"]
+        self._FUEL_CONSUMPTION_RATE = kwargs["FUEL_CONSUMPTION_RATE"]
+        self._DECELERATION_RATE = kwargs["DECELERATION_RATE"]
+        self._STEER_RATE = kwargs["STEER_RATE"]
+
+        self._MAX_SPEED = kwargs["MAX_SPEED"]
+        self._MAX_FUEL = kwargs["MAX_FUEL"]
 
         # None until placed, (y, x) coordinates afterwards
         # x increases to the right, y increases downward

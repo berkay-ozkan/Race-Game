@@ -29,7 +29,7 @@ class Component(Monitor):
 
     @Monitor.sync
     @classmethod
-    def create(cls, component_type_name: str) -> "Component":
+    def create(cls, component_type_name: str, **kwargs: dict) -> "Component":
         component_class = cls._registered_subclasses.get(component_type_name)
 
         if component_class is None:
@@ -37,7 +37,7 @@ class Component(Monitor):
             raise ValueError(
                 f"Component type '{component_type_name}' is not registered.")
 
-        instance = component_class()
+        instance = component_class(**kwargs)
         ID_Tracker()._add_objects(instance)
 
         #How to notify?

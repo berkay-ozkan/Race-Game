@@ -1,7 +1,7 @@
 from source.objects.components.cells import Rock, Fuel, Booster
 from source.objects.components.cells.checkpoint import Checkpoint
 from source.objects.components.cells.roads import Turn90, Straight, Diagonal
-from source.objects.components.cars import Ferrari
+from source.objects.components import Car
 from source.repo import Repo
 from threading import Thread
 import time
@@ -32,7 +32,7 @@ r.components.register("diagonal", Diagonal)
 r.components.register('rock', Rock)
 r.components.register("fuel", Fuel)
 r.components.register("booster", Booster)
-r.components.register("Ferrari", Ferrari)
+r.components.register("car", Car)
 rt = r.components.create('turn90')
 r.components.register('checkpoint', Checkpoint)
 cp = r.components.create('checkpoint')
@@ -73,8 +73,19 @@ ogr[(0, 8)] = r.components.create('rock')
 ogr[(1, 0)] = r.components.create('rock')
 ogr[(7, 1)] = r.components.create('fuel')
 
+FERRARI_ATTRIBUTES = {
+    "_MODEL": "Ferrari",
+    # Data source: ChatGPT
+    "_ACCELERATION_RATE": 19,
+    "_FUEL_CONSUMPTION_RATE": 0.06,
+    "_DECELERATION_RATE": 26,
+    "_STEER_RATE": 0.25,
+    "_MAX_SPEED": 210,
+    "_MAX_FUEL": 23
+}
+
 temp = r.components.create('rock')
-frr = r.components.create('Ferrari')
+frr = r.components.create('car', **FERRARI_ATTRIBUTES)
 frr._DRIVER = "Alonso"
 
 frr._speed = 64
@@ -126,7 +137,7 @@ def wait_for_map(repo):
 def wait_for_attach(repo):
     repo.attach_wait()
 
-r.components.register("Ferrari", Ferrari)
+r.components.register("car", Car)
 r.components.register('checkpoint', Checkpoint)
 wait_map_thread = Thread(target=wait_for_map, args=(r,))
 wait_attach_thread = Thread(target=wait_for_attach, args=(r,))
@@ -173,7 +184,7 @@ print("User1 attached maps:", [m.description for m in r.list_attached("User1")])
 print("User2 attached maps:", [m.description for m in r.list_attached("User2")])
 
 m = r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
-frr = r.components.create('Ferrari')
+frr = r.components.create('car', **FERRARI_ATTRIBUTES)
 cp = r.components.create('checkpoint')
 def edit_map():
     time.sleep(1)
