@@ -4,6 +4,7 @@ from source.objects.components import Car, Cell
 from math import ceil, floor
 from source.monitor import Monitor
 from source.objects.components.cells.checkpoint import Checkpoint
+from source.id_tracker import ID_Tracker
 
 
 class Map(Monitor):
@@ -22,6 +23,9 @@ class Map(Monitor):
         self._checkpoints = {}
         self._next_checkpoint_order = 0
         self._cars = []
+        self._is_view = False
+        self._user_views = {}
+        self._view_dimensions = {}
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
@@ -124,8 +128,8 @@ class Map(Monitor):
                         reverse=True)
 
     @Monitor.sync
-    def view(self, y, x, height, width):
-        if (self._id == None):
+    def view(self, y, x, height, width, user):
+        if (self._is_view == True):
             print("view of a view cannot be created")
             return
 
@@ -134,8 +138,9 @@ class Map(Monitor):
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
-        map_view.id = None
-
+        id = ID_Tracker()._add_objects(map_view)
+        map_view._id = id
+        map_view._is_view = True
         y_floor = floor(y / self.cell_size)
         x_floor = floor(x / self.cell_size)
         for row in range(height_ceil):
@@ -144,7 +149,10 @@ class Map(Monitor):
                 map_col = x_floor + col
                 if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
-
+        self._user_views[user] = map_view
+        y_end = y + height
+        x_end = x + width
+        self._view_dimensions[id] = [y, y_end, x, x_end]
         return map_view
 
     @Monitor.sync
