@@ -1,3 +1,5 @@
+from inspect import signature
+from json import loads
 from id_tracker import ID_Tracker
 from monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
@@ -83,8 +85,20 @@ class RDAgent(Thread):
                 break
             input = encoded_input.decode()
 
-            # TODO: Evaluate commands as required
-            reply = eval(input)
+            decoded_input = loads(input)
+            if "id" in decoded_input:
+                id = decoded_input["id"]
+                object = ID_Tracker()._objects[id]
+            else:
+                object = self.repo
+            function_name = decoded_input["function_name"]
+            parameters = decoded_input["parameters"]
+
+            function = object.__getattribute__(function_name)
+            # TODO: Cast parameters to appropriate types
+            function_signature = signature(function)
+            reply = function(**parameters)
+
             if reply is not None:
                 self.chatroom.newmessage((self.username, str(reply).encode()))
 
