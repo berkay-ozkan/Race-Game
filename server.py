@@ -3,6 +3,15 @@ from json import loads
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
+from source.objects.components.cars.ferrari import Ferrari
+from source.objects.components.cells.booster import Booster
+from source.objects.components.cells.checkpoint import Checkpoint
+from source.objects.components.cells.fuel import Fuel
+from source.objects.components.cells.road import Road
+from source.objects.components.cells.roads.diagonal import Diagonal
+from source.objects.components.cells.roads.straight import Straight
+from source.objects.components.cells.roads.turn90 import Turn90
+from source.objects.components.cells.rock import Rock
 from source.repo import Repo
 from source.socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
@@ -128,6 +137,16 @@ def main() -> None:
 
     chatroom = Chat()
     repo = Repo()
+
+    repo.components.register("ferrari", Ferrari)
+    repo.components.register("diagonal", Diagonal)
+    repo.components.register("straight", Straight)
+    repo.components.register("turn90", Turn90)
+    repo.components.register("booster", Booster)
+    repo.components.register("checkpoint", Checkpoint)
+    repo.components.register("fuel", Fuel)
+    repo.components.register("road", Road)
+    repo.components.register("rock", Rock)
 
     while True:
         conn, addr = s.accept()
