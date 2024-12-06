@@ -155,7 +155,7 @@ class Car(Component):
             else:
 
                 for cell in reversed(components_below):
-                    cell.interact(self)
+                    cell._interact(self)
                     print(f'this is interacted cell {cell.row}, {cell.col}')
 
         y1 = y0 - sin(self._angle) * self._speed
@@ -180,7 +180,7 @@ class Car(Component):
         else:
             # Interact with the most recently added component first
             for cell in reversed(components_below):
-                cell.interact(self)
+                cell._interact(self)
         '''
         self._accelerate = False
         self._brake = False

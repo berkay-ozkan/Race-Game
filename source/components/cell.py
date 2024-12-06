@@ -11,5 +11,5 @@ class Cell(Component):
         self.col: int
 
     # Subclass instance functions
-    def interact(self, car: Car) -> None:
+    def _interact(self, car: Car) -> None:
         raise NotImplementedError

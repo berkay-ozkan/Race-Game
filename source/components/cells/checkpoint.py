@@ -12,7 +12,7 @@ class Checkpoint(Cell):
         self._description = 'a checkpoint component'
         self._representation = 'C'
 
-    def interact(self, car):
+    def _interact(self, car):
         if self == car._next_checkpoint:
             self._interactions[
                 car.get_id()] = -1  #need a way to keep record of time

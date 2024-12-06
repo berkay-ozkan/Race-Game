@@ -13,5 +13,5 @@ class Road(Cell):
     def representation(self) -> str:
         return self._representation[self.rotation]
 
-    def interact(self, car):
+    def _interact(self, car):
         car._speed *= 0.97  # reduce speed due to friction

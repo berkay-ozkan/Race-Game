@@ -8,5 +8,5 @@ class Rock(Cell):
         self._description = "A random rock that stops the car"
         self._representation = "🪨"
 
-    def interact(self, car):
+    def _interact(self, car):
         car._speed = 0
