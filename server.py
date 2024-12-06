@@ -37,11 +37,11 @@ class Chat(Monitor):
 class WRAgent(Thread):
 
     def __init__(self, sock, addr, chat):
+        super().__init__()
         self.sock, self.addr = sock, addr
         self.chat = chat
         self.current = 0
         self.notexit = True
-        Thread.__init__(self)
 
     def run(self):
         while True:
@@ -65,9 +65,9 @@ class WRAgent(Thread):
 class RDAgent(Thread):
 
     def __init__(self, sock, addr, chatroom, repo: Repo):
+        super().__init__()
         self.sock, self.addr, self.chatroom, self.repo = sock, addr, chatroom, repo
         self.username: str
-        super().__init__()
 
     def read_username(self) -> None:
         encoded_input = read_variable_size(self.sock)

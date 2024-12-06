@@ -7,7 +7,7 @@ class Road(Cell):
     }
 
     def __init__(self) -> None:
-        super()
+        super().__init__()
         self.rotation: int
 
     def representation(self) -> str:

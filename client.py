@@ -7,8 +7,8 @@ from threading import Thread
 class WRAgent(Thread):
 
     def __init__(self, sock):
+        super().__init__()
         self.sock = sock
-        Thread.__init__(self)
 
     def run(self):
         while True:
@@ -21,8 +21,8 @@ class WRAgent(Thread):
 class RDAgent(Thread):
 
     def __init__(self, sock):
-        self.sock = sock
         super().__init__()
+        self.sock = sock
 
     def run(self):
         while True:

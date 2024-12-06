@@ -33,7 +33,7 @@ class Repo(Monitor):
 
         return id
 
-    @Monitor.sync   
+    @Monitor.sync
     def list(self) -> dict:
         obj_list = {
             objId: obj.description
@@ -43,7 +43,7 @@ class Repo(Monitor):
 
     @Monitor.sync
     def attach(self, obj_id, user):
-        
+
         while obj_id not in ID_Tracker()._objects:
             #print("waitong for creation of map with given id")
             with self._create_condition:
@@ -56,11 +56,11 @@ class Repo(Monitor):
 
         with self._attach_condition:
             self._attach_condition.notify_all()
-        
+
         ID_Tracker()._objects[obj_id].register_observer(user)
 
         return ID_Tracker()._objects[obj_id]
-    
+
     @Monitor.sync
     def get_map_for_user(self, user_id):
         for map_id, users in self._attachments.items():
@@ -91,7 +91,7 @@ class Repo(Monitor):
     def delete(self, obj_id):
         if obj_id not in self._attachments:
             del ID_Tracker()._objects[obj_id]
-        
+
         with self._create_condition:
             self._create_condition.notify_all()
 
@@ -108,4 +108,3 @@ class Repo(Monitor):
             #print("Waiting a")
             self._attach_condition.wait()
             #print("Notified a")
-    

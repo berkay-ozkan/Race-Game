@@ -4,7 +4,7 @@ from components import Cell
 class Rock(Cell):
 
     def __init__(self):
-        super()
+        super().__init__()
         self._description = "A random rock that stops the car"
         self._representation = "🪨"
 

@@ -43,7 +43,6 @@ class Map(Monitor):
                 condition.notify()
                 #print(f'{observer} is notified of change')
 
-
     # For adding Cell components
     @Monitor.sync
     def __setitem__(self, pos, cell: Cell):
@@ -110,7 +109,7 @@ class Map(Monitor):
         obj._angle = 0
         if obj not in self._cars:
             self._cars.append(obj)
-            
+
         if obj._next_checkpoint == None:
             if self._checkpoints:
                 obj._next_checkpoint = self._checkpoints[0]
@@ -119,8 +118,9 @@ class Map(Monitor):
 
     @Monitor.sync
     def sort_cars(self):
-       self._cars.sort(key=lambda car: (car._laps_completed, car._next_checkpoint._order), reverse=True)
-        
+        self._cars.sort(key=lambda car:
+                        (car._laps_completed, car._next_checkpoint._order),
+                        reverse=True)
 
     @Monitor.sync
     def view(self, y, x, height, width):
@@ -177,7 +177,7 @@ class Map(Monitor):
     @Monitor.sync
     def get_id(self):
         return self._id
-    
+
     @Monitor.sync
     def wait_for_change(self, observer):
         with self._observers[observer]:
