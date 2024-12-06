@@ -34,6 +34,7 @@ class Map(Monitor):
         self._tick_count = None
         self._game_thread = None
         self._stop_event = Event()
+        self._leaderboards = []
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
@@ -116,7 +117,7 @@ class Map(Monitor):
 
     # For adding Car components
     @Monitor.sync
-    def place(self, obj: Component, y: float, x: float):
+    def place(self, obj: Component, y: float, x: float, user: str):
         if self._game_mode_active:
             return
         self.remove(obj)
@@ -128,6 +129,7 @@ class Map(Monitor):
         obj._MAP = self
         obj._position = (y, x)
         obj._angle = 0
+        obj._user = user
         if obj not in self._cars:
             self._cars.append(obj)
 
@@ -233,6 +235,10 @@ class Map(Monitor):
             for car in self._cars:
                 car.tick()
 
+            self.sort_cars()
+            for i in range(len(self._cars)):
+                self._leaderboards[i] = self._cars[i]._user
+
             if self._tick_count % self._notification_interval == 0:
                 self.notify_observers()
 
@@ -242,12 +248,12 @@ class Map(Monitor):
     def stop(self):
         if not self._game_mode_active:
             return
-        
+
         self._stop_event.set()
         self._game_thread.join()
 
         for car in self._cars:
             car.stop()
-        
+
         self._game_mode_active = False
         self._start_time = None

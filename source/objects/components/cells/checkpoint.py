@@ -1,5 +1,5 @@
 from source.objects.components import Cell
-from source.objects.component import Component
+from time import time
 
 
 class Checkpoint(Cell):
@@ -13,7 +13,7 @@ class Checkpoint(Cell):
         self._representation = 'C'
 
     def _interact(self, car):
+        interraction_time = time()
         if self == car._next_checkpoint:
-            self._interactions[
-                car.get_id()] = -1  #need a way to keep record of time
+            self._interactions[car.get_id()] = interraction_time
             car.update_next_checkpoint()

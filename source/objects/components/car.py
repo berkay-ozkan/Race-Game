@@ -40,7 +40,8 @@ class Car(Component):
         "_running": "bool",
         "_next_checkpoint": "int",
         "_laps_completed": "int",
-        "_visited_checkpoints": "int"
+        "_visited_checkpoints": "int",
+        "_user" : "str"
     }
 
     def __init__(self) -> None:
@@ -49,7 +50,7 @@ class Car(Component):
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: None | str = None
-
+        self._user = None
         # None until placed, (y, x) coordinates afterwards
         # x increases to the right, y increases downward
         self._position: None | tuple[float, float] = None
