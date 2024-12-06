@@ -30,7 +30,8 @@ class RDAgent(Thread):
             if reply is None:
                 break
             print(reply.decode())
-        print("peer closed the connection")
+
+        print("The server closed the connection.")
         self.sock.close()
 
 

@@ -76,6 +76,27 @@ class RDAgent(Thread):
         username = input[input.find("USER") + 4:]
         self.username = username
 
+    def run_command(self, decoded_input: dict) -> str | None:
+        if "id" in decoded_input:
+            id = decoded_input["id"]
+            object = ID_Tracker()._objects[id]
+        else:
+            object = self.repo
+
+        function_name: str = decoded_input["function_name"]
+        if function_name.startswith('_'):
+            return "Calling internal functions is not supported"
+
+        # TODO: Cast parameters to appropriate types
+        parameters = decoded_input["parameters"]
+        function = object.__getattribute__(function_name)
+        function_signature = signature(function)
+
+        result = function(**parameters)
+        if result is not None:
+            return str(result)
+        return None
+
     def run(self):
         self.read_username()
 
@@ -83,28 +104,15 @@ class RDAgent(Thread):
             encoded_input = read_variable_size(self.sock)
             if encoded_input is None:
                 break
-            input = encoded_input.decode()
+            decoded_input = loads(encoded_input.decode())
 
-            decoded_input = loads(input)
-            if "id" in decoded_input:
-                id = decoded_input["id"]
-                object = ID_Tracker()._objects[id]
-            else:
-                object = self.repo
-            function_name = decoded_input["function_name"]
-            parameters = decoded_input["parameters"]
+            result = self.run_command(decoded_input)
+            if result is not None:
+                self.chatroom.newmessage((self.username, result.encode()))
 
-            function = object.__getattribute__(function_name)
-            # TODO: Cast parameters to appropriate types
-            function_signature = signature(function)
-            reply = function(**parameters)
-
-            if reply is not None:
-                self.chatroom.newmessage((self.username, str(reply).encode()))
-
-        print("peer closed the connection")
+        print(self.username, "closed the connection.")
+        self.chatroom.newmessage(f"{self.username} closed the connection.")
         self.sock.close()
-        self.chatroom.newmessage((self.addr, b"bye"))
 
 
 def main() -> None:
