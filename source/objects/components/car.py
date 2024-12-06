@@ -1,4 +1,4 @@
-from source.component import Component
+from source.objects.component import Component
 from math import cos, sin, floor, ceil
 
 

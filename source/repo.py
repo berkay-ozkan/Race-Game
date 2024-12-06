@@ -1,6 +1,6 @@
-from source.component import Component
+from source.objects.component import Component
 from source.id_tracker import ID_Tracker
-from source.map import Map
+from source.objects.map import Map
 from source.singleton import singleton
 from source.monitor import Monitor
 

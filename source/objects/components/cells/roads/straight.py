@@ -1,4 +1,4 @@
-from source.components.cells import Road
+from source.objects.components.cells import Road
 
 
 class Straight(Road):

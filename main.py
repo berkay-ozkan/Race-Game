@@ -1,7 +1,7 @@
-from source.components.cells import Rock, Fuel, Booster
-from source.components.cells.checkpoint import Checkpoint
-from source.components.cells.roads import Turn90, Straight, Diagonal
-from source.components.cars import Ferrari
+from source.objects.components.cells import Rock, Fuel, Booster
+from source.objects.components.cells.checkpoint import Checkpoint
+from source.objects.components.cells.roads import Turn90, Straight, Diagonal
+from source.objects.components.cars import Ferrari
 from source.repo import Repo
 from threading import Thread
 import time

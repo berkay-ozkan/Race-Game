@@ -1,4 +1,4 @@
-from source.components import Cell
+from source.objects.components import Cell
 
 
 class Road(Cell):
