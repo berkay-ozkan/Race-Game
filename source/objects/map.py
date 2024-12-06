@@ -42,7 +42,7 @@ class Map(Monitor):
             self._observers[observer] = self.CV()
             #print(f'user {observer} is now interested in this map')
 
-    #For removing observer from map (When a user is detached form the map in repo)
+    # For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
     def remove_observer(self, observer: str):
         if observer in self._observers:
@@ -210,11 +210,14 @@ class Map(Monitor):
         with self._observers[observer]:
             self._observers[observer].wait()
 
-    #For starting game mode
+    # For starting game mode
     @Monitor.sync
     def start(self):
         if self._game_mode_active:
             return
+
+        for car in self._cars:
+            car.start()
 
         self._game_mode_active = True
         self._start_time = time()
@@ -223,6 +226,7 @@ class Map(Monitor):
         self._game_thread = Thread(target=self.game_controller)
         self._game_thread.start()
 
+    # Game controller thread
     def game_controller(self):
         while not self._stop_event.is_set():
             self._tick_count += 1
@@ -234,6 +238,7 @@ class Map(Monitor):
 
             sleep(self._tick_interval)
 
+    # For stopping game mode
     def stop(self):
         if not self._game_mode_active:
             return
