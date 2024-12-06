@@ -129,7 +129,6 @@ class Car(Component):
 
         curr_row = floor(y0 / self._MAP.cell_size)
         curr_col = floor(x0 / self._MAP.cell_size)
-        print(f"Starting position: row={curr_row}, col={curr_col}")
 
         y_speed = -sin(self._angle)
         x_speed = cos(self._angle)
@@ -142,28 +141,21 @@ class Car(Component):
             curr_row = floor(current_y / self._MAP.cell_size)
             curr_col = floor(current_x / self._MAP.cell_size)
 
-            print(f"Step {step}: row={curr_row}, col={curr_col}")
-
             components_below = self._MAP.grid[curr_row][curr_col]
-            print(components_below)
             if not components_below:
                 self._speed = min(
                     self._speed,
                     self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
-                print('wrong tuuurn')
-                print(f'STEssssssPS{step}')
             else:
 
                 for cell in reversed(components_below):
                     cell._interact(self)
-                    print(f'this is interacted cell {cell.row}, {cell.col}')
 
         y1 = y0 - sin(self._angle) * self._speed
         x1 = x0 + cos(self._angle) * self._speed
         self._position = (y1, x1)
 
         pos_y, pos_x = self._position
-        print(f"Final position: (y={pos_y}, x={pos_x})")
         self._MAP.place(self, pos_y, pos_x)
 
         # Reset movement flags
@@ -171,22 +163,4 @@ class Car(Component):
         self._brake = False
         self._turn_clockwise = False
         self._turn_counterclockwise = False
-        '''
-        components_below = self._MAP.get_y_x(*self._position)
-        if not components_below:
-            self._speed = min(
-                self._speed,
-                self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
-        else:
-            # Interact with the most recently added component first
-            for cell in reversed(components_below):
-                cell._interact(self)
-        '''
-        self._accelerate = False
-        self._brake = False
-        self._turn_clockwise = False
-        self._turn_counterclockwise = False
         self._position = (y1, x1)
-        pos_y, pos_x = self._position
-        print(f'{pos_y, pos_x} poooos')
-        self._MAP.place(self, pos_y, pos_x)
