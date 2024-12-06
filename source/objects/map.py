@@ -177,6 +177,7 @@ class Map(Monitor):
         y_end = y + height
         x_end = x + width
         self._view_dimensions[id] = [y, y_end, x, x_end]
+        self.register_observer(user)
         return map_view
 
     @Monitor.sync
@@ -244,7 +245,9 @@ class Map(Monitor):
                 self._leaderboards[i] = self._cars[i]._user
 
             if self._tick_count % self._notification_interval == 0:
-                self.notify_observers()
+                for user in self._observers:
+                    with self._observers[user]:
+                        self._observers[user].notify
 
             sleep(self._tick_interval)
 

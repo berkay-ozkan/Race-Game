@@ -57,8 +57,6 @@ class Repo(Monitor):
         with self._attach_condition:
             self._attach_condition.notify_all()
 
-        ID_Tracker()._objects[obj_id].register_observer(user)
-
         return ID_Tracker()._objects[obj_id]
 
     @Monitor.sync
