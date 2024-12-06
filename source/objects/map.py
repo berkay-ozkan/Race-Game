@@ -134,6 +134,7 @@ class Map(Monitor):
             return
         if user in self._user_views:
             print("Auser can only have one view")
+            return
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
