@@ -247,7 +247,7 @@ class Map(Monitor):
             if self._tick_count % self._notification_interval == 0:
                 for user in self._observers:
                     with self._observers[user]:
-                        self._observers[user].notify
+                        self._observers[user].notify()
 
             sleep(self._tick_interval)
 
