@@ -1,3 +1,4 @@
+from threading import Condition
 from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
@@ -17,21 +18,21 @@ class Map(Monitor):
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
         self._id = None
-        self._observers = {}
+        self._observers: dict[str, Condition] = {}
         self._checkpoints = {}
         self._next_checkpoint_order = 0
         self._cars = []
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
-    def register_observer(self, observer):
+    def register_observer(self, observer: str):
         if observer not in self._observers:
             self._observers[observer] = self.CV()
             #print(f'user {observer} is now interested in this map')
 
     #For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
-    def remove_observer(self, observer):
+    def remove_observer(self, observer: str):
         if observer in self._observers:
             del self._observers[observer]
             #print(f'user {observer} is no longer interested in this map')
@@ -66,7 +67,7 @@ class Map(Monitor):
         return None
 
     @Monitor.sync
-    def remove(self, component):
+    def remove(self, component: Component):
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
@@ -97,7 +98,7 @@ class Map(Monitor):
 
     # For adding Car components
     @Monitor.sync
-    def place(self, obj, y: float, x: float):
+    def place(self, obj: Component, y: float, x: float):
         self.remove(obj)
 
         row = floor(y / self.cell_size)
@@ -179,6 +180,6 @@ class Map(Monitor):
         return self._id
 
     @Monitor.sync
-    def wait_for_change(self, observer):
+    def wait_for_change(self, observer: str):
         with self._observers[observer]:
             self._observers[observer].wait()
