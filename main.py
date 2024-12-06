@@ -15,10 +15,10 @@ r.create(description="map4", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map5", cols=4, rows=4, cellsize=64, bgcolor='green')
 r.create(description="map6", cols=4, rows=4, cellsize=64, bgcolor='green')
 
-r.create(description="F571", rows=10, cols=10, cellsize=64, bg_color='green')
+id = r.create(description="F571", rows=10, cols=10, cellsize=64, bg_color='green')
 print(r.list())  # F571 will be listed with an id
-ogr = r.attach(7, "onur")
-tgr = r.attach(7, "tolga")  # these two are the same object
+ogr = r.attach(id, "onur")
+tgr = r.attach(id, "tolga")  # these two are the same object
 r.components.list()  # lists the available components
 # assume all components call Repo.components.register(type, cls)
 r.components.register('turn90', Turn90)
@@ -113,7 +113,8 @@ ogr.draw()
 print(frr._next_checkpoint._order)
 print(f'{frr._next_checkpoint._order} THIS IS ORDER OF FRR')
 #print(frr._MAP.grid)
-
+#r.list()
+#print(r._objects)
 '''
 def wait_for_map(repo):
     repo.create_wait()

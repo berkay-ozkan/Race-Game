@@ -26,24 +26,25 @@ class Repo(Monitor):
         map = Map(description, cols, rows, cell_size, bg_color)
 
         id = ID_Tracker()._add_objects(map)
+        #self._objects[id] = map
         map._id = id
         with self._create_condition:
             self._create_condition.notify_all()
 
         return id
 
-    @Monitor.sync
+    @Monitor.sync   
     def list(self) -> dict:
         obj_list = {
             objId: obj.description
-            for objId, obj in self._objects.items()
+            for objId, obj in ID_Tracker()._objects.items()
         }
         return obj_list
 
     @Monitor.sync
     def attach(self, obj_id, user):
         
-        while obj_id not in self._objects:
+        while obj_id not in ID_Tracker()._objects:
             #print("waitong for creation of map with given id")
             with self._create_condition:
                 self._create_condition.wait()
@@ -56,9 +57,9 @@ class Repo(Monitor):
         with self._attach_condition:
             self._attach_condition.notify_all()
         
-        self._objects[obj_id].register_observer(user)
+        ID_Tracker()._objects[obj_id].register_observer(user)
 
-        return self._objects[obj_id]
+        return ID_Tracker()._objects[obj_id]
     
     @Monitor.sync
     def get_map_for_user(self, user_id):
@@ -69,7 +70,7 @@ class Repo(Monitor):
     @Monitor.sync
     def list_attached(self, user):
         return [
-            self._objects[obj_id]
+            ID_Tracker()._objects[obj_id]
             for obj_id, users in self._attachments.items() if user in users
         ]
 
@@ -78,7 +79,7 @@ class Repo(Monitor):
         if obj_id in self._attachments:
             if user in self._attachments[obj_id]:
                 self._attachments[obj_id].remove(user)
-                self._objects[obj_id].remove_observer(user)
+                ID_Tracker()._objects[obj_id].remove_observer(user)
 
         if not self._attachments[obj_id]:
             del self._attachments[obj_id]
@@ -89,7 +90,7 @@ class Repo(Monitor):
     @Monitor.sync
     def delete(self, obj_id):
         if obj_id not in self._attachments:
-            del self._objects[obj_id]
+            del ID_Tracker()._objects[obj_id]
         
         with self._create_condition:
             self._create_condition.notify_all()

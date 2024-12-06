@@ -19,7 +19,7 @@ class ClientServer(Thread):
                 message_parts_list = message.split()
                 command = message_parts_list[0]
                 args = message_parts_list[1 :]
-                response = socket_helpers.command_handler(command, args, self.repo, "VUSAL")
+                response = socket_helpers.command_handler(command, args, self.repo, "")
                 socket_helpers.write_variable_size(self.connection, response)
 
         except Exception as e:

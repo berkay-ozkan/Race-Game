@@ -50,6 +50,7 @@ def command_handler(command, args, shared_data, user_id):
     elif command == "PLACE_CAR":
         map = shared_data.get_map_for_user(user_id)  
         map.place(shared_data._objects[args[0]], int(args[1]), int(args[2]))
+        return ">OK"
     elif command == "ROTATE":
         shared_data._objects[args[0]]._rotation = args[1]
         return ">OK"
