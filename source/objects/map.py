@@ -51,11 +51,15 @@ class Map(Monitor):
             #print(f'user {observer} is no longer interested in this map')
 
     @Monitor.sync
-    def notify_observers(self):
-        for observer, condition in self._observers.items():
-            with condition:
-                condition.notify()
-                #print(f'{observer} is notified of change')
+    def notify_observers(self, affected_y, affected_x):
+        for user, view in self._user_views.items():
+            view_id = view.get_id()
+            y_start, y_end, x_start, x_end = self._view_dimensions[view_id]
+
+            if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
+                condition = self._observers[user]
+                with condition:
+                    condition.notify()
 
     # For adding Cell components
     @Monitor.sync
@@ -245,6 +249,7 @@ class Map(Monitor):
             sleep(self._tick_interval)
 
     # For stopping game mode
+    @Monitor.sync
     def stop(self):
         if not self._game_mode_active:
             return
