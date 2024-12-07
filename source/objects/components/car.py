@@ -138,6 +138,9 @@ class Car(Component):
 
         self._MAP.remove(self)
 
+        self._position = (self._position[0] - sin(self._angle) * self._speed,
+                          self._position[1] + cos(self._angle) * self._speed)
+
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
@@ -150,44 +153,21 @@ class Car(Component):
         if self._turn_counterclockwise:
             self._angle += self._STEER_RATE
 
-        num_of_cells_travelled = floor(self._speed / self._MAP.cell_size)
-        y0, x0 = self._position
+        components_below = self._MAP.get_y_x(*self._position)
+        print(components_below)
+        if not components_below:
+            self._speed = min(
+                self._speed,
+                self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
+        else:
+            # Interact with the most recently added component first
+            for cell in reversed(components_below):
+                cell._interact(self)
 
-        curr_row = floor(y0 / self._MAP.cell_size)
-        curr_col = floor(x0 / self._MAP.cell_size)
-
-        y_speed = -sin(self._angle)
-        x_speed = cos(self._angle)
-
-        for step in range(num_of_cells_travelled + 1):
-
-            current_y = y0 + step * (y_speed * self._MAP.cell_size)
-            current_x = x0 + step * (x_speed * self._MAP.cell_size)
-
-            curr_row = floor(current_y / self._MAP.cell_size)
-            curr_col = floor(current_x / self._MAP.cell_size)
-
-            components_below = self._MAP.get_y_x(curr_row, curr_col)
-            print(components_below)
-            if not components_below:
-                self._speed = min(
-                    self._speed,
-                    self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
-            else:
-
-                for cell in reversed(components_below):
-                    cell._interact(self)
-
-        y1 = y0 - sin(self._angle) * self._speed
-        x1 = x0 + cos(self._angle) * self._speed
-        self._position = (y1, x1)
-
-        pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x, self._user)
-
-        # Reset movement flags
         self._accelerate = False
         self._brake = False
         self._turn_clockwise = False
         self._turn_counterclockwise = False
-        self._position = (y1, x1)
+
+        pos_y, pos_x = self._position
+        self._MAP.place(self, pos_y, pos_x, self._user)

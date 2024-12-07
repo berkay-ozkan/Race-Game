@@ -246,7 +246,7 @@ class Map(Monitor):
             for i in range(len(self._cars)):
                 self._leaderboards.append(self._cars[i]._user)
                 print(f'time for car {self._cars[i]} is {self._cars[i]._current_checkpoint._interactions[self._cars[i].get_id()]}, {self._cars[i]._position}')
-
+                print(f'checkpoint is {self._cars[i]._current_checkpoint._order}')
             if self._tick_count % self._notification_interval == 0:
                 for user in self._observers:
                     with self._observers[user]:
