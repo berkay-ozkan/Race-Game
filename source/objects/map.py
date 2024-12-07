@@ -218,9 +218,10 @@ class Map(Object):
 
             for car in self._cars:
                 player = car._user
-                time = car._current_checkpoint._interactions[car.get_id()]
+                time = car._current_checkpoint and car._current_checkpoint._interactions[
+                    car.get_id()]
                 lap = car._laps_completed
-                cp = car._current_checkpoint._order
+                cp = car._current_checkpoint and car._current_checkpoint._order
                 car_id = f'car{car.get_id()}'
                 leaderboard_entry = (player, time, lap, cp, car_id)
                 self._leaderboards.append(leaderboard_entry)
