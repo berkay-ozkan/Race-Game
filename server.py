@@ -3,6 +3,7 @@ from json import loads
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
+from source.object import Object
 from source.objects.components import Car
 from source.objects.components.cells.booster import Booster
 from source.objects.components.cells.checkpoint import Checkpoint
@@ -96,10 +97,17 @@ class RDAgent(Thread):
         if function_name.startswith('_'):
             return "Calling internal functions is not supported"
 
-        # TODO: Cast parameters to appropriate types
         parameters = decoded_input["parameters"]
-        function = object.__getattribute__(function_name)
+
+        function = getattr(object, function_name)
         function_signature = signature(function)
+        for parameter in function_signature.parameters.values():
+            parameter_name = parameter.name
+            parameter_type = parameter.annotation
+            if issubclass(parameter_type, Object):
+                object_id = parameters[parameter_name]
+                object = ID_Tracker()._objects[object_id]
+                parameters[parameter_name] = object
 
         result = function(**parameters)
         if result is not None:

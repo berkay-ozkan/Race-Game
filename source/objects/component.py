@@ -1,8 +1,9 @@
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
+from source.object import Object
 
 
-class Component(Monitor):
+class Component(Object):
     # Component class variables
     _registered_subclasses: dict = {}
 
@@ -64,7 +65,6 @@ class Component(Monitor):
     def __init__(self) -> None:
         super().__init__()
         self.condition = self.CV()
-        self._id: int
 
     #@Monitor.sync
     def description(self) -> str:
@@ -87,7 +87,3 @@ class Component(Monitor):
     #@Monitor.sync
     def representation(self) -> str:
         return self._representation
-
-    #@Monitor.sync
-    def get_id(self) -> int:
-        return self._id

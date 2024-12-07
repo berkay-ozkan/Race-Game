@@ -1,4 +1,5 @@
 from threading import Condition
+from source.object import Object
 from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
@@ -6,7 +7,7 @@ from source.monitor import Monitor
 from source.objects.components.cells.checkpoint import Checkpoint
 
 
-class Map(Monitor):
+class Map(Object):
 
     def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
         super().__init__()
@@ -17,7 +18,6 @@ class Map(Monitor):
         self.bg_color = bg_color
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
-        self._id = None
         self._observers: dict[str, Condition] = {}
         self._checkpoints = {}
         self._next_checkpoint_order = 0
@@ -174,10 +174,6 @@ class Map(Monitor):
             for attribute in player_information:
                 print(attribute)
             print()
-
-    @Monitor.sync
-    def get_id(self):
-        return self._id
 
     @Monitor.sync
     def wait_for_change(self, observer: str):
