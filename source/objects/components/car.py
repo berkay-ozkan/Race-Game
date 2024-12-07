@@ -136,8 +136,6 @@ class Car(Component):
         if self._angle is None or self._position is None or self._MAP is None:
             return
 
-        self._MAP.remove(self)
-
         self._position = (self._position[0] - sin(self._angle) * self._speed,
                           self._position[1] + cos(self._angle) * self._speed)
 

@@ -99,11 +99,11 @@ class Map(Object):
     # For adding Car components
     @Monitor.sync
     def place(self, obj: int, y: float, x: float, user: str):
-        obj = ID_Tracker()._objects[obj]
         if self._game_mode_active:
             return
         self.remove(obj)
 
+        obj = ID_Tracker()._objects[obj]
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
         self.grid[row][col].append(obj)
