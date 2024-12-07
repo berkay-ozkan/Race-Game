@@ -1,3 +1,4 @@
+from threading import RLock
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from source.object import Object
@@ -6,6 +7,7 @@ from source.object import Object
 class Component(Object):
     # Component class variables
     _registered_subclasses: dict = {}
+    mlock: RLock = RLock()
 
     # Subclass class variables
     _attributes: dict[str, str] = Monitor._attributes | {
@@ -20,16 +22,16 @@ class Component(Object):
     _representation: str
     _type_name: str
 
-    @Monitor.sync
     @classmethod
+    @Monitor.sync
     def list(cls) -> dict[str, str]:
         return {
             subclass._type_name: subclass._description
             for subclass in cls._registered_subclasses.values()
         }
 
-    @Monitor.sync
     @classmethod
+    @Monitor.sync
     def create(cls, component_type_name: str, **kwargs: dict) -> "Component":
         component_class = cls._registered_subclasses.get(component_type_name)
 
@@ -45,8 +47,8 @@ class Component(Object):
 
         return instance
 
-    #@Monitor.sync
     @classmethod
+    @Monitor.sync
     def register(cls, component_type_name: str, component_class) -> None:
         cls._registered_subclasses[component_type_name] = component_class
         component_class._type_name = component_type_name
@@ -54,8 +56,8 @@ class Component(Object):
     # with cls.condition:
     #    cls.condition.notify_all()
 
-    @Monitor.sync
     @classmethod
+    @Monitor.sync
     def unregister(cls, component_type_name: str) -> None:
         del cls._registered_subclasses[component_type_name]
 
@@ -66,7 +68,7 @@ class Component(Object):
         super().__init__()
         self.condition = self.CV()
 
-    #@Monitor.sync
+    @Monitor.sync
     def description(self) -> str:
         return self._description
 
@@ -74,16 +76,21 @@ class Component(Object):
     def type_name(self) -> str:
         return self._type_name
 
-    #@Monitor.sync
+    @Monitor.sync
     def attributes(self) -> dict[str, str]:
         return {key: value for key, value in self._attributes.items()}
 
+    @Monitor.sync
     def __setattr__(self, name: str, value) -> None:
         if name not in type(self)._attributes:
             raise AttributeError(
                 f"'{type(self)}' object has no attribute '{name}'")
         return super().__setattr__(name, value)
 
-    #@Monitor.sync
+    @Monitor.sync
     def representation(self) -> str:
         return self._representation
+
+    @Monitor.sync
+    def __str__(self) -> str:
+        return str(self._id)
