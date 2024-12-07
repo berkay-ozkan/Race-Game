@@ -44,7 +44,8 @@ class Chat(Monitor):
         self.newmess.wait()
 
 
-class WRAgent(Thread):
+# TODO: Implement notification system
+class Notifications(Thread):
 
     def __init__(self, sock, addr, chat):
         super().__init__()
@@ -72,11 +73,11 @@ class WRAgent(Thread):
             self.chat.wait()
 
 
-class RDAgent(Thread):
+class Replies(Thread):
 
-    def __init__(self, sock, addr, chatroom, repo: Repo):
+    def __init__(self, sock, addr, repo: Repo):
         super().__init__()
-        self.sock, self.addr, self.chatroom, self.repo = sock, addr, chatroom, repo
+        self.sock, self.addr, self.repo = sock, addr, repo
         self.username: str
 
     def read_username(self) -> None:
@@ -94,7 +95,7 @@ class RDAgent(Thread):
             object = self.repo
 
         function_name: str = decoded_input["function_name"]
-        if RDAgent.is_internal(function_name):
+        if Replies.is_internal(function_name):
             return "Calling internal functions is not supported"
 
         parameters = decoded_input["parameters"]
@@ -126,10 +127,14 @@ class RDAgent(Thread):
 
             result = self.run_command(decoded_input)
             if result is not None:
-                self.chatroom.newmessage((self.username, result.encode()))
+                try:
+                    message = str(self.username) + ": " + result.strip()
+                    write_variable_size(self.sock, message)
+                except Exception:
+                    print("Writer to", self.username, "terminating")
+                    break
 
         print(self.username, "closed the connection.")
-        self.chatroom.newmessage(f"{self.username} closed the connection.")
         self.sock.close()
 
     @staticmethod
@@ -167,8 +172,8 @@ def main() -> None:
         conn, addr = s.accept()
 
         print("Connected by", addr)
-        a = RDAgent(conn, addr, chatroom, repo)
-        b = WRAgent(conn, addr, chatroom)
+        a = Replies(conn, addr, repo)
+        b = Notifications(conn, addr, chatroom)
         a.start()
         b.start()
 
