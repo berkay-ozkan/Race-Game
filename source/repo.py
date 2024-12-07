@@ -13,6 +13,7 @@ class Repo(Monitor):
         self._attachments = {}
         self._objects = {}
         self.components = Component()
+        self.components._id = ID_Tracker()._add_objects(self.components)
         self._create_condition = self.CV()
         self._attach_condition = self.CV()
 
