@@ -41,13 +41,12 @@ class Map(Monitor):
     def register_observer(self, observer: str):
         if observer not in self._observers:
             self._observers[observer] = self.CV()
-            
+
     # For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
     def remove_observer(self, observer: str):
         if observer in self._observers:
             del self._observers[observer]
-         
 
     @Monitor.sync
     def notify_observers(self, affected_y, affected_x):
@@ -57,7 +56,8 @@ class Map(Monitor):
 
             if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
                 condition = self._observers[user]
-                (f'user {user} notified of change at {affected_x}, {affected_y}print')
+                (f'user {user} notified of change at {affected_x}, {affected_y}print'
+                 )
                 with condition:
                     condition.notify()
 
@@ -242,16 +242,21 @@ class Map(Monitor):
 
             self.sort_cars()
             self._leaderboards.clear()
-            
-            for i in range(len(self._cars)):
-                self._leaderboards.append(self._cars[i]._user)
-                print(f'time for car {self._cars[i]} is {self._cars[i]._current_checkpoint._interactions[self._cars[i].get_id()]}, {self._cars[i]._position}')
-                print(f'checkpoint is {self._cars[i]._current_checkpoint._order}')
+
+            for car in self._cars:
+                player = car._user
+                time = car._current_checkpoint._interactions[
+                    car.get_id()]
+                lap = car._laps_completed
+                cp = car._current_checkpoint._order
+                car_id = f'car{car.get_id()}'
+                leaderboard_entry = (player, time, lap, cp, car_id)
+                self._leaderboards.append(leaderboard_entry)
+
             if self._tick_count % self._notification_interval == 0:
                 for user in self._observers:
                     with self._observers[user]:
                         self._observers[user].notify()
-
 
             sleep(self._tick_interval)
 

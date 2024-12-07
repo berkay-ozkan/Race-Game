@@ -84,49 +84,25 @@ FERRARI_ATTRIBUTES = {
     "steer_rate": 0.25,
     "max_speed": 210,
     "max_fuel": 23
-   
 }
 
-temp = r.components.create('rock')
 frr = r.components.create('car', **FERRARI_ATTRIBUTES)
+fr = r.components.create('car', **FERRARI_ATTRIBUTES)
 frr._DRIVER = "Alonso"
 frr._next_checkpoint = cp
-frr._speed = 65
-
-temp._interact(frr)
-ogr.place(frr, 0, 0, 'ots')
-
-frr._angle = 0
 frr._speed = 63
+fr._DRIVER = "Alo"
+fr._next_checkpoint = cp
+fr._speed = 62
+
+ogr.place(frr, 0, 0, 'ots')
+ogr.place(fr, 0, 0, 'vusal')
+frr._angle = 0
+fr._angle = 0
 ogr.draw()
-
-
-#cv.draw()
 
 ogr.start()
 sleep(20)
 ogr.stop()
 
 print(ogr._leaderboards)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-

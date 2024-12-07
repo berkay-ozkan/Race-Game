@@ -41,11 +41,11 @@ class Car(Component):
         "_turn_counterclockwise": "bool",
         "_running": "bool",
         "_next_checkpoint": "Checkpoint",
-        "_current_checkpoint" : "Ceckpoint",
+        "_current_checkpoint": "Ceckpoint",
         "_laps_completed": "int",
         "_visited_checkpoints": "int",
         "_user": "str",
-        "_time" : "int"
+        "_time": "int"
     }
 
     def __init__(self, **kwargs: dict) -> None:
@@ -154,7 +154,7 @@ class Car(Component):
             self._angle += self._STEER_RATE
 
         components_below = self._MAP.get_y_x(*self._position)
-        print(components_below)
+
         if not components_below:
             self._speed = min(
                 self._speed,
