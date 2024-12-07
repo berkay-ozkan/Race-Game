@@ -17,6 +17,7 @@ class Car(Component):
     _MAX_SPEED: float
     _MAX_FUEL: float
 
+    _description: str = "car"
     _representation: str = "🚘"
 
     _attributes = Component._attributes | {
