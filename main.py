@@ -95,15 +95,15 @@ ogr.place(frr, 0, 0, "onur")
 
 frr._angle = 0
 frr._speed = 63
-ogr.draw()
+print(ogr.draw())
 
 cv = ogr.view(200, 200, 600, 600, "onur")
 cd = cv.view(200, 200, 600, 600, "onur")
-#cv.draw()
+#print(cv.draw())
 
 frr.start()
 frr.tick()
-#ogr.draw()
+#print(ogr.draw())
 #frr.accelerate()
 
 #frr.turn_counterclockwise()
@@ -120,10 +120,10 @@ frr.tick()
 
 frr.tick()
 frr.tick()
-ogr.draw()
+print(ogr.draw())
 ogr.place(frr, 0, 0, "onur")
 frr.tick()
-ogr.draw()
+print(ogr.draw())
 print(frr._next_checkpoint._order)
 print(f'{frr._next_checkpoint._order} THIS IS ORDER OF FRR')
 #print(frr._MAP.grid)
@@ -193,7 +193,7 @@ def edit_map():
 
     
     
-    mp.draw()
+    print(mp.draw())
 mp = r.attach(m, 'vusal')
 edit_thread = Thread(target=edit_map)
 edit_thread.start()

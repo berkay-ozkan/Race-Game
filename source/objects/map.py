@@ -181,17 +181,18 @@ class Map(Object):
         return map_view
 
     @Monitor.sync
-    def draw(self) -> None:
+    def draw(self) -> str:
+        result = ""
         all_players_information: list[list[str]] = []
 
         for row in self.grid:
             for cell in row:
                 if len(cell) == 0:
-                    print(" ", end="")
+                    result += " "
                     continue
 
                 topmost_component = cell[-1]
-                print(topmost_component.representation(), end="")
+                result += topmost_component.representation()
 
                 if isinstance(topmost_component, Car):
                     player_information = []
@@ -200,13 +201,15 @@ class Map(Object):
                             f"{attribute}: {getattr(topmost_component, attribute)}"
                         )
                     all_players_information.append(player_information)
-            print()
-        print()
+            result += '\n'
+        result += '\n'
 
         for player_information in all_players_information:
             for attribute in player_information:
-                print(attribute)
-            print()
+                result += attribute + '\n'
+            result += '\n'
+
+        return result
 
     @Monitor.sync
     def wait_for_change(self, observer: str):
