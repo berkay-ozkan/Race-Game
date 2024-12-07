@@ -97,8 +97,8 @@ frr._angle = 0
 frr._speed = 63
 ogr.draw()
 
-cv = ogr.view(200, 200, 600, 600)
-cd = cv.view(200, 200, 600, 600)
+cv = ogr.view(200, 200, 600, 600, "onur")
+cd = cv.view(200, 200, 600, 600, "onur")
 #cv.draw()
 
 frr.start()
