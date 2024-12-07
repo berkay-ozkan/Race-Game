@@ -60,7 +60,8 @@ class Map(Object):
         return None
 
     @Monitor.sync
-    def remove(self, component: Component):
+    def remove(self, component: int):
+        component = ID_Tracker()._objects[component]
         if self._game_mode_active:
             return
         for row in range(self.rows):
@@ -97,7 +98,8 @@ class Map(Object):
 
     # For adding Car components
     @Monitor.sync
-    def place(self, obj: Component, y: float, x: float, user: str):
+    def place(self, obj: int, y: float, x: float, user: str):
+        obj = ID_Tracker()._objects[obj]
         if self._game_mode_active:
             return
         self.remove(obj)
@@ -185,6 +187,8 @@ class Map(Object):
                 result += attribute + '\n'
             result += '\n'
 
+        if not all_players_information:
+            print("no players")
         return result
 
     # For starting game mode

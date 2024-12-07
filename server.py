@@ -59,21 +59,10 @@ class Replies(Thread):
         function_name: str = decoded_input["function_name"]
         if Replies.is_internal(function_name):
             return "Calling internal functions is not supported"
-
+        function = getattr(object, function_name)
         parameters = decoded_input["parameters"]
 
-        function = getattr(object, function_name)
-        function_signature = signature(function)
-        for parameter in function_signature.parameters.values():
-            parameter_name = parameter.name
-            parameter_type = parameter.annotation
-            if issubclass(parameter_type, Object):
-                object_id = parameters[-1][parameter_name]
-                object = ID_Tracker()._objects[object_id]
-                parameters[-1][parameter_name] = object
-
         result = function(*parameters[:-1], **parameters[-1])
-
         if result is not None:
             return str(result)
         return "Command executed"

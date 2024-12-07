@@ -95,8 +95,8 @@ fr._DRIVER = "Alo"
 fr._next_checkpoint = cp
 fr._speed = 62
 
-ogr.place(frr, 0, 0, 'ots')
-ogr.place(fr, 0, 0, 'vusal')
+ogr.place(frr._id, 0, 0, 'ots')
+ogr.place(fr._id, 0, 0, 'vusal')
 frr._angle = 0
 fr._angle = 0
 print(ogr.draw())

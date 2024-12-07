@@ -170,4 +170,4 @@ class Car(Component):
         self._turn_counterclockwise = False
 
         pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x, self._user)
+        self._MAP.place(self._id, pos_y, pos_x, self._user)
