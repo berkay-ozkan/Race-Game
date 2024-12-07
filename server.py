@@ -94,7 +94,7 @@ class RDAgent(Thread):
             object = self.repo
 
         function_name: str = decoded_input["function_name"]
-        if function_name.startswith('_'):
+        if RDAgent.is_internal(function_name):
             return "Calling internal functions is not supported"
 
         parameters = decoded_input["parameters"]
@@ -131,6 +131,12 @@ class RDAgent(Thread):
         print(self.username, "closed the connection.")
         self.chatroom.newmessage(f"{self.username} closed the connection.")
         self.sock.close()
+
+    @staticmethod
+    def is_internal(function_name: str) -> bool:
+        if function_name.startswith("__") and function_name.endswith("__"):
+            return False
+        return function_name.startswith('_')
 
 
 def main() -> None:
