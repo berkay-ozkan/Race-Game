@@ -82,7 +82,7 @@ class Replies(Thread):
         self.username: str = username
         self.repo: Repo = repo
 
-    def run_command(self, decoded_input: dict) -> str | None:
+    def run_command(self, decoded_input: dict) -> str:
         if "id" in decoded_input:
             id = decoded_input["id"]
             object = ID_Tracker()._objects[id]
@@ -109,7 +109,7 @@ class Replies(Thread):
 
         if result is not None:
             return str(result)
-        return None
+        return "Command executed"
 
     def run(self):
         while True:
@@ -119,13 +119,12 @@ class Replies(Thread):
             decoded_input = loads(encoded_input.decode())
 
             result = self.run_command(decoded_input)
-            if result is not None:
-                try:
-                    message = "Result: " + result.strip()
-                    write_variable_size(self.sock, message)
-                except Exception:
-                    print("Writer to", self.username, "terminating")
-                    break
+            try:
+                message = "Result: " + result.strip()
+                write_variable_size(self.sock, message)
+            except Exception:
+                print("Writer to", self.username, "terminating")
+                break
 
         print(self.username, "closed the connection.")
         self.sock.close()
