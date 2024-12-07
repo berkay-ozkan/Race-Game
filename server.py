@@ -13,65 +13,32 @@ from source.objects.components.cells.roads.diagonal import Diagonal
 from source.objects.components.cells.roads.straight import Straight
 from source.objects.components.cells.roads.turn90 import Turn90
 from source.objects.components.cells.rock import Rock
+from source.observer import Observer
 from source.repo import Repo
 from source.socket_helpers import read_variable_size, write_variable_size
 from sys import argv, exit
 from threading import Thread
 
 
-class Chat(Monitor):
-
-    def __init__(self):
-        super().__init__()
-        self.buf = []
-        self.newmess = self.CV()
-
-    @Monitor.sync
-    def newmessage(self, mess):
-        self.buf.append(mess)
-        self.newmess.notify_all()
-
-    @Monitor.sync
-    def getmessages(self, after=0):
-        if len(self.buf) < after:
-            a = []
-        else:
-            a = self.buf[after:]
-        return a
-
-    @Monitor.sync
-    def wait(self):
-        self.newmess.wait()
-
-
-# TODO: Implement notification system
 class Notifications(Thread):
 
-    def __init__(self, sock: socket, username: str, chat):
+    def __init__(self, sock: socket, username: str, observer: Observer):
         super().__init__()
         self.sock: socket = sock
         self.username: str = username
-        self.chat = chat
+        self.observer: Observer = observer
+
         self.current = 0
         self.notexit = True
 
     def run(self):
         while True:
-            oldmess = self.chat.getmessages(self.current)
-            if len(oldmess) != 0:
-                self.current += len(oldmess)
-                try:
-                    mlist = [
-                        str(username) + ": " + m.strip().decode()
-                        for (username, m) in oldmess
-                    ] + [""]
-                    message = '\n'.join(mlist)
-                    write_variable_size(self.sock, message)
-                except Exception:
-                    print("Writer terminating")
-                    break
+            view_id = self.observer.wait(self.username)
 
-            self.chat.wait()
+            if view_id is not None:
+                print("Sending notification")
+                new_state = ID_Tracker()._objects[view_id].draw()
+                write_variable_size(self.sock, new_state)
 
 
 class Replies(Thread):
@@ -147,7 +114,7 @@ def main() -> None:
     s.bind((HOST, PORT))
     s.listen(1)
 
-    chatroom = Chat()
+    observer = Observer()
     repo = Repo()
 
     repo.components.register("car", Car)
@@ -169,7 +136,7 @@ def main() -> None:
         username = encoded_input.decode().strip()  # type: ignore[union-attr]
 
         a = Replies(conn, username, repo)
-        b = Notifications(conn, username, chatroom)
+        b = Notifications(conn, username, observer)
         a.start()
         b.start()
 

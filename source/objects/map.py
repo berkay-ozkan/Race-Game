@@ -5,6 +5,7 @@ from source.objects.components import Car, Cell
 from math import ceil, floor
 from source.monitor import Monitor
 from source.objects.components.cells.checkpoint import Checkpoint
+from source.observer import Observer, ObserverInformation
 from source.id_tracker import ID_Tracker
 from time import time, sleep
 
@@ -20,13 +21,10 @@ class Map(Object):
         self.bg_color = bg_color
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
-        self._observers: dict[str, Condition] = {}
         self._checkpoints = {}
         self._next_checkpoint_order = 0
         self._cars = []
         self._is_view = False
-        self._user_views = {}
-        self._view_dimensions = {}
         self._game_mode_active = False
         self._start_time = None
         self._tick_interval = 1.0
@@ -35,31 +33,6 @@ class Map(Object):
         self._game_thread = None
         self._stop_event = Event()
         self._leaderboards = []
-
-    # For adding interested observers to map (When a user is attached to the map in repo)
-    @Monitor.sync
-    def register_observer(self, observer: str):
-        if observer not in self._observers:
-            self._observers[observer] = self.CV()
-            #print(f'user {observer} is now interested in this map')
-
-    # For removing observer from map (When a user is detached form the map in repo)
-    @Monitor.sync
-    def remove_observer(self, observer: str):
-        if observer in self._observers:
-            del self._observers[observer]
-            #print(f'user {observer} is no longer interested in this map')
-
-    @Monitor.sync
-    def notify_observers(self, affected_y, affected_x):
-        for user, view in self._user_views.items():
-            view_id = view.get_id()
-            y_start, y_end, x_start, x_end = self._view_dimensions[view_id]
-
-            if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
-                condition = self._observers[user]
-                with condition:
-                    condition.notify()
 
     # For adding Cell components
     @Monitor.sync
@@ -71,7 +44,8 @@ class Map(Object):
         self.grid[row][col].append(cell)
         cell.row = row
         cell.col = col
-        self.notify_observers(row, col)
+        cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     # For getting Cell components
     @Monitor.sync
@@ -94,7 +68,8 @@ class Map(Object):
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                    self.notify_observers(row, col)
+                    cell_bounds = self._cell_bounds(row, col)
+                    Observer().create_notification(self._id, cell_bounds)
 
     @Monitor.sync
     def __delitem__(self, pos):
@@ -107,7 +82,8 @@ class Map(Object):
             return
 
         del self.grid[row][col][-1]
-        self.notify_observers(row, col)
+        cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor.sync
@@ -141,7 +117,8 @@ class Map(Object):
             if self._checkpoints:
                 obj._next_checkpoint = self._checkpoints[0]
 
-        self.notify_observers(row, col)
+        cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     @Monitor.sync
     def sort_cars(self):
@@ -154,16 +131,13 @@ class Map(Object):
         if (self._is_view == True):
             print("view of a view cannot be created")
             return
-        if user in self._user_views:
-            print("Auser can only have one view")
-            return
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
-        id = ID_Tracker()._add_objects(map_view)
-        map_view._id = id
+        view_id = ID_Tracker()._add_objects(map_view)
+        map_view._id = view_id
         map_view._is_view = True
         y_floor = floor(y / self.cell_size)
         x_floor = floor(x / self.cell_size)
@@ -173,11 +147,13 @@ class Map(Object):
                 map_col = x_floor + col
                 if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
-        self._user_views[user] = map_view
         y_end = y_floor + ceil(height / self.cell_size)
         x_end = x_floor + ceil(width / self.cell_size)
-        self._view_dimensions[id] = [y_floor, y_end, x_floor, x_end]
-        self.register_observer(user)
+        # A user can only have one view at a time
+        Observer().unregister(user)
+        observer_information = ObserverInformation(view_id, self._id,
+                                                   ((y, x), (y_end, x_end)))
+        Observer().register(user, observer_information)
         return map_view
 
     @Monitor.sync
@@ -211,11 +187,6 @@ class Map(Object):
 
         return result
 
-    @Monitor.sync
-    def wait_for_change(self, observer: str):
-        with self._observers[observer]:
-            self._observers[observer].wait()
-
     # For starting game mode
     @Monitor.sync
     def start(self):
@@ -244,9 +215,8 @@ class Map(Object):
                 self._leaderboards[i] = self._cars[i]._user
 
             if self._tick_count % self._notification_interval == 0:
-                for user in self._observers:
-                    with self._observers[user]:
-                        self._observers[user].notify()
+                bounds = self._bounds()
+                Observer().create_notification(self._id, bounds)
 
             sleep(self._tick_interval)
 
@@ -264,3 +234,15 @@ class Map(Object):
 
         self._game_mode_active = False
         self._start_time = None
+
+    def _bounds(self) -> tuple[tuple[float, float], tuple[float, float]]:
+        bounds = ((0, 0), ((self.rows + 1) * self.cell_size,
+                           (self.cols + 1) * self.cell_size))
+        return bounds
+
+    def _cell_bounds(
+            self, row: int,
+            col: int) -> tuple[tuple[float, float], tuple[float, float]]:
+        bounds = ((row * self.cell_size, col * self.cell_size),
+                  ((row + 1) * self.cell_size, (col + 1) * self.cell_size))
+        return bounds
