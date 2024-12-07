@@ -91,7 +91,7 @@ frr._DRIVER = "Alonso"
 frr._speed = 64
 
 temp._interact(frr)
-ogr.place(frr, 0, 0)
+ogr.place(frr, 0, 0, "onur")
 
 frr._angle = 0
 frr._speed = 63
@@ -121,7 +121,7 @@ frr.tick()
 frr.tick()
 frr.tick()
 ogr.draw()
-ogr.place(frr, 0, 0)
+ogr.place(frr, 0, 0, "onur")
 frr.tick()
 ogr.draw()
 print(frr._next_checkpoint._order)
@@ -189,7 +189,7 @@ cp = r.components.create('checkpoint')
 def edit_map():
     time.sleep(1)
     print("car place")
-    mp.place(frr, 0, 0)
+    mp.place(frr, 0, 0, "vusal")
 
     
     
@@ -199,5 +199,5 @@ edit_thread = Thread(target=edit_map)
 edit_thread.start()
 edit_thread.join()
 print(cp._order)
-mp.place(cp, 0, 0)
+mp.place(cp, 0, 0, "vusal")
 '''
