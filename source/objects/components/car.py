@@ -42,7 +42,8 @@ class Car(Component):
         "_running": "bool",
         "_next_checkpoint": "int",
         "_laps_completed": "int",
-        "_visited_checkpoints": "int"
+        "_visited_checkpoints": "int",
+        "_user": "str"
     }
 
     def __init__(self, **kwargs: dict) -> None:
@@ -61,6 +62,7 @@ class Car(Component):
         self._MAX_SPEED = kwargs["max_speed"]
         self._MAX_FUEL = kwargs["max_fuel"]
 
+        self._user = None
         # None until placed, (y, x) coordinates afterwards
         # x increases to the right, y increases downward
         self._position: None | tuple[float, float] = None
@@ -175,7 +177,7 @@ class Car(Component):
         self._position = (y1, x1)
 
         pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x)
+        self._MAP.place(self, pos_y, pos_x, self._user)
 
         # Reset movement flags
         self._accelerate = False

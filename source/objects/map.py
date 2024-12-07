@@ -1,10 +1,12 @@
-from threading import Condition
+from threading import Condition, Thread, Event
 from source.object import Object
 from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
 from source.monitor import Monitor
 from source.objects.components.cells.checkpoint import Checkpoint
+from source.id_tracker import ID_Tracker
+from time import time, sleep
 
 
 class Map(Object):
@@ -22,6 +24,17 @@ class Map(Object):
         self._checkpoints = {}
         self._next_checkpoint_order = 0
         self._cars = []
+        self._is_view = False
+        self._user_views = {}
+        self._view_dimensions = {}
+        self._game_mode_active = False
+        self._start_time = None
+        self._tick_interval = 1.0
+        self._notification_interval = 5
+        self._tick_count = None
+        self._game_thread = None
+        self._stop_event = Event()
+        self._leaderboards = []
 
     # For adding interested observers to map (When a user is attached to the map in repo)
     @Monitor.sync
@@ -30,7 +43,7 @@ class Map(Object):
             self._observers[observer] = self.CV()
             #print(f'user {observer} is now interested in this map')
 
-    #For removing observer from map (When a user is detached form the map in repo)
+    # For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
     def remove_observer(self, observer: str):
         if observer in self._observers:
@@ -38,15 +51,21 @@ class Map(Object):
             #print(f'user {observer} is no longer interested in this map')
 
     @Monitor.sync
-    def notify_observers(self):
-        for observer, condition in self._observers.items():
-            with condition:
-                condition.notify()
-                #print(f'{observer} is notified of change')
+    def notify_observers(self, affected_y, affected_x):
+        for user, view in self._user_views.items():
+            view_id = view.get_id()
+            y_start, y_end, x_start, x_end = self._view_dimensions[view_id]
+
+            if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
+                condition = self._observers[user]
+                with condition:
+                    condition.notify()
 
     # For adding Cell components
     @Monitor.sync
     def __setitem__(self, pos, cell: Cell):
+        if self._game_mode_active:
+            return
         row = pos[0] - 1
         col = pos[1] - 1
         self.grid[row][col].append(cell)
@@ -68,6 +87,8 @@ class Map(Object):
 
     @Monitor.sync
     def remove(self, component: Component):
+        if self._game_mode_active:
+            return
         for row in range(self.rows):
             for col in range(self.cols):
                 cell = self.grid[row][col]
@@ -77,6 +98,8 @@ class Map(Object):
 
     @Monitor.sync
     def __delitem__(self, pos):
+        if self._game_mode_active:
+            return
         row = pos[0] - 1
         col = pos[1] - 1
 
@@ -98,7 +121,9 @@ class Map(Object):
 
     # For adding Car components
     @Monitor.sync
-    def place(self, obj: Component, y: float, x: float):
+    def place(self, obj: Component, y: float, x: float, user: str):
+        if self._game_mode_active:
+            return
         self.remove(obj)
 
         row = floor(y / self.cell_size)
@@ -108,6 +133,7 @@ class Map(Object):
         obj._MAP = self
         obj._position = (y, x)
         obj._angle = 0
+        obj._user = user
         if obj not in self._cars:
             self._cars.append(obj)
 
@@ -124,18 +150,21 @@ class Map(Object):
                         reverse=True)
 
     @Monitor.sync
-    def view(self, y, x, height, width):
-        if (self._id == None):
+    def view(self, y, x, height, width, user):
+        if (self._is_view == True):
             print("view of a view cannot be created")
             return
-
+        if user in self._user_views:
+            print("Auser can only have one view")
+            return
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
-        map_view.id = None
-
+        id = ID_Tracker()._add_objects(map_view)
+        map_view._id = id
+        map_view._is_view = True
         y_floor = floor(y / self.cell_size)
         x_floor = floor(x / self.cell_size)
         for row in range(height_ceil):
@@ -144,7 +173,11 @@ class Map(Object):
                 map_col = x_floor + col
                 if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
-
+        self._user_views[user] = map_view
+        y_end = y + height
+        x_end = x + width
+        self._view_dimensions[id] = [y, y_end, x, x_end]
+        self.register_observer(user)
         return map_view
 
     @Monitor.sync
@@ -179,3 +212,52 @@ class Map(Object):
     def wait_for_change(self, observer: str):
         with self._observers[observer]:
             self._observers[observer].wait()
+
+    # For starting game mode
+    @Monitor.sync
+    def start(self):
+        if self._game_mode_active:
+            return
+
+        for car in self._cars:
+            car.start()
+
+        self._game_mode_active = True
+        self._start_time = time()
+        self._stop_event.clear()
+        self._tick_count = 0
+        self._game_thread = Thread(target=self.game_controller)
+        self._game_thread.start()
+
+    # Game controller thread
+    def game_controller(self):
+        while not self._stop_event.is_set():
+            self._tick_count += 1
+            for car in self._cars:
+                car.tick()
+
+            self.sort_cars()
+            for i in range(len(self._cars)):
+                self._leaderboards[i] = self._cars[i]._user
+
+            if self._tick_count % self._notification_interval == 0:
+                for user in self._observers:
+                    with self._observers[user]:
+                        self._observers[user].notify()
+
+            sleep(self._tick_interval)
+
+    # For stopping game mode
+    @Monitor.sync
+    def stop(self):
+        if not self._game_mode_active:
+            return
+
+        self._stop_event.set()
+        self._game_thread.join()
+
+        for car in self._cars:
+            car.stop()
+
+        self._game_mode_active = False
+        self._start_time = None
