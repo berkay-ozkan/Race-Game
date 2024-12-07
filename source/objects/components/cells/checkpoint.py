@@ -1,3 +1,4 @@
+from source.monitor import Monitor
 from source.objects.components import Cell
 from source.objects.component import Component
 
@@ -12,6 +13,7 @@ class Checkpoint(Cell):
         self._description = 'a checkpoint component'
         self._representation = 'C'
 
+    @Monitor.sync
     def _interact(self, car):
         if self == car._next_checkpoint:
             self._interactions[

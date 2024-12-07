@@ -1,3 +1,4 @@
+from source.monitor import Monitor
 from source.objects.component import Component
 from source.objects.components import Car
 
@@ -11,5 +12,6 @@ class Cell(Component):
         self.col: int
 
     # Subclass instance functions
+    @Monitor.sync
     def _interact(self, car: Car) -> None:
         raise NotImplementedError
