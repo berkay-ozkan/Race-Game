@@ -74,13 +74,13 @@ class Replies(Thread):
                 break
             decoded_input = loads(encoded_input.decode())
 
-            result = self.run_command(decoded_input)
             try:
-                message = "Result: " + result.strip()
-                write_variable_size(self.sock, message)
-            except Exception:
-                print("Writer to", self.username, "terminating")
-                break
+                result = self.run_command(decoded_input)
+            except:
+                pass
+
+            message = "Result: " + result.strip()
+            write_variable_size(self.sock, message)
 
         print(self.username, "closed the connection.")
         self.sock.close()
