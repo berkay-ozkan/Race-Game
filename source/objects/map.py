@@ -1,5 +1,4 @@
 from threading import Condition, Thread, Event
-from source.object import Object
 from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
@@ -9,7 +8,7 @@ from source.id_tracker import ID_Tracker
 from time import time, sleep
 
 
-class Map(Object):
+class Map(Monitor):
 
     def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
         super().__init__()
@@ -20,6 +19,7 @@ class Map(Object):
         self.bg_color = bg_color
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
+        self._id = None
         self._observers: dict[str, Condition] = {}
         self._checkpoints = {}
         self._next_checkpoint_order = 0
@@ -58,6 +58,7 @@ class Map(Object):
 
             if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
                 condition = self._observers[user]
+               
                 with condition:
                     condition.notify()
 
@@ -207,6 +208,10 @@ class Map(Object):
             for attribute in player_information:
                 print(attribute)
             print()
+
+    @Monitor.sync
+    def get_id(self):
+        return self._id
 
     @Monitor.sync
     def wait_for_change(self, observer: str):
