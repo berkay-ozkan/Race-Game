@@ -50,14 +50,14 @@ class Car(Component):
         self._MAP = None
         self._DRIVER: None | str = None
 
-        self._MODEL = kwargs.get("_MODEL")
-        self._ACCELERATION_RATE = kwargs["ACCELERATION_RATE"]
-        self._FUEL_CONSUMPTION_RATE = kwargs["FUEL_CONSUMPTION_RATE"]
-        self._DECELERATION_RATE = kwargs["DECELERATION_RATE"]
-        self._STEER_RATE = kwargs["STEER_RATE"]
+        self._MODEL = kwargs.get("model")
+        self._ACCELERATION_RATE = kwargs["acceleration_rate"]
+        self._FUEL_CONSUMPTION_RATE = kwargs["fuel_consumption_rate"]
+        self._DECELERATION_RATE = kwargs["deceleration_rate"]
+        self._STEER_RATE = kwargs["steer_rate"]
 
-        self._MAX_SPEED = kwargs["MAX_SPEED"]
-        self._MAX_FUEL = kwargs["MAX_FUEL"]
+        self._MAX_SPEED = kwargs["max_speed"]
+        self._MAX_FUEL = kwargs["max_fuel"]
 
         # None until placed, (y, x) coordinates afterwards
         # x increases to the right, y increases downward

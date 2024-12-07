@@ -74,14 +74,14 @@ ogr[(1, 0)] = r.components.create('rock')
 ogr[(7, 1)] = r.components.create('fuel')
 
 FERRARI_ATTRIBUTES = {
-    "_MODEL": "Ferrari",
+    "model": "Ferrari",
     # Data source: ChatGPT
-    "_ACCELERATION_RATE": 19,
-    "_FUEL_CONSUMPTION_RATE": 0.06,
-    "_DECELERATION_RATE": 26,
-    "_STEER_RATE": 0.25,
-    "_MAX_SPEED": 210,
-    "_MAX_FUEL": 23
+    "acceleration_rate": 19,
+    "fuel_consumption_rate": 0.06,
+    "deceleration_rate": 26,
+    "steer_rate": 0.25,
+    "max_speed": 210,
+    "max_fuel": 23
 }
 
 temp = r.components.create('rock')
