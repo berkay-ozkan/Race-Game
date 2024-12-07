@@ -125,7 +125,8 @@ class Map(Object):
     @Monitor.sync
     def sort_cars(self):
         self._cars.sort(key=lambda car:
-                        (car._laps_completed, car._next_checkpoint._order),
+                        (car._laps_completed, car._next_checkpoint and car.
+                         _next_checkpoint._order),
                         reverse=True)
 
     @Monitor.sync
