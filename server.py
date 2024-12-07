@@ -105,11 +105,12 @@ class RDAgent(Thread):
             parameter_name = parameter.name
             parameter_type = parameter.annotation
             if issubclass(parameter_type, Object):
-                object_id = parameters[parameter_name]
+                object_id = parameters[-1][parameter_name]
                 object = ID_Tracker()._objects[object_id]
-                parameters[parameter_name] = object
+                parameters[-1][parameter_name] = object
 
-        result = function(**parameters)
+        result = function(*parameters[:-1], **parameters[-1])
+
         if result is not None:
             return str(result)
         return None
