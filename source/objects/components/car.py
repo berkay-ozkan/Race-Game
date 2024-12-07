@@ -157,7 +157,7 @@ class Car(Component):
         self._position = (y1, x1)
 
         pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x)
+        self._MAP.place(self, pos_y, pos_x,self._user)
 
         # Reset movement flags
         self._accelerate = False
