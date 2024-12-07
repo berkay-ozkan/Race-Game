@@ -71,7 +71,7 @@ class Map(Object):
         self.grid[row][col].append(cell)
         cell.row = row
         cell.col = col
-        self.notify_observers()
+        self.notify_observers(row, col)
 
     # For getting Cell components
     @Monitor.sync
@@ -94,7 +94,7 @@ class Map(Object):
                 cell = self.grid[row][col]
                 if component in cell:
                     cell.remove(component)
-                    self.notify_observers()
+                    self.notify_observers(row, col)
 
     @Monitor.sync
     def __delitem__(self, pos):
@@ -107,7 +107,7 @@ class Map(Object):
             return
 
         del self.grid[row][col][-1]
-        self.notify_observers()
+        self.notify_observers(row, col)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor.sync
@@ -141,7 +141,7 @@ class Map(Object):
             if self._checkpoints:
                 obj._next_checkpoint = self._checkpoints[0]
 
-        self.notify_observers()
+        self.notify_observers(row, col)
 
     @Monitor.sync
     def sort_cars(self):
@@ -174,9 +174,9 @@ class Map(Object):
                 if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
                     map_view.grid[row][col] = self.grid[map_row][map_col]
         self._user_views[user] = map_view
-        y_end = y + height
-        x_end = x + width
-        self._view_dimensions[id] = [y, y_end, x, x_end]
+        y_end = y_floor + ceil(height / self.cell_size)
+        x_end = x_floor + ceil(width / self.cell_size)
+        self._view_dimensions[id] = [y_floor, y_end, x_floor, x_end]
         self.register_observer(user)
         return map_view
 
