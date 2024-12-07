@@ -1,5 +1,6 @@
-from inspect import signature
 from json import loads
+import os
+from pickle import dump, load
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
@@ -74,6 +75,10 @@ class Replies(Thread):
                 break
             decoded_input = loads(encoded_input.decode())
 
+            if decoded_input == "SAVE":
+                with open('save', 'wb') as file:
+                    dump(ID_Tracker, file)
+
             try:
                 result = self.run_command(decoded_input)
             except:
@@ -103,6 +108,9 @@ def main() -> None:
     s.bind((HOST, PORT))
     s.listen(1)
 
+    if os.path.exists('save'):
+        with open('save', 'rb') as file:
+            load(file)
     observer = Observer()
     repo = Repo()
 
