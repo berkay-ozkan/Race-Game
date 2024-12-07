@@ -1,6 +1,5 @@
 from json import loads
-import os
-from pickle import dump, load
+from dill import dump
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
@@ -73,11 +72,14 @@ class Replies(Thread):
             encoded_input = read_variable_size(self.sock)
             if encoded_input is None:
                 break
+
             decoded_input = loads(encoded_input.decode())
 
             if decoded_input == "SAVE":
                 with open('save', 'wb') as file:
-                    dump(ID_Tracker, file)
+                    dump(ID_Tracker(), file)
+                    write_variable_size(self.sock, "State saved")
+                    continue
 
             try:
                 result = self.run_command(decoded_input)
@@ -108,9 +110,6 @@ def main() -> None:
     s.bind((HOST, PORT))
     s.listen(1)
 
-    if os.path.exists('save'):
-        with open('save', 'rb') as file:
-            load(file)
     observer = Observer()
     repo = Repo()
 
