@@ -187,8 +187,6 @@ class Map(Object):
                 result += attribute + '\n'
             result += '\n'
 
-        if not all_players_information:
-            print("no players")
         return result
 
     # For starting game mode
