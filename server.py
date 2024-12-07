@@ -47,9 +47,10 @@ class Chat(Monitor):
 # TODO: Implement notification system
 class Notifications(Thread):
 
-    def __init__(self, sock, addr, chat):
+    def __init__(self, sock: socket, username: str, chat):
         super().__init__()
-        self.sock, self.addr = sock, addr
+        self.sock: socket = sock
+        self.username: str = username
         self.chat = chat
         self.current = 0
         self.notexit = True
@@ -61,8 +62,8 @@ class Notifications(Thread):
                 self.current += len(oldmess)
                 try:
                     mlist = [
-                        str(addr) + ": " + m.strip().decode()
-                        for (addr, m) in oldmess
+                        str(username) + ": " + m.strip().decode()
+                        for (username, m) in oldmess
                     ] + [""]
                     message = '\n'.join(mlist)
                     write_variable_size(self.sock, message)
@@ -75,17 +76,11 @@ class Notifications(Thread):
 
 class Replies(Thread):
 
-    def __init__(self, sock, addr, repo: Repo):
+    def __init__(self, sock: socket, username: str, repo: Repo):
         super().__init__()
-        self.sock, self.addr, self.repo = sock, addr, repo
-        self.username: str
-
-    def read_username(self) -> None:
-        encoded_input = read_variable_size(self.sock)
-        input = encoded_input.decode().split()  # type: ignore[union-attr]
-
-        username = input[1]
-        self.username = username
+        self.sock: socket = sock
+        self.username: str = username
+        self.repo: Repo = repo
 
     def run_command(self, decoded_input: dict) -> str | None:
         if "id" in decoded_input:
@@ -117,8 +112,6 @@ class Replies(Thread):
         return None
 
     def run(self):
-        self.read_username()
-
         while True:
             encoded_input = read_variable_size(self.sock)
             if encoded_input is None:
@@ -128,7 +121,7 @@ class Replies(Thread):
             result = self.run_command(decoded_input)
             if result is not None:
                 try:
-                    message = str(self.username) + ": " + result.strip()
+                    message = "Result: " + result.strip()
                     write_variable_size(self.sock, message)
                 except Exception:
                     print("Writer to", self.username, "terminating")
@@ -170,10 +163,14 @@ def main() -> None:
 
     while True:
         conn, addr = s.accept()
-
         print("Connected by", addr)
-        a = Replies(conn, addr, repo)
-        b = Notifications(conn, addr, chatroom)
+
+        write_variable_size(conn, "Please enter your username")
+        encoded_input = read_variable_size(conn)
+        username = encoded_input.decode().strip()  # type: ignore[union-attr]
+
+        a = Replies(conn, username, repo)
+        b = Notifications(conn, username, chatroom)
         a.start()
         b.start()
 
