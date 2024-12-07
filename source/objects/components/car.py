@@ -40,10 +40,12 @@ class Car(Component):
         "_turn_clockwise": "bool",
         "_turn_counterclockwise": "bool",
         "_running": "bool",
-        "_next_checkpoint": "int",
+        "_next_checkpoint": "Checkpoint",
+        "_current_checkpoint" : "Ceckpoint",
         "_laps_completed": "int",
         "_visited_checkpoints": "int",
-        "_user": "str"
+        "_user": "str",
+        "_time" : "int"
     }
 
     def __init__(self, **kwargs: dict) -> None:
@@ -79,7 +81,8 @@ class Car(Component):
         self._turn_counterclockwise: bool = False
         self._laps_completed = 0
         self._next_checkpoint = None
-
+        self._time = None
+        self._current_checkpoint = None
         self._running: bool = False
         self._visited_checkpoints = 0
 
@@ -91,14 +94,16 @@ class Car(Component):
             if self._visited_checkpoints == checkpoint_count:
 
                 self._laps_completed += 1
+            self._current_checkpoint = self._next_checkpoint
             self._next_checkpoint = self._MAP._checkpoints[1]
             self._visited_checkpoints = 1
         elif (order == checkpoint_count - 1):
-
+            self._current_checkpoint = self._next_checkpoint
             self._visited_checkpoints += 1
             self._next_checkpoint = self._MAP._checkpoints[0]
 
         else:
+            self._current_checkpoint = self._next_checkpoint
             self._next_checkpoint = self._MAP._checkpoints[order + 1]
             self._visited_checkpoints += 1
 
@@ -162,7 +167,8 @@ class Car(Component):
             curr_row = floor(current_y / self._MAP.cell_size)
             curr_col = floor(current_x / self._MAP.cell_size)
 
-            components_below = self._MAP.grid[curr_row][curr_col]
+            components_below = self._MAP.get_y_x(curr_row, curr_col)
+            print(components_below)
             if not components_below:
                 self._speed = min(
                     self._speed,

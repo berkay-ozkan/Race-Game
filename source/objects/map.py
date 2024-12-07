@@ -41,14 +41,13 @@ class Map(Monitor):
     def register_observer(self, observer: str):
         if observer not in self._observers:
             self._observers[observer] = self.CV()
-            #print(f'user {observer} is now interested in this map')
-
+            
     # For removing observer from map (When a user is detached form the map in repo)
     @Monitor.sync
     def remove_observer(self, observer: str):
         if observer in self._observers:
             del self._observers[observer]
-            #print(f'user {observer} is no longer interested in this map')
+         
 
     @Monitor.sync
     def notify_observers(self, affected_y, affected_x):
@@ -58,7 +57,7 @@ class Map(Monitor):
 
             if y_start <= affected_y < y_end and x_start <= affected_x < x_end:
                 condition = self._observers[user]
-               
+                (f'user {user} notified of change at {affected_x}, {affected_y}print')
                 with condition:
                     condition.notify()
 
@@ -156,7 +155,7 @@ class Map(Monitor):
             print("view of a view cannot be created")
             return
         if user in self._user_views:
-            print("Auser can only have one view")
+            print("A user can only have one view")
             return
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
@@ -242,13 +241,17 @@ class Map(Monitor):
                 car.tick()
 
             self.sort_cars()
+            self._leaderboards.clear()
+            
             for i in range(len(self._cars)):
-                self._leaderboards[i] = self._cars[i]._user
+                self._leaderboards.append(self._cars[i]._user)
+                print(f'time for car {self._cars[i]} is {self._cars[i]._current_checkpoint._interactions[self._cars[i].get_id()]}, {self._cars[i]._position}')
 
             if self._tick_count % self._notification_interval == 0:
                 for user in self._observers:
                     with self._observers[user]:
                         self._observers[user].notify()
+
 
             sleep(self._tick_interval)
 
