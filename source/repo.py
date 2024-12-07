@@ -46,7 +46,7 @@ class Repo(Monitor):
     def attach(self, obj_id, user):
 
         while obj_id not in ID_Tracker()._objects:
-            #print("waitong for creation of map with given id")
+           
             with self._create_condition:
                 self._create_condition.wait()
 
@@ -97,13 +97,12 @@ class Repo(Monitor):
     @Monitor.sync
     def create_wait(self):
         with self._create_condition:
-            #print("Waiting c")
+            
             self._create_condition.wait()
-            #print("Notified c")
-
+           
     @Monitor.sync
     def attach_wait(self):
         with self._attach_condition:
-            #print("Waiting a")
+            
             self._attach_condition.wait()
-            #print("Notified a")
+            

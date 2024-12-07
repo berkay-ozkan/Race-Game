@@ -40,10 +40,12 @@ class Car(Component):
         "_turn_clockwise": "bool",
         "_turn_counterclockwise": "bool",
         "_running": "bool",
-        "_next_checkpoint": "int",
+        "_next_checkpoint": "Checkpoint",
+        "_current_checkpoint": "Ceckpoint",
         "_laps_completed": "int",
         "_visited_checkpoints": "int",
-        "_user": "str"
+        "_user": "str",
+        "_time": "int"
     }
 
     def __init__(self, **kwargs: dict) -> None:
@@ -79,7 +81,8 @@ class Car(Component):
         self._turn_counterclockwise: bool = False
         self._laps_completed = 0
         self._next_checkpoint = None
-
+        self._time = None
+        self._current_checkpoint = None
         self._running: bool = False
         self._visited_checkpoints = 0
 
@@ -91,14 +94,16 @@ class Car(Component):
             if self._visited_checkpoints == checkpoint_count:
 
                 self._laps_completed += 1
+            self._current_checkpoint = self._next_checkpoint
             self._next_checkpoint = self._MAP._checkpoints[1]
             self._visited_checkpoints = 1
         elif (order == checkpoint_count - 1):
-
+            self._current_checkpoint = self._next_checkpoint
             self._visited_checkpoints += 1
             self._next_checkpoint = self._MAP._checkpoints[0]
 
         else:
+            self._current_checkpoint = self._next_checkpoint
             self._next_checkpoint = self._MAP._checkpoints[order + 1]
             self._visited_checkpoints += 1
 
@@ -133,6 +138,9 @@ class Car(Component):
 
         self._MAP.remove(self)
 
+        self._position = (self._position[0] - sin(self._angle) * self._speed,
+                          self._position[1] + cos(self._angle) * self._speed)
+
         if not self._running or self._brake:
             self._speed = max(0, self._speed - self._DECELERATION_RATE)
         elif self._accelerate and self._fuel:
@@ -145,43 +153,21 @@ class Car(Component):
         if self._turn_counterclockwise:
             self._angle += self._STEER_RATE
 
-        num_of_cells_travelled = floor(self._speed / self._MAP.cell_size)
-        y0, x0 = self._position
+        components_below = self._MAP.get_y_x(*self._position)
 
-        curr_row = floor(y0 / self._MAP.cell_size)
-        curr_col = floor(x0 / self._MAP.cell_size)
+        if not components_below:
+            self._speed = min(
+                self._speed,
+                self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
+        else:
+            # Interact with the most recently added component first
+            for cell in reversed(components_below):
+                cell._interact(self)
 
-        y_speed = -sin(self._angle)
-        x_speed = cos(self._angle)
-
-        for step in range(num_of_cells_travelled + 1):
-
-            current_y = y0 + step * (y_speed * self._MAP.cell_size)
-            current_x = x0 + step * (x_speed * self._MAP.cell_size)
-
-            curr_row = floor(current_y / self._MAP.cell_size)
-            curr_col = floor(current_x / self._MAP.cell_size)
-
-            components_below = self._MAP.grid[curr_row][curr_col]
-            if not components_below:
-                self._speed = min(
-                    self._speed,
-                    self._MAX_SPEED * Car._EMPTY_CELL_SPEED_MULTIPLIER)
-            else:
-
-                for cell in reversed(components_below):
-                    cell._interact(self)
-
-        y1 = y0 - sin(self._angle) * self._speed
-        x1 = x0 + cos(self._angle) * self._speed
-        self._position = (y1, x1)
-
-        pos_y, pos_x = self._position
-        self._MAP.place(self, pos_y, pos_x, self._user)
-
-        # Reset movement flags
         self._accelerate = False
         self._brake = False
         self._turn_clockwise = False
         self._turn_counterclockwise = False
-        self._position = (y1, x1)
+
+        pos_y, pos_x = self._position
+        self._MAP.place(self, pos_y, pos_x, self._user)

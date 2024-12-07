@@ -211,8 +211,16 @@ class Map(Object):
                 car.tick()
 
             self.sort_cars()
-            for i in range(len(self._cars)):
-                self._leaderboards[i] = self._cars[i]._user
+            self._leaderboards.clear()
+
+            for car in self._cars:
+                player = car._user
+                time = car._current_checkpoint._interactions[car.get_id()]
+                lap = car._laps_completed
+                cp = car._current_checkpoint._order
+                car_id = f'car{car.get_id()}'
+                leaderboard_entry = (player, time, lap, cp, car_id)
+                self._leaderboards.append(leaderboard_entry)
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
