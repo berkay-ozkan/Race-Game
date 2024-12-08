@@ -1,17 +1,8 @@
-import os
-from dill import load
-from source.singleton import singleton
+from source.persistent_singleton import persistent_singleton
 
 
-@singleton
+@persistent_singleton
 class ID_Tracker:
-
-    def __new__(cls):
-        if os.path.exists('save'):
-            print("Restoring latest save")
-            with open('save', 'rb') as file:
-                return load(file)
-        return super().__new__(cls)
 
     def __init__(self) -> None:
         self._id_counter: int = 0

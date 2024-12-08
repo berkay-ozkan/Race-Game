@@ -76,10 +76,10 @@ class Replies(Thread):
             decoded_input = loads(encoded_input.decode())
 
             if decoded_input == "SAVE":
-                with open('save', 'wb') as file:
+                with open('ID_Tracker', 'wb') as file:
                     dump(ID_Tracker(), file)
-                    write_variable_size(self.sock, "State saved")
-                    continue
+                write_variable_size(self.sock, "State saved")
+                continue
 
             try:
                 result = self.run_command(decoded_input)
