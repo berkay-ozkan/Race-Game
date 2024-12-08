@@ -17,5 +17,5 @@ def read_variable_size(socket: socket) -> None | bytes:
 
 def write_variable_size(socket: socket, message: str) -> None:
     encoded_message = message.encode()
-    socket.send(pack(INPUT_SIZE_FORMAT, len(encoded_message)))
-    socket.send(encoded_message)
+    socket.send(
+        pack(INPUT_SIZE_FORMAT, len(encoded_message)) + encoded_message)
