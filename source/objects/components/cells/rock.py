@@ -9,6 +9,6 @@ class Rock(Cell):
         self._description = "A random rock that stops the car"
         self._representation = "🪨"
 
-    @Monitor.sync
+    @Monitor().sync
     def _interact(self, car):
         car._speed = 0

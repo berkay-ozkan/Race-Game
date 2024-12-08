@@ -12,6 +12,6 @@ class Cell(Component):
         self.col: int
 
     # Subclass instance functions
-    @Monitor.sync
+    @Monitor().sync
     def _interact(self, car: Car) -> None:
         raise NotImplementedError

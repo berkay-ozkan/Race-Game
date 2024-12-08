@@ -13,7 +13,7 @@ class Checkpoint(Cell):
         self._description = 'a checkpoint component'
         self._representation = 'C'
 
-    @Monitor.sync
+    @Monitor().sync
     def _interact(self, car):
         interraction_time = time()
         if self == car._next_checkpoint:

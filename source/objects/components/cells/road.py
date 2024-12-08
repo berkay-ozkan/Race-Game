@@ -11,10 +11,10 @@ class Road(Cell):
         super().__init__()
         self.rotation: int
 
-    @Monitor.sync
+    @Monitor().sync
     def representation(self) -> str:
         return self._representation[self.rotation]
 
-    @Monitor.sync
+    @Monitor().sync
     def _interact(self, car):
         car._speed *= 0.97  # reduce speed due to friction

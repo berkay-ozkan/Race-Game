@@ -86,7 +86,7 @@ class Car(Component):
         self._running: bool = False
         self._visited_checkpoints = 0
 
-    @Monitor.sync
+    @Monitor().sync
     def update_next_checkpoint(self):
         checkpoint_count = len(self._MAP._checkpoints)
         order = self._next_checkpoint._order
@@ -107,31 +107,31 @@ class Car(Component):
             self._next_checkpoint = self._MAP._checkpoints[order + 1]
             self._visited_checkpoints += 1
 
-    @Monitor.sync
+    @Monitor().sync
     def start(self) -> None:
         self._running = True
 
-    @Monitor.sync
+    @Monitor().sync
     def stop(self) -> None:
         self._running = False
 
-    @Monitor.sync
+    @Monitor().sync
     def accelerate(self) -> None:
         self._accelerate = True
 
-    @Monitor.sync
+    @Monitor().sync
     def brake(self) -> None:
         self._brake = True
 
-    @Monitor.sync
+    @Monitor().sync
     def turn_clockwise(self) -> None:
         self._turn_clockwise = True
 
-    @Monitor.sync
+    @Monitor().sync
     def turn_counterclockwise(self) -> None:
         self._turn_counterclockwise = True
 
-    @Monitor.sync
+    @Monitor().sync
     def tick(self) -> None:
         if self._angle is None or self._position is None or self._MAP is None:
             return

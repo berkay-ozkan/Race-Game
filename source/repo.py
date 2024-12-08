@@ -6,7 +6,7 @@ from source.monitor import Monitor
 
 
 @singleton
-class Repo(Monitor):
+class Repo:
 
     def __init__(self):
         super().__init__()
@@ -17,7 +17,7 @@ class Repo(Monitor):
         self.components = Component()
         self.components._id = ID_Tracker()._add_objects(self.components)
 
-    @Monitor.sync
+    @Monitor().sync
     def create(self, **kwargs):
         description = kwargs.get('description')
         cols = kwargs.get('cols')
@@ -30,7 +30,7 @@ class Repo(Monitor):
         map._id = id
         return id
 
-    @Monitor.sync
+    @Monitor().sync
     def list(self) -> dict:
         obj_list = {
             objId: obj.description
@@ -38,7 +38,7 @@ class Repo(Monitor):
         }
         return obj_list
 
-    @Monitor.sync
+    @Monitor().sync
     def attach(self, obj_id, user):
         if obj_id not in self._attachments:
             self._attachments[obj_id] = set()
@@ -47,14 +47,14 @@ class Repo(Monitor):
 
         return ID_Tracker()._objects[obj_id]
 
-    @Monitor.sync
+    @Monitor().sync
     def list_attached(self, user):
         return [
             ID_Tracker()._objects[obj_id]
             for obj_id, users in self._attachments.items() if user in users
         ]
 
-    @Monitor.sync
+    @Monitor().sync
     def detach(self, obj_id, user):
         if obj_id in self._attachments:
             if user in self._attachments[obj_id]:
@@ -63,7 +63,7 @@ class Repo(Monitor):
         if not self._attachments[obj_id]:
             del self._attachments[obj_id]
 
-    @Monitor.sync
+    @Monitor().sync
     def delete(self, obj_id):
         if obj_id not in self._attachments:
             del ID_Tracker()._objects[obj_id]

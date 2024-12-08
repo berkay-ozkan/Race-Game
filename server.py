@@ -1,7 +1,6 @@
 from json import loads
 from dill import dump
 from source.id_tracker import ID_Tracker
-from source.monitor import Monitor
 from socket import AF_INET, socket, SOCK_STREAM
 from source.object import Object
 from source.objects.components import Car

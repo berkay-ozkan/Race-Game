@@ -14,32 +14,32 @@ class ObserverInformation:
 
 
 @singleton
-class Observer(Monitor):
+class Observer:
 
     def __init__(self):
         super().__init__()
         self.observers = {}
 
-    @Monitor.sync
+    @Monitor().sync
     def register(self, username, observer_information: ObserverInformation):
         ''' A new condition is created per observer and it is
         notified when interest set of the observer changes'''
-        condition = Condition(self.mlock)
+        condition = Condition(Monitor().mlocks[self])
         self.observers[username] = (observer_information, condition)
         return condition
 
-    @Monitor.sync
+    @Monitor().sync
     def unregister(self, username):
         if username in self.observers:
             del self.observers[username]
 
-    @Monitor.sync
+    @Monitor().sync
     def wait(self, username):
         if username in self.observers:
             self.observers[username][1].wait()
             return self.observers[username][0].view_id
 
-    @Monitor.sync
+    @Monitor().sync
     def create_notification(self, map_id: int, affected_bounds):
         for observer_information, condition in self.observers.values():
             if map_id == observer_information.map_id and Observer(

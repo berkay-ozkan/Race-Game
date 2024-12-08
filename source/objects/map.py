@@ -35,7 +35,7 @@ class Map(Object):
         self._leaderboards = []
 
     # For adding Cell components
-    @Monitor.sync
+    @Monitor().sync
     def __setitem__(self, pos, cell: Cell):
         if self._game_mode_active:
             return
@@ -48,7 +48,7 @@ class Map(Object):
         Observer().create_notification(self._id, cell_bounds)
 
     # For getting Cell components
-    @Monitor.sync
+    @Monitor().sync
     def __getitem__(self, pos):
         row = pos[0] - 1
         col = pos[1] - 1
@@ -59,7 +59,7 @@ class Map(Object):
 
         return None
 
-    @Monitor.sync
+    @Monitor().sync
     def remove(self, component: int):
         component = ID_Tracker()._objects[component]
         if self._game_mode_active:
@@ -72,7 +72,7 @@ class Map(Object):
                     cell_bounds = self._cell_bounds(row, col)
                     Observer().create_notification(self._id, cell_bounds)
 
-    @Monitor.sync
+    @Monitor().sync
     def __delitem__(self, pos):
         if self._game_mode_active:
             return
@@ -87,7 +87,7 @@ class Map(Object):
         Observer().create_notification(self._id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
-    @Monitor.sync
+    @Monitor().sync
     def get_y_x(self, y, x):
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
@@ -97,7 +97,7 @@ class Map(Object):
                    self.grid[row][col]))
 
     # For adding Car components
-    @Monitor.sync
+    @Monitor().sync
     def place(self, obj: int, y: float, x: float, user: str):
         if self._game_mode_active:
             return
@@ -122,14 +122,14 @@ class Map(Object):
         cell_bounds = self._cell_bounds(row, col)
         Observer().create_notification(self._id, cell_bounds)
 
-    @Monitor.sync
+    @Monitor().sync
     def sort_cars(self):
         self._cars.sort(key=lambda car:
                         (car._laps_completed, car._next_checkpoint and car.
                          _next_checkpoint._order),
                         reverse=True)
 
-    @Monitor.sync
+    @Monitor().sync
     def view(self, y, x, height, width, user):
         if (self._is_view == True):
             print("view of a view cannot be created")
@@ -159,7 +159,7 @@ class Map(Object):
         Observer().register(user, observer_information)
         return map_view
 
-    @Monitor.sync
+    @Monitor().sync
     def draw(self) -> str:
         result = ""
         all_players_information: list[list[str]] = []
@@ -191,7 +191,7 @@ class Map(Object):
         return result
 
     # For starting game mode
-    @Monitor.sync
+    @Monitor().sync
     def start(self):
         if self._game_mode_active:
             return
@@ -233,7 +233,7 @@ class Map(Object):
             sleep(self._tick_interval)
 
     # For stopping game mode
-    @Monitor.sync
+    @Monitor().sync
     def stop(self):
         if not self._game_mode_active:
             return
