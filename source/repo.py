@@ -11,11 +11,11 @@ class Repo:
     def __init__(self):
         super().__init__()
         self.description = "repo"
-        self._id = ID_Tracker()._add_objects(self)
+        ID_Tracker()._add_objects(self)
         self._attachments = {}
         self._objects = {}
         self.components = Component()
-        self.components._id = ID_Tracker()._add_objects(self.components)
+        ID_Tracker()._add_objects(self.components)
 
     @Monitor().sync
     def create(self, **kwargs):
@@ -27,14 +27,13 @@ class Repo:
         map = Map(description, cols, rows, cell_size, bg_color)
 
         id = ID_Tracker()._add_objects(map)
-        map._id = id
         return id
 
     @Monitor().sync
     def list(self) -> dict:
         obj_list = {
             objId: obj.description
-            for objId, obj in ID_Tracker()._objects.items()
+            for objId, obj in enumerate(ID_Tracker()._objects)
         }
         return obj_list
 

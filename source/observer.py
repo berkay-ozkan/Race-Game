@@ -1,4 +1,5 @@
 from threading import Condition, RLock
+from source.persistent_singleton import persistent_singleton
 from source.singleton import singleton
 from source.monitor import Monitor
 
@@ -13,7 +14,7 @@ class ObserverInformation:
                                 tuple[float, float]] = view_bounds
 
 
-@singleton
+@persistent_singleton
 class Observer:
 
     def __init__(self):

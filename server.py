@@ -75,15 +75,17 @@ class Replies(Thread):
             decoded_input = loads(encoded_input.decode())
 
             if decoded_input == "SAVE":
-                with open('ID_Tracker', 'wb') as file:
+                with open('ID_Tracker.bin', 'wb') as file:
                     dump(ID_Tracker(), file)
+                with open('Observer.bin', 'wb') as file:
+                    dump(Observer(), file)
                 write_variable_size(self.sock, "State saved")
                 continue
 
             try:
                 result = self.run_command(decoded_input)
-            except:
-                pass
+            except Exception as exception:
+                result = str(exception)
 
             message = "Result: " + result.strip()
             write_variable_size(self.sock, message)
