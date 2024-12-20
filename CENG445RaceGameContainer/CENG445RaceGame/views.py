@@ -44,3 +44,10 @@ def repo_create_post(request: HttpRequest):
     command = {"function_name": "create", "parameters": [kwargs]}
     communicate_with_server(request, dumps(command))
     return redirect("/")
+
+
+@login_required(login_url="/login")
+def repo_list(request: HttpRequest):
+    command = {"function_name": "list", "parameters": []}
+    communicate_with_server(request, dumps(command))
+    return redirect("/")

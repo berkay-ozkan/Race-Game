@@ -28,7 +28,7 @@ urlpatterns = [
     # TODO: Check code for functions I've missed
     path('repo/create', views.repo_create),
     path('repo/create/post', views.repo_create_post),
-    path('repo/list', views.NotImplemented),
+    path('repo/list', views.repo_list),
     path('repo/list-attached', views.NotImplemented),
     path('repo/attach', views.NotImplemented),
     path('repo/detach', views.NotImplemented),
