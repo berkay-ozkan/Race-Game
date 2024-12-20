@@ -126,7 +126,6 @@ def main() -> None:
         conn, addr = s.accept()
         print("Connected by", addr)
 
-        write_variable_size(conn, "Please enter your username")
         encoded_input = read_variable_size(conn)
         username = encoded_input.decode().strip()  # type: ignore[union-attr]
 
