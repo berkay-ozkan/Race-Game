@@ -53,29 +53,200 @@ def repo_list(request: HttpRequest):
     return redirect("/")
 
 
-repo_list_attached = NotImplemented
-repo_attach = NotImplemented
-repo_detach = NotImplemented
-repo_delete = NotImplemented
-component_factory_list = NotImplemented
-component_factory_create = NotImplemented
-component_factory_register = NotImplemented
-component_factory_unregister = NotImplemented
-object_getid = NotImplemented
-component_description = NotImplemented
-component_type = NotImplemented
-component_attributes = NotImplemented
-component_draw = NotImplemented
-map_getxy = NotImplemented
-map_place = NotImplemented
-map_view = NotImplemented
-map_draw = NotImplemented
-car_model = NotImplemented
-car_map = NotImplemented
-car_driver = NotImplemented
-car_pos = NotImplemented
-car_angle = NotImplemented
-car_topspeed = NotImplemented
-car_topfuel = NotImplemented
-car_speed = NotImplemented
-car_fuel = NotImplemented
+@login_required(login_url="/login")
+def repo_list_attached(request: HttpRequest):
+    return render(request, "repo-list-attached.html")
+
+
+@login_required(login_url="/login")
+def repo_attach(request: HttpRequest):
+    return render(request, "repo-attach.html")
+
+
+@login_required(login_url="/login")
+def repo_detach(request: HttpRequest):
+    return render(request, "repo-detach.html")
+
+
+@login_required(login_url="/login")
+def repo_delete(request: HttpRequest):
+    return render(request, "repo-delete.html")
+
+
+@login_required(login_url="/login")
+def component_factory_list(request: HttpRequest):
+    command: dict = {"id": 1, "function_name": "list", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request,
+                  "component-factory-list.html",
+                  context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def component_factory_create(request: HttpRequest):
+    return render(request, "component-factory-create.html")
+
+
+@login_required(login_url="/login")
+def component_factory_register(request: HttpRequest):
+    return render(request, "component-factory-register.html")
+
+
+@login_required(login_url="/login")
+def component_factory_unregister(request: HttpRequest):
+    return render(request, "component-factory-unregister.html")
+
+
+@login_required(login_url="/login")
+def object_getid(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "getid", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "object-getid.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def component_description(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "description", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request,
+                  "component-description.html",
+                  context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def component_type(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "type", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "component-type.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def component_attributes(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "attributes", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request,
+                  "component-attributes.html",
+                  context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def component_draw(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "draw", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "component-draw.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def map_getxy(request: HttpRequest):
+    return render(request, "map-getxy.html")
+
+
+@login_required(login_url="/login")
+def map_place(request: HttpRequest):
+    return render(request, "map-place.html")
+
+
+@login_required(login_url="/login")
+def map_view(request: HttpRequest):
+    return render(request, "map-view.html")
+
+
+@login_required(login_url="/login")
+def map_draw(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "draw", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "map-draw.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_model(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "model", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-model.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_map(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "map", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-map.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_driver(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "driver", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-driver.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_pos(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "pos", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-pos.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_angle(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "angle", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-angle.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_topspeed(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "topspeed", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-topspeed.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_topfuel(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "topfuel", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-topfuel.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_speed(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "speed", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-speed.html", context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def car_fuel(request: HttpRequest):
+    id: int = request.POST["id"]
+    command = {"id": id, "function_name": "fuel", "parameters": []}
+    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    reply = encoded_reply.decode()
+    return render(request, "car-fuel.html", context={"reply": reply})
