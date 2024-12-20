@@ -78,9 +78,7 @@ def component_factory_list(request: HttpRequest):
     command: dict = {"id": 1, "function_name": "list", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request,
-                  "component-factory-list.html",
-                  context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -104,7 +102,7 @@ def object_getid(request: HttpRequest):
     command = {"id": id, "function_name": "getid", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "object-getid.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -113,9 +111,7 @@ def component_description(request: HttpRequest):
     command = {"id": id, "function_name": "description", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request,
-                  "component-description.html",
-                  context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -124,7 +120,7 @@ def component_type(request: HttpRequest):
     command = {"id": id, "function_name": "type", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "component-type.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -133,9 +129,7 @@ def component_attributes(request: HttpRequest):
     command = {"id": id, "function_name": "attributes", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request,
-                  "component-attributes.html",
-                  context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -144,6 +138,7 @@ def component_draw(request: HttpRequest):
     command = {"id": id, "function_name": "draw", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
+    # TODO: Render visuals
     return render(request, "component-draw.html", context={"reply": reply})
 
 
@@ -168,6 +163,7 @@ def map_draw(request: HttpRequest):
     command = {"id": id, "function_name": "draw", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
+    # TODO: Render visuals
     return render(request, "map-draw.html", context={"reply": reply})
 
 
@@ -177,7 +173,7 @@ def car_model(request: HttpRequest):
     command = {"id": id, "function_name": "model", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-model.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -186,7 +182,7 @@ def car_map(request: HttpRequest):
     command = {"id": id, "function_name": "map", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-map.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -195,7 +191,7 @@ def car_driver(request: HttpRequest):
     command = {"id": id, "function_name": "driver", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-driver.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -204,7 +200,7 @@ def car_pos(request: HttpRequest):
     command = {"id": id, "function_name": "pos", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-pos.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -213,7 +209,7 @@ def car_angle(request: HttpRequest):
     command = {"id": id, "function_name": "angle", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-angle.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -222,7 +218,7 @@ def car_topspeed(request: HttpRequest):
     command = {"id": id, "function_name": "topspeed", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-topspeed.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -231,7 +227,7 @@ def car_topfuel(request: HttpRequest):
     command = {"id": id, "function_name": "topfuel", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-topfuel.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -240,7 +236,7 @@ def car_speed(request: HttpRequest):
     command = {"id": id, "function_name": "speed", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-speed.html", context={"reply": reply})
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -249,4 +245,4 @@ def car_fuel(request: HttpRequest):
     command = {"id": id, "function_name": "fuel", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
-    return render(request, "car-fuel.html", context={"reply": reply})
+    return HttpResponse(reply)
