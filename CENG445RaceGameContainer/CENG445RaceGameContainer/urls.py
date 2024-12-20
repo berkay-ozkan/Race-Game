@@ -23,6 +23,7 @@ urlpatterns = [
     # Login pages
     path('log_in', views.login_post),
     path('login', views.login_view),
+    path('log_out', views.logout_view),
     # Game interface
     # TODO: Check code for functions I've missed
     path('repo/create', views.NotImplemented),
