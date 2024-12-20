@@ -4,7 +4,6 @@ from source.objects.component import Component
 from source.objects.components import Car, Cell
 from math import ceil, floor
 from source.monitor import Monitor
-from source.objects.components.cells.checkpoint import Checkpoint
 from source.observer import Observer, ObserverInformation
 from source.id_tracker import ID_Tracker
 from time import time, sleep
@@ -21,8 +20,6 @@ class Map(Object):
         self.bg_color = bg_color
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
-        self._checkpoints = {}
-        self._next_checkpoint_order = 0
         self._cars = []
         self._is_view = False
         self._game_mode_active = False
@@ -115,19 +112,8 @@ class Map(Object):
         if obj not in self._cars:
             self._cars.append(obj)
 
-        if obj._next_checkpoint == None:
-            if self._checkpoints:
-                obj._next_checkpoint = self._checkpoints[0]
-
         cell_bounds = self._cell_bounds(row, col)
         Observer().create_notification(self._id, cell_bounds)
-
-    @Monitor().sync
-    def sort_cars(self):
-        self._cars.sort(key=lambda car:
-                        (car._laps_completed, car._next_checkpoint and car.
-                         _next_checkpoint._order),
-                        reverse=True)
 
     @Monitor().sync
     def view(self, y, x, height, width, user):
@@ -213,17 +199,13 @@ class Map(Object):
             for car in self._cars:
                 car.tick()
 
-            self.sort_cars()
             self._leaderboards.clear()
 
             for car in self._cars:
                 player = car._user
-                time = car._current_checkpoint and car._current_checkpoint._interactions[
-                    car.get_id()]
                 lap = car._laps_completed
-                cp = car._current_checkpoint and car._current_checkpoint._order
                 car_id = f'car{car.get_id()}'
-                leaderboard_entry = (player, time, lap, cp, car_id)
+                leaderboard_entry = (player, lap, car_id)
                 self._leaderboards.append(leaderboard_entry)
 
             if self._tick_count % self._notification_interval == 0:

@@ -40,10 +40,7 @@ class Car(Component):
         "_turn_clockwise": "bool",
         "_turn_counterclockwise": "bool",
         "_running": "bool",
-        "_next_checkpoint": "Checkpoint",
-        "_current_checkpoint": "Ceckpoint",
         "_laps_completed": "int",
-        "_visited_checkpoints": "int",
         "_user": "str",
         "_time": "int"
     }
@@ -80,32 +77,8 @@ class Car(Component):
         self._turn_clockwise: bool = False
         self._turn_counterclockwise: bool = False
         self._laps_completed = 0
-        self._next_checkpoint = None
         self._time = None
-        self._current_checkpoint = None
         self._running: bool = False
-        self._visited_checkpoints = 0
-
-    @Monitor().sync
-    def update_next_checkpoint(self):
-        checkpoint_count = len(self._MAP._checkpoints)
-        order = self._next_checkpoint._order
-        if (order == 0):
-            if self._visited_checkpoints == checkpoint_count:
-
-                self._laps_completed += 1
-            self._current_checkpoint = self._next_checkpoint
-            self._next_checkpoint = self._MAP._checkpoints[1]
-            self._visited_checkpoints = 1
-        elif (order == checkpoint_count - 1):
-            self._current_checkpoint = self._next_checkpoint
-            self._visited_checkpoints += 1
-            self._next_checkpoint = self._MAP._checkpoints[0]
-
-        else:
-            self._current_checkpoint = self._next_checkpoint
-            self._next_checkpoint = self._MAP._checkpoints[order + 1]
-            self._visited_checkpoints += 1
 
     @Monitor().sync
     def start(self) -> None:

@@ -5,7 +5,6 @@ from socket import AF_INET, socket, SOCK_STREAM
 from source.object import Object
 from source.objects.components import Car
 from source.objects.components.cells.booster import Booster
-from source.objects.components.cells.checkpoint import Checkpoint
 from source.objects.components.cells.fuel import Fuel
 from source.objects.components.cells.road import Road
 from source.objects.components.cells.roads.diagonal import Diagonal
@@ -119,7 +118,6 @@ def main() -> None:
     repo.components.register("straight", Straight)
     repo.components.register("turn90", Turn90)
     repo.components.register("booster", Booster)
-    repo.components.register("checkpoint", Checkpoint)
     repo.components.register("fuel", Fuel)
     repo.components.register("road", Road)
     repo.components.register("rock", Rock)

@@ -1,5 +1,4 @@
 from source.objects.components.cells import Rock, Fuel, Booster
-from source.objects.components.cells.checkpoint import Checkpoint
 from source.objects.components.cells.roads import Turn90, Straight, Diagonal
 from source.objects.components import Car
 from source.repo import Repo
@@ -36,15 +35,6 @@ r.components.register("fuel", Fuel)
 r.components.register("booster", Booster)
 r.components.register("car", Car)
 rt = r.components.create('turn90')
-r.components.register('checkpoint', Checkpoint)
-cp = r.components.create('checkpoint')
-cp1 = r.components.create('checkpoint')
-ogr[(1, 1)] = cp
-ogr[(1, 2)] = cp1
-cp._order = 0
-cp1._order = 1
-ogr._checkpoints[0] = cp
-ogr._checkpoints[1] = cp1
 ogr[(1, 1)] = rt
 rt.rotation = 0
 for j in range(2, 8):
@@ -89,10 +79,8 @@ FERRARI_ATTRIBUTES = {
 frr = r.components.create('car', **FERRARI_ATTRIBUTES)
 fr = r.components.create('car', **FERRARI_ATTRIBUTES)
 frr._DRIVER = "Alonso"
-frr._next_checkpoint = cp
 frr._speed = 63
 fr._DRIVER = "Alo"
-fr._next_checkpoint = cp
 fr._speed = 62
 
 ogr.place(frr._id, 0, 0, 'ots')
