@@ -1,4 +1,4 @@
-from CENG445RaceGame.server_integration import communicate_with_server
+from CENG445RaceGame.server_integration import write_to_backend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -42,14 +42,14 @@ def repo_create(request: HttpRequest):
 def repo_create_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "create", "parameters": [kwargs]}
-    communicate_with_server(request, dumps(command))
+    write_to_backend(request, dumps(command))
     return redirect("/")
 
 
 @login_required(login_url="/login")
 def repo_list(request: HttpRequest):
     command = {"function_name": "list", "parameters": []}
-    communicate_with_server(request, dumps(command))
+    write_to_backend(request, dumps(command))
     return redirect("/")
 
 
@@ -76,7 +76,7 @@ def repo_delete(request: HttpRequest):
 @login_required(login_url="/login")
 def component_factory_list(request: HttpRequest):
     command: dict = {"id": 1, "function_name": "list", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -100,7 +100,7 @@ def component_factory_unregister(request: HttpRequest):
 def object_getid(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "getid", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -109,7 +109,7 @@ def object_getid(request: HttpRequest, **kwargs: dict):
 def component_description(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "description", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -118,7 +118,7 @@ def component_description(request: HttpRequest, **kwargs: dict):
 def component_type(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "type", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -127,7 +127,7 @@ def component_type(request: HttpRequest, **kwargs: dict):
 def component_attributes(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "attributes", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -136,7 +136,7 @@ def component_attributes(request: HttpRequest, **kwargs: dict):
 def component_draw(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "draw", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     # TODO: Render visuals
     return render(request, "component-draw.html", context={"reply": reply})
@@ -161,7 +161,7 @@ def map_view(request: HttpRequest):
 def map_draw(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "draw", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     # TODO: Render visuals
     return render(request, "map-draw.html", context={"reply": reply})
@@ -171,7 +171,7 @@ def map_draw(request: HttpRequest, **kwargs: dict):
 def car_model(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "model", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -180,7 +180,7 @@ def car_model(request: HttpRequest, **kwargs: dict):
 def car_map(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "map", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -189,7 +189,7 @@ def car_map(request: HttpRequest, **kwargs: dict):
 def car_driver(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "driver", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -198,7 +198,7 @@ def car_driver(request: HttpRequest, **kwargs: dict):
 def car_pos(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "pos", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -207,7 +207,7 @@ def car_pos(request: HttpRequest, **kwargs: dict):
 def car_angle(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "angle", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -216,7 +216,7 @@ def car_angle(request: HttpRequest, **kwargs: dict):
 def car_topspeed(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "topspeed", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -225,7 +225,7 @@ def car_topspeed(request: HttpRequest, **kwargs: dict):
 def car_topfuel(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "topfuel", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -234,7 +234,7 @@ def car_topfuel(request: HttpRequest, **kwargs: dict):
 def car_speed(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "speed", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
 
@@ -243,6 +243,6 @@ def car_speed(request: HttpRequest, **kwargs: dict):
 def car_fuel(request: HttpRequest, **kwargs: dict):
     id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "fuel", "parameters": []}
-    encoded_reply: bytes = communicate_with_server(request, dumps(command))
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
