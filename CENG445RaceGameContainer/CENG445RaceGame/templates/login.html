@@ -1,10 +1,9 @@
 <html>
 
 <body>
-    <form method="post" action="/log_in">
+    <form method="post" action="/login/post">
         Username: <input type="text" name="username" />
-        {% csrf_token %}
-        <input type="submit" name="login" value="login" />
+        <input type="submit" />
     </form>
 </body>
 
