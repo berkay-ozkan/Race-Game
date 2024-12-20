@@ -97,8 +97,8 @@ def component_factory_unregister(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def object_getid(request: HttpRequest):
-    id: int = request.POST["id"]
+def object_getid(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "getid", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -106,8 +106,8 @@ def object_getid(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def component_description(request: HttpRequest):
-    id: int = request.POST["id"]
+def component_description(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "description", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -115,8 +115,8 @@ def component_description(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def component_type(request: HttpRequest):
-    id: int = request.POST["id"]
+def component_type(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "type", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -124,8 +124,8 @@ def component_type(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def component_attributes(request: HttpRequest):
-    id: int = request.POST["id"]
+def component_attributes(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "attributes", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -133,8 +133,8 @@ def component_attributes(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def component_draw(request: HttpRequest):
-    id: int = request.POST["id"]
+def component_draw(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "draw", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -158,8 +158,8 @@ def map_view(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def map_draw(request: HttpRequest):
-    id: int = request.POST["id"]
+def map_draw(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "draw", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -168,8 +168,8 @@ def map_draw(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_model(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_model(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "model", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -177,8 +177,8 @@ def car_model(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_map(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_map(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "map", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -186,8 +186,8 @@ def car_map(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_driver(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_driver(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "driver", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -195,8 +195,8 @@ def car_driver(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_pos(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_pos(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "pos", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -204,8 +204,8 @@ def car_pos(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_angle(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_angle(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "angle", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -213,8 +213,8 @@ def car_angle(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_topspeed(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_topspeed(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "topspeed", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -222,8 +222,8 @@ def car_topspeed(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_topfuel(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_topfuel(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "topfuel", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -231,8 +231,8 @@ def car_topfuel(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_speed(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_speed(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "speed", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
@@ -240,8 +240,8 @@ def car_speed(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def car_fuel(request: HttpRequest):
-    id: int = request.POST["id"]
+def car_fuel(request: HttpRequest, **kwargs: dict):
+    id: int = int(kwargs["id"])
     command = {"id": id, "function_name": "fuel", "parameters": []}
     encoded_reply: bytes = communicate_with_server(request, dumps(command))
     reply = encoded_reply.decode()
