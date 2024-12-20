@@ -131,9 +131,7 @@ def main() -> None:
         username = encoded_input.decode().strip()  # type: ignore[union-attr]
 
         a = Replies(conn, username, repo)
-        b = Notifications(conn, username, observer)
         a.start()
-        b.start()
 
 
 if __name__ == "__main__":
