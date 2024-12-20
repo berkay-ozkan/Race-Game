@@ -1,8 +1,7 @@
 from django.http import HttpResponse
-from django.shortcuts import render
 
 # Create your views here.
 
 
-def index(request):
-    return HttpResponse("Hello, world.")
+def NotImplemented(*args, **kwargs):
+    return HttpResponse("This page is yet to be implemented.")

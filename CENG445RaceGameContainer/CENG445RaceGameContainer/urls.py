@@ -19,6 +19,60 @@ from django.urls import path
 from CENG445RaceGame import views
 
 urlpatterns = [
+    # TODO: Check code for functions I've missed
     path('admin/', admin.site.urls),
-    path('index/', views.index),
+    path('repo/create', views.NotImplemented),
+    path('repo/list', views.NotImplemented),
+    path('repo/list-attached', views.NotImplemented),
+    path('repo/attach', views.NotImplemented),
+    path('repo/detach', views.NotImplemented),
+    path('repo/delete', views.NotImplemented),
+    path('component-factory/list', views.NotImplemented),
+    path('component-factory/create', views.NotImplemented),
+    path('component-factory/register', views.NotImplemented),
+    path('component-factory/unregister', views.NotImplemented),
+    path('object/<int:id>/getid', views.NotImplemented),
+    path('component/<int:id>/description', views.NotImplemented),
+    path('component/<int:id>/type', views.NotImplemented),
+    path('component/<int:id>/attributes', views.NotImplemented),
+    path('component/<int:id>/__getattr__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('component/<int:id>/__setattr__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('component/<int:id>/draw', views.NotImplemented),
+    path('map/<int:id>/__init__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('map/<int:id>/__getitem__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('map/<int:id>/__setitem__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('map/<int:id>/__delitem__',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('map/<int:id>/remove',
+         views.NotImplemented),  # TODO: This requires an object reference
+    path('map/<int:id>/getxy', views.NotImplemented),
+    path('map/<int:id>/place', views.NotImplemented),
+    path('map/<int:id>/view', views.NotImplemented),
+    path('map/<int:id>/draw', views.NotImplemented),
+    path('cell/<int:id>/interact',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('car/<int:id>/model', views.NotImplemented),
+    path('car/<int:id>/map', views.NotImplemented),
+    path('car/<int:id>/driver', views.NotImplemented),
+    path('car/<int:id>/pos', views.NotImplemented),
+    path('car/<int:id>/angle', views.NotImplemented),
+    path('car/<int:id>/topspeed', views.NotImplemented),
+    path('car/<int:id>/topfuel', views.NotImplemented),
+    path('car/<int:id>/speed', views.NotImplemented),
+    path('car/<int:id>/fuel', views.NotImplemented),
+    path('car/<int:id>/start',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('car/<int:id>/stop',
+         views.NotImplemented),  # TODO: Should this be accessible?
+    path('car/<int:id>/accelerate', views.NotImplemented),
+    path('car/<int:id>/decelerate', views.NotImplemented),
+    path('car/<int:id>/left', views.NotImplemented),
+    path('car/<int:id>/right', views.NotImplemented),
+    path('car/<int:id>/tick',
+         views.NotImplemented),  # TODO: Should this be accessible?
 ]
