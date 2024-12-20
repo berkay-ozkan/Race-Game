@@ -19,8 +19,12 @@ from django.urls import path
 from CENG445RaceGame import views
 
 urlpatterns = [
-    # TODO: Check code for functions I've missed
     path('admin/', admin.site.urls),
+    # Login pages
+    path('log_in', views.login_post),
+    path('login', views.login_view),
+    # Game interface
+    # TODO: Check code for functions I've missed
     path('repo/create', views.NotImplemented),
     path('repo/list', views.NotImplemented),
     path('repo/list-attached', views.NotImplemented),
