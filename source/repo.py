@@ -18,14 +18,9 @@ class Repo:
         ID_Tracker()._add_objects(self.components)
 
     @Monitor().sync
-    def create(self, **kwargs):
-        description = kwargs.get('description')
-        cols = kwargs.get('cols')
-        rows = kwargs.get('rows')
-        cell_size = kwargs.get('cellsize')
-        bg_color = kwargs.get('bgcolor')
-        map = Map(description, cols, rows, cell_size, bg_color)
-
+    def create(self, description: str, rows: int, cols: int, cellsize: int,
+               bgcolor: str):
+        map = Map(description, cols, rows, cellsize, bgcolor)
         id = ID_Tracker()._add_objects(map)
         return id
 

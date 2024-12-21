@@ -1,12 +1,11 @@
+from inspect import Signature, signature
 from json import loads
 from dill import dump
 from source.id_tracker import ID_Tracker
 from socket import AF_INET, socket, SOCK_STREAM
-from source.object import Object
 from source.objects.components import Car
 from source.objects.components.cells.booster import Booster
 from source.objects.components.cells.fuel import Fuel
-from source.objects.components.cells.road import Road
 from source.objects.components.cells.roads.diagonal import Diagonal
 from source.objects.components.cells.roads.straight import Straight
 from source.objects.components.cells.roads.turn90 import Turn90
@@ -59,6 +58,21 @@ class Replies(Thread):
             return "Calling internal functions is not supported"
         function = getattr(object, function_name)
         parameters = decoded_input["parameters"]
+
+        signature_parameter_list = list(
+            signature(function).parameters.values())
+        for index in range(len(parameters[:-1])):
+            if signature_parameter_list[
+                    index].annotation is not Signature.empty:
+                parameters[-1][index] = signature_parameter_list[
+                    index].annotation(parameters[-1][index])
+        for key, value in parameters[-1].items():
+            if key not in signature(function).parameters:
+                continue
+            annotation = signature(function).parameters[key].annotation
+            if annotation is not Signature.empty:
+                parameters[-1][key] = signature(
+                    function).parameters[key].annotation(value)
 
         result = function(*parameters[:-1], **parameters[-1])
         if result is not None:
