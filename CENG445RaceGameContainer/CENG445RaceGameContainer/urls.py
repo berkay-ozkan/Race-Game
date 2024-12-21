@@ -65,8 +65,8 @@ urlpatterns = [
          views.NotImplemented),  # TODO: Should this be accessible?
     path('map/<int:id>/remove',
          views.NotImplemented),  # TODO: This requires an object reference
-    path('map/<int:id>/getxy', views.map_getxy),
-    path('map/<int:id>/getxy/post', views.map_getxy_post),
+    path('map/<int:id>/get-y-x', views.map_get_y_x),
+    path('map/<int:id>/get-y-x/post', views.map_get_y_x_post),
     path('map/<int:id>/place', views.map_place),
     path('map/<int:id>/place/post', views.map_place_post),
     path('map/<int:id>/view', views.map_view),

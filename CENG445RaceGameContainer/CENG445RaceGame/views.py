@@ -221,18 +221,18 @@ def component_representation(request: HttpRequest, **query_parameters: dict):
 
 
 @login_required(login_url="/login")
-def map_getxy(request: HttpRequest, **query_parameters: dict):
+def map_get_y_x(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    return render(request, "map-getxy.html", context={"id": id})
+    return render(request, "map-get-y-x.html", context={"id": id})
 
 
 @login_required(login_url="/login")
-def map_getxy_post(request: HttpRequest, **query_parameters: dict):
+def map_get_y_x_post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command: dict = {
         "id": id,
-        "function_name": "getxy",
+        "function_name": "get_y_x",
         "parameters": [kwargs]
     }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
