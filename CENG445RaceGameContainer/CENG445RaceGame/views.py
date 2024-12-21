@@ -61,6 +61,15 @@ def repo_list_attached(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def repo_list_attached_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command = {"function_name": "list_attached", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def repo_attach(request: HttpRequest):
     return render(request, "repo-attach.html")
 

@@ -30,6 +30,7 @@ urlpatterns = [
     path('repo/create/post', views.repo_create_post),
     path('repo/list', views.repo_list),
     path('repo/list-attached', views.repo_list_attached),
+    path('repo/list-attached/post', views.repo_list_attached_post),
     path('repo/attach', views.repo_attach),
     path('repo/detach', views.repo_detach),
     path('repo/delete', views.repo_delete),
