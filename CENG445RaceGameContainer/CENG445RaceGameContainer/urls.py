@@ -34,6 +34,7 @@ urlpatterns = [
     path('repo/attach', views.repo_attach),
     path('repo/attach/post', views.repo_attach_post),
     path('repo/detach', views.repo_detach),
+    path('repo/detach/post', views.repo_detach_post),
     path('repo/delete', views.repo_delete),
     path('component-factory/list', views.component_factory_list),
     path('component-factory/create', views.component_factory_create),

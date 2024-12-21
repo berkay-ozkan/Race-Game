@@ -89,6 +89,15 @@ def repo_detach(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def repo_detach_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command = {"function_name": "detach", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def repo_delete(request: HttpRequest):
     return render(request, "repo-delete.html")
 
