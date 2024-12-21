@@ -119,7 +119,6 @@ def main() -> None:
     repo.components.register("turn90", Turn90)
     repo.components.register("booster", Booster)
     repo.components.register("fuel", Fuel)
-    repo.components.register("road", Road)
     repo.components.register("rock", Rock)
 
     while True:
