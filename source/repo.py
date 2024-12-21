@@ -19,12 +19,12 @@ class Repo:
 
     @Monitor().sync
     def create(self, description: str, rows: int, cols: int, cellsize: int,
-               bgcolor: str):
+               bg_color: str):
         rows = int(rows)
         cols = int(cols)
         cellsize = int(cellsize)
 
-        map = Map(description, cols, rows, cellsize, bgcolor)
+        map = Map(description, cols, rows, cellsize, bg_color)
         id = ID_Tracker()._add_objects(map)
         return id
 
