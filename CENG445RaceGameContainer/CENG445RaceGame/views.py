@@ -125,13 +125,52 @@ def component_factory_create(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def component_factory_create_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [kwargs]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def component_factory_register(request: HttpRequest):
     return render(request, "component-factory-register.html")
 
 
 @login_required(login_url="/login")
+def component_factory_register_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {
+        "id": 1,
+        "function_name": "register",
+        "parameters": [kwargs]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def component_factory_unregister(request: HttpRequest):
     return render(request, "component-factory-unregister.html")
+
+
+@login_required(login_url="/login")
+def component_factory_unregister_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {
+        "id": 1,
+        "function_name": "unregister",
+        "parameters": [kwargs]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -185,13 +224,40 @@ def map_getxy(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def map_getxy_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {"id": 1, "function_name": "getxy", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def map_place(request: HttpRequest):
     return render(request, "map-place.html")
 
 
 @login_required(login_url="/login")
+def map_place_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {"id": 1, "function_name": "place", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def map_view(request: HttpRequest):
     return render(request, "map-view.html")
+
+
+@login_required(login_url="/login")
+def map_view_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command: dict = {"id": 1, "function_name": "view", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
