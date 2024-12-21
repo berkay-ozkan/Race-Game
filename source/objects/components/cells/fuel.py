@@ -7,7 +7,7 @@ class Fuel(Cell):
     def __init__(self):
         super().__init__()
         self._description = "A little fuel to replenish some fuel of the car"
-        self._representation = "⛽"
+        self._representation = "fuel.png"
 
     @Monitor().sync
     def _interact(self, car):

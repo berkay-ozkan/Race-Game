@@ -7,7 +7,7 @@ class Rock(Cell):
     def __init__(self):
         super().__init__()
         self._description = "A random rock that stops the car"
-        self._representation = "🪨"
+        self._representation = "rock.png"
 
     @Monitor().sync
     def _interact(self, car):

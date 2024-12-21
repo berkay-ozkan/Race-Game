@@ -138,7 +138,6 @@ def component_draw(request: HttpRequest, **kwargs: dict):
     command = {"id": id, "function_name": "draw", "parameters": []}
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
-    # TODO: Render visuals
     return render(request, "component-draw.html", context={"reply": reply})
 
 

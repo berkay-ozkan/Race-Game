@@ -6,4 +6,4 @@ class Diagonal(Road):
     def __init__(self):
         super().__init__()
         self._description = "A diagonal road"
-        self._representation = ["╱", "╲"]
+        self._representation = ["diagonal-0.png", "diagonal-1.png"]
