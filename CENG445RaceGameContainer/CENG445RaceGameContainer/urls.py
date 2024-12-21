@@ -74,6 +74,8 @@ urlpatterns = [
     path('map/<int:id>/draw', views.map_draw),
     path('cell/<int:id>/interact',
          views.NotImplemented),  # TODO: Should this be accessible?
+    path('car/create', views.car_create),
+    path('car/create/post', views.car_create_post),
     path('car/<int:id>/model', views.car_model),
     path('car/<int:id>/map', views.car_map),
     path('car/<int:id>/driver', views.car_driver),
@@ -97,4 +99,10 @@ urlpatterns = [
          views.NotImplemented),  # TODO: Should this be accessible?
     path('car/<int:id>/tick',
          views.NotImplemented),  # TODO: Should this be accessible?
+    path('diagonal/create', views.diagonal_create),
+    path('straight/create', views.straight_create),
+    path('turn90/create', views.turn90_create),
+    path('booster/create', views.booster_create),
+    path('fuel/create', views.fuel_create),
+    path('rock/create', views.rock_create),
 ]

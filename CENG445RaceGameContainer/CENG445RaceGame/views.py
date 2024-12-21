@@ -126,15 +126,8 @@ def component_factory_create(request: HttpRequest):
 
 @login_required(login_url="/login")
 def component_factory_create_post(request: HttpRequest):
-    kwargs = request.POST.dict()
-    command: dict = {
-        "id": 1,
-        "function_name": "create",
-        "parameters": [kwargs]
-    }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
-    return HttpResponse(reply)
+    component_type_name = request.POST["component_type_name"]
+    return redirect(f"/{component_type_name}/create")
 
 
 @login_required(login_url="/login")
@@ -287,6 +280,26 @@ def map_draw(request: HttpRequest, **query_parameters: dict):
 
 
 @login_required(login_url="/login")
+def car_create(request: HttpRequest):
+    return render(request, "car-create.html")
+
+
+@login_required(login_url="/login")
+def car_create_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [kwargs | {
+            "component_type_name": "car"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def car_model(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     command = {"id": id, "function_name": "model", "parameters": [{}]}
@@ -362,6 +375,90 @@ def car_speed(request: HttpRequest, **query_parameters: dict):
 def car_fuel(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     command = {"id": id, "function_name": "fuel", "parameters": [{}]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def diagonal_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "diagonal"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def straight_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "straight"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def turn90_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "turn90"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def booster_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "booster"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def fuel_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "fuel"
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def rock_create(request: HttpRequest):
+    command = {
+        "id": 1,
+        "function_name": "create",
+        "parameters": [{
+            "component_type_name": "rock"
+        }]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
