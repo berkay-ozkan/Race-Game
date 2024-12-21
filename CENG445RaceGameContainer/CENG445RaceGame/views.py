@@ -42,8 +42,9 @@ def repo_create(request: HttpRequest):
 def repo_create_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "create", "parameters": [kwargs]}
-    write_to_backend(request, dumps(command))
-    return redirect("/")
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
