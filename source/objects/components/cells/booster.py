@@ -1,5 +1,6 @@
 from source.monitor import Monitor
 from source.objects.components import Cell
+from source.objects.components.car import Car
 
 
 class Booster(Cell):
@@ -7,7 +8,7 @@ class Booster(Cell):
     _representation = 'booster.png'
 
     @Monitor().sync
-    def _interact(self, car):
+    def _interact(self, car: Car):
         car._speed += 47
         if car._speed > car._MAX_SPEED:
             car._speed = car._MAX_SPEED

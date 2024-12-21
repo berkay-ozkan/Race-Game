@@ -33,7 +33,7 @@ class Repo:
         return obj_list
 
     @Monitor().sync
-    def attach(self, obj_id, user):
+    def attach(self, obj_id: int, user: str):
         if obj_id not in self._attachments:
             self._attachments[obj_id] = set()
 
@@ -42,14 +42,14 @@ class Repo:
         return ID_Tracker()._objects[obj_id]
 
     @Monitor().sync
-    def list_attached(self, user):
+    def list_attached(self, user: str):
         return [
             ID_Tracker()._objects[obj_id]
             for obj_id, users in self._attachments.items() if user in users
         ]
 
     @Monitor().sync
-    def detach(self, obj_id, user):
+    def detach(self, obj_id: int, user: str):
         if obj_id in self._attachments:
             if user in self._attachments[obj_id]:
                 self._attachments[obj_id].remove(user)
@@ -58,6 +58,6 @@ class Repo:
             del self._attachments[obj_id]
 
     @Monitor().sync
-    def delete(self, obj_id):
+    def delete(self, obj_id: int):
         if obj_id not in self._attachments:
             del ID_Tracker()._objects[obj_id]

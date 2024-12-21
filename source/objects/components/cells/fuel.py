@@ -1,5 +1,6 @@
 from source.monitor import Monitor
 from source.objects.components import Cell
+from source.objects.components.car import Car
 
 
 class Fuel(Cell):
@@ -7,7 +8,7 @@ class Fuel(Cell):
     _representation = "fuel.png"
 
     @Monitor().sync
-    def _interact(self, car):
+    def _interact(self, car: Car):
         car._fuel += 10
         if car._fuel > car._MAX_FUEL:
             car._fuel = car._MAX_FUEL

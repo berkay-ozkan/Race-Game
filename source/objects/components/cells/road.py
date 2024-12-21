@@ -1,5 +1,6 @@
 from source.monitor import Monitor
 from source.objects.components import Cell
+from source.objects.components.car import Car
 
 
 class Road(Cell):
@@ -16,5 +17,5 @@ class Road(Cell):
         return self._representation[self.rotation]
 
     @Monitor().sync
-    def _interact(self, car):
+    def _interact(self, car: Car):
         car._speed *= 0.97  # reduce speed due to friction

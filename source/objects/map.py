@@ -11,7 +11,8 @@ from time import time, sleep
 
 class Map(Object):
 
-    def __init__(self, description, cols, rows, cell_size, bg_color) -> None:
+    def __init__(self, description: str, cols: int, rows: int, cell_size: int,
+                 bg_color: str) -> None:
         super().__init__()
         self.description = description
         self.cols = cols
@@ -33,7 +34,7 @@ class Map(Object):
 
     # For adding Cell components
     @Monitor().sync
-    def __setitem__(self, pos, cell: Cell):
+    def __setitem__(self, pos: tuple[int, int], cell: Cell):
         if self._game_mode_active:
             return
         row = pos[0] - 1
@@ -46,7 +47,7 @@ class Map(Object):
 
     # For getting Cell components
     @Monitor().sync
-    def __getitem__(self, pos):
+    def __getitem__(self, pos: tuple[int, int]):
         row = pos[0] - 1
         col = pos[1] - 1
 
@@ -70,7 +71,7 @@ class Map(Object):
                     Observer().create_notification(self._id, cell_bounds)
 
     @Monitor().sync
-    def __delitem__(self, pos):
+    def __delitem__(self, pos: tuple[int, int]):
         if self._game_mode_active:
             return
         row = pos[0] - 1
@@ -85,7 +86,7 @@ class Map(Object):
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
-    def get_y_x(self, y, x):
+    def get_y_x(self, y: float, x: float):
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
 
@@ -116,7 +117,7 @@ class Map(Object):
         Observer().create_notification(self._id, cell_bounds)
 
     @Monitor().sync
-    def view(self, y, x, height, width, user):
+    def view(self, y: float, x: float, height: float, width: float, user: str):
         if (self._is_view == True):
             print("view of a view cannot be created")
             return

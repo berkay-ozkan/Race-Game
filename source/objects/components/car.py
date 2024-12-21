@@ -45,21 +45,28 @@ class Car(Component):
         "_time": "int"
     }
 
-    def __init__(self, **kwargs: dict) -> None:
+    def __init__(self,
+                 acceleration_rate: float,
+                 fuel_consumption_rate: float,
+                 deceleration_rate: float,
+                 steer_rate: float,
+                 max_speed: float,
+                 max_fuel: float,
+                 model: str | None = None) -> None:
         super().__init__()
 
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: None | str = None
 
-        self._MODEL = kwargs.get("model")
-        self._ACCELERATION_RATE = kwargs["acceleration_rate"]
-        self._FUEL_CONSUMPTION_RATE = kwargs["fuel_consumption_rate"]
-        self._DECELERATION_RATE = kwargs["deceleration_rate"]
-        self._STEER_RATE = kwargs["steer_rate"]
+        self._MODEL = model
+        self._ACCELERATION_RATE = acceleration_rate
+        self._FUEL_CONSUMPTION_RATE = fuel_consumption_rate
+        self._DECELERATION_RATE = deceleration_rate
+        self._STEER_RATE = steer_rate
 
-        self._MAX_SPEED = kwargs["max_speed"]
-        self._MAX_FUEL = kwargs["max_fuel"]
+        self._MAX_SPEED = max_speed
+        self._MAX_FUEL = max_fuel
 
         self._user = None
         # None until placed, (y, x) coordinates afterwards

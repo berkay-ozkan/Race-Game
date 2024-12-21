@@ -22,7 +22,8 @@ class Observer:
         self.observers = {}
 
     @Monitor().sync
-    def register(self, username, observer_information: ObserverInformation):
+    def register(self, username: str,
+                 observer_information: ObserverInformation):
         ''' A new condition is created per observer and it is
         notified when interest set of the observer changes'''
         condition = Condition(Monitor().mlocks[self])
@@ -30,18 +31,20 @@ class Observer:
         return condition
 
     @Monitor().sync
-    def unregister(self, username):
+    def unregister(self, username: str):
         if username in self.observers:
             del self.observers[username]
 
     @Monitor().sync
-    def wait(self, username):
+    def wait(self, username: str):
         if username in self.observers:
             self.observers[username][1].wait()
             return self.observers[username][0].view_id
 
     @Monitor().sync
-    def create_notification(self, map_id: int, affected_bounds):
+    def create_notification(self, map_id: int,
+                            affected_bounds: tuple[tuple[float, float],
+                                                   tuple[float, float]]):
         for observer_information, condition in self.observers.values():
             if map_id == observer_information.map_id and Observer(
             )._rectangles_intersect(observer_information.view_bounds,

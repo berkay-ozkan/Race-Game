@@ -1,5 +1,6 @@
 from source.monitor import Monitor
 from source.objects.components import Cell
+from source.objects.components.car import Car
 
 
 class Rock(Cell):
@@ -7,5 +8,5 @@ class Rock(Cell):
     _representation = "rock.png"
 
     @Monitor().sync
-    def _interact(self, car):
+    def _interact(self, car: Car):
         car._speed = 0
