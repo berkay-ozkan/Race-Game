@@ -3,11 +3,8 @@ from source.objects.components import Cell
 
 
 class Booster(Cell):
-
-    def __init__(self):
-        super().__init__()
-        self._description = "A little boost to car speed"
-        self._representation = 'booster.png'
+    _description = "A little boost to car speed"
+    _representation = 'booster.png'
 
     @Monitor().sync
     def _interact(self, car):
