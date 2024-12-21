@@ -1,3 +1,4 @@
+from pickle import loads
 from CENG445RaceGame.server_integration import write_to_backend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -372,9 +373,13 @@ def map_draw(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     command = {"id": id, "function_name": "draw", "parameters": [{}]}
     encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
-    # TODO: Render visuals
-    return render(request, "map-draw.html", context={"reply": reply})
+    reply = loads(eval(encoded_reply.decode()))
+    return render(request,
+                  "map-draw.html",
+                  context={
+                      "canvas": reply[0],
+                      "all_players_information": reply[1]
+                  })
 
 
 @login_required(login_url="/login")

@@ -1,4 +1,5 @@
 from math import ceil, floor
+from pickle import dumps
 from threading import Thread, Event
 from source.object import Object
 from source.objects.component import Component
@@ -168,18 +169,18 @@ class Map(Object):
         return map_view
 
     @Monitor().sync
-    def draw(self) -> str:
-        result = ""
+    def draw(self) -> bytes:
+        canvas: list[list[str]] = []
         all_players_information: list[list[str]] = []
-
         for row in self.grid:
+            canvas.append([])
             for cell in row:
                 if len(cell) == 0:
-                    result += " "
+                    canvas[-1].append("empty.png")
                     continue
 
                 topmost_component = cell[-1]
-                result += topmost_component.representation()
+                canvas[-1].append(topmost_component.representation())
 
                 if isinstance(topmost_component, Car):
                     player_information = []
@@ -188,15 +189,8 @@ class Map(Object):
                             f"{attribute}: {getattr(topmost_component, attribute)}"
                         )
                     all_players_information.append(player_information)
-            result += '\n'
-        result += '\n'
 
-        for player_information in all_players_information:
-            for attribute in player_information:
-                result += attribute + '\n'
-            result += '\n'
-
-        return result
+        return dumps((canvas, all_players_information))
 
     # For starting game mode
     @Monitor().sync

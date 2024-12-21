@@ -1,6 +1,15 @@
 <html>
 
 <body>
+    {% for row in canvas %}
+    {% for cell in row %}
+    {% load static %}
+    <img src="{% static cell %}">
+    {% endfor %}<br>
+    {% endfor %}<br>
+    <br>
+    {{ all_players_information }}
+
     <script>
         const TIMEOUT_INTERVAL = 3000;  // In milliseconds
 
