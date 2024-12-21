@@ -85,8 +85,7 @@ class Replies(Thread):
             except Exception as exception:
                 result = str(exception)
 
-            message = result.strip()
-            write_variable_size(self.sock, message)
+            write_variable_size(self.sock, result)
 
         print(self.username, "closed the connection.")
         self.sock.close()
