@@ -54,7 +54,7 @@ urlpatterns = [
          views.NotImplemented),  # TODO: Should this be accessible?
     path('component/<int:id>/__setattr__',
          views.NotImplemented),  # TODO: Should this be accessible?
-    path('component/<int:id>/draw', views.component_draw),
+    path('component/<int:id>/representation', views.component_representation),
     path('map/<int:id>/__init__',
          views.NotImplemented),  # TODO: Should this be accessible?
     path('map/<int:id>/__getitem__',
