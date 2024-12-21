@@ -103,6 +103,15 @@ def repo_delete(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def repo_delete_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command = {"function_name": "delete", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def component_factory_list(request: HttpRequest):
     command: dict = {"id": 1, "function_name": "list", "parameters": [{}]}
     encoded_reply: bytes = write_to_backend(request, dumps(command))
