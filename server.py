@@ -59,21 +59,6 @@ class Replies(Thread):
         function = getattr(object, function_name)
         parameters = decoded_input["parameters"]
 
-        signature_parameter_list = list(
-            signature(function).parameters.values())
-        for index in range(len(parameters[:-1])):
-            if signature_parameter_list[
-                    index].annotation is not Signature.empty:
-                parameters[-1][index] = signature_parameter_list[
-                    index].annotation(parameters[-1][index])
-        for key, value in parameters[-1].items():
-            if key not in signature(function).parameters:
-                continue
-            annotation = signature(function).parameters[key].annotation
-            if annotation is not Signature.empty:
-                parameters[-1][key] = signature(
-                    function).parameters[key].annotation(value)
-
         result = function(*parameters[:-1], **parameters[-1])
         if result is not None:
             return str(result)

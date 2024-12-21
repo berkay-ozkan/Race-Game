@@ -20,6 +20,10 @@ class Repo:
     @Monitor().sync
     def create(self, description: str, rows: int, cols: int, cellsize: int,
                bgcolor: str):
+        rows = int(rows)
+        cols = int(cols)
+        cellsize = int(cellsize)
+
         map = Map(description, cols, rows, cellsize, bgcolor)
         id = ID_Tracker()._add_objects(map)
         return id
@@ -34,6 +38,8 @@ class Repo:
 
     @Monitor().sync
     def attach(self, obj_id: int, user: str):
+        obj_id = int(obj_id)
+
         if obj_id not in self._attachments:
             self._attachments[obj_id] = set()
 
@@ -50,6 +56,8 @@ class Repo:
 
     @Monitor().sync
     def detach(self, obj_id: int, user: str):
+        obj_id = int(obj_id)
+
         if obj_id in self._attachments:
             if user in self._attachments[obj_id]:
                 self._attachments[obj_id].remove(user)
@@ -59,5 +67,7 @@ class Repo:
 
     @Monitor().sync
     def delete(self, obj_id: int):
+        obj_id = int(obj_id)
+
         if obj_id not in self._attachments:
             del ID_Tracker()._objects[obj_id]

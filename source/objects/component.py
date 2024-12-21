@@ -1,4 +1,3 @@
-from threading import RLock
 from source.id_tracker import ID_Tracker
 from source.monitor import Monitor
 from source.object import Object

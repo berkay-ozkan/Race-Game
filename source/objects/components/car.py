@@ -55,6 +55,13 @@ class Car(Component):
                  model: str | None = None) -> None:
         super().__init__()
 
+        acceleration_rate = float(acceleration_rate)
+        fuel_consumption_rate = float(fuel_consumption_rate)
+        deceleration_rate = float(deceleration_rate)
+        steer_rate = float(steer_rate)
+        max_speed = float(max_speed)
+        max_fuel = float(max_fuel)
+
         # None until placed, Map afterwards
         self._MAP = None
         self._DRIVER: None | str = None

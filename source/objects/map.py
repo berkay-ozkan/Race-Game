@@ -13,6 +13,10 @@ class Map(Object):
 
     def __init__(self, description: str, cols: int, rows: int, cell_size: int,
                  bg_color: str) -> None:
+        cols = int(cols)
+        rows = int(rows)
+        cell_size = int(cell_size)
+
         super().__init__()
         self.description = description
         self.cols = cols
@@ -59,6 +63,8 @@ class Map(Object):
 
     @Monitor().sync
     def remove(self, component: int):
+        component = int(component)
+
         component = ID_Tracker()._objects[component]
         if self._game_mode_active:
             return
@@ -87,6 +93,9 @@ class Map(Object):
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
     def get_y_x(self, y: float, x: float):
+        y = float(y)
+        x = float(x)
+
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
 
@@ -97,6 +106,10 @@ class Map(Object):
     # For adding Car components
     @Monitor().sync
     def place(self, obj: int, y: float, x: float, user: str):
+        obj = int(obj)
+        y = float(y)
+        x = float(x)
+
         if self._game_mode_active:
             return
         self.remove(obj)
@@ -118,6 +131,11 @@ class Map(Object):
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
+        y = float(y)
+        x = float(x)
+        height = float(height)
+        width = float(width)
+
         if (self._is_view == True):
             print("view of a view cannot be created")
             return
