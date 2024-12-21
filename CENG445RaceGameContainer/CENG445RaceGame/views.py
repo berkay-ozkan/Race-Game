@@ -75,6 +75,15 @@ def repo_attach(request: HttpRequest):
 
 
 @login_required(login_url="/login")
+def repo_attach_post(request: HttpRequest):
+    kwargs = request.POST.dict()
+    command = {"function_name": "attach", "parameters": [kwargs]}
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def repo_detach(request: HttpRequest):
     return render(request, "repo-detach.html")
 
