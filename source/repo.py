@@ -7,10 +7,10 @@ from source.monitor import Monitor
 
 @singleton
 class Repo:
+    _description = "repo"
 
     def __init__(self):
         super().__init__()
-        self.description = "repo"
         ID_Tracker()._add_objects(self)
         self._attachments = {}
         self._objects = {}
@@ -31,7 +31,7 @@ class Repo:
     @Monitor().sync
     def list(self) -> dict:
         obj_list = {
-            objId: obj.description
+            objId: obj._description
             for objId, obj in enumerate(ID_Tracker()._objects)
         }
         return obj_list

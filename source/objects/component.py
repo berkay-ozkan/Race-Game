@@ -16,7 +16,7 @@ class Component(Object):
         # Instance variables
         "_id": "int"
     }
-    _description: str
+    _description: str = "Component factory"
     _representation: str
     _type_name: str
 

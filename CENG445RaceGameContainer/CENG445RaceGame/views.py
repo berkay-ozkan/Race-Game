@@ -203,6 +203,33 @@ def component_attributes(request: HttpRequest, **query_parameters: dict):
 
 
 @login_required(login_url="/login")
+def component___setattr__(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    return render(request, "component-__setattr__.html", context={"id": id})
+
+
+@login_required(login_url="/login")
+def component___setattr___post(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    kwargs = request.POST.dict()
+    if kwargs["type"] == "int":
+        kwargs["value"] = int(kwargs["value"])
+    if kwargs["type"] == "float":
+        kwargs["value"] = float(kwargs["value"])
+    command = {
+        "id": id,
+        "function_name": "__setattr__",
+        "parameters": [{
+            "name": kwargs["name"],
+            "value": kwargs["value"]
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
 def component_representation(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     command = {"id": id, "function_name": "representation", "parameters": [{}]}
@@ -211,6 +238,75 @@ def component_representation(request: HttpRequest, **query_parameters: dict):
     return render(request,
                   "component-representation.html",
                   context={"reply": reply})
+
+
+@login_required(login_url="/login")
+def map___setitem__(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    return render(request, "map-__setitem__.html", context={"id": id})
+
+
+@login_required(login_url="/login")
+def map___setitem___post(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    kwargs = request.POST.dict()
+    command = {
+        "id":
+        id,
+        "function_name":
+        "__setitem__",
+        "parameters": [{
+            "pos": (int(kwargs["y"]), int(kwargs["x"])),
+            "id": kwargs["id"]
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def map___delitem__(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    return render(request, "map-__delitem__.html", context={"id": id})
+
+
+@login_required(login_url="/login")
+def map___delitem___post(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    kwargs = request.POST.dict()
+    command = {
+        "id": id,
+        "function_name": "__delitem__",
+        "parameters": [{
+            "pos": (int(kwargs["y"]), int(kwargs["x"]))
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def map_remove(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    return render(request, "map-remove.html", context={"id": id})
+
+
+@login_required(login_url="/login")
+def map_remove_post(request: HttpRequest, **query_parameters: dict):
+    id: int = int(query_parameters["id"])
+    kwargs = request.POST.dict()
+    command = {
+        "id": id,
+        "function_name": "remove",
+        "parameters": [{
+            "id": kwargs["id"]
+        }]
+    }
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
@@ -246,7 +342,9 @@ def map_place_post(request: HttpRequest, **query_parameters: dict):
     command: dict = {
         "id": id,
         "function_name": "place",
-        "parameters": [kwargs]
+        "parameters": [kwargs | {
+            "user": request.user.username
+        }]
     }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()

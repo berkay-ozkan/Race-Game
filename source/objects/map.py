@@ -1,8 +1,8 @@
-from threading import Condition, Thread, Event
+from math import ceil, floor
+from threading import Thread, Event
 from source.object import Object
 from source.objects.component import Component
 from source.objects.components import Car, Cell
-from math import ceil, floor
 from source.monitor import Monitor
 from source.observer import Observer, ObserverInformation
 from source.id_tracker import ID_Tracker
@@ -18,7 +18,7 @@ class Map(Object):
         cell_size = int(cell_size)
 
         super().__init__()
-        self.description = description
+        self._description = description
         self.cols = cols
         self.rows = rows
         self.cell_size = cell_size
@@ -38,7 +38,10 @@ class Map(Object):
 
     # For adding Cell components
     @Monitor().sync
-    def __setitem__(self, pos: tuple[int, int], cell: Cell):
+    def __setitem__(self, pos: tuple[int, int], id: int):
+        id = int(id)
+
+        cell = ID_Tracker()._objects[id]
         if self._game_mode_active:
             return
         row = pos[0] - 1
@@ -62,10 +65,10 @@ class Map(Object):
         return None
 
     @Monitor().sync
-    def remove(self, component: int):
-        component = int(component)
+    def remove(self, id: int):
+        id = int(id)
 
-        component = ID_Tracker()._objects[component]
+        component = ID_Tracker()._objects[id]
         if self._game_mode_active:
             return
         for row in range(self.rows):

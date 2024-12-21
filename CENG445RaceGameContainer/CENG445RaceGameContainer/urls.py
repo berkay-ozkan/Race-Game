@@ -52,19 +52,18 @@ urlpatterns = [
     path('component/<int:id>/attributes', views.component_attributes),
     path('component/<int:id>/__getattr__',
          views.NotImplemented),  # TODO: Should this be accessible?
-    path('component/<int:id>/__setattr__',
-         views.NotImplemented),  # TODO: Should this be accessible?
+    path('component/<int:id>/__setattr__', views.component___setattr__),
+    path('component/<int:id>/__setattr__/post',
+         views.component___setattr___post),
     path('component/<int:id>/representation', views.component_representation),
-    path('map/<int:id>/__init__',
-         views.NotImplemented),  # TODO: Should this be accessible?
     path('map/<int:id>/__getitem__',
          views.NotImplemented),  # TODO: Should this be accessible?
-    path('map/<int:id>/__setitem__',
-         views.NotImplemented),  # TODO: Should this be accessible?
-    path('map/<int:id>/__delitem__',
-         views.NotImplemented),  # TODO: Should this be accessible?
-    path('map/<int:id>/remove',
-         views.NotImplemented),  # TODO: This requires an object reference
+    path('map/<int:id>/__setitem__', views.map___setitem__),
+    path('map/<int:id>/__setitem__/post', views.map___setitem___post),
+    path('map/<int:id>/__delitem__', views.map___delitem__),
+    path('map/<int:id>/__delitem__/post', views.map___delitem___post),
+    path('map/<int:id>/remove', views.map_remove),
+    path('map/<int:id>/remove/post', views.map_remove_post),
     path('map/<int:id>/get-y-x', views.map_get_y_x),
     path('map/<int:id>/get-y-x/post', views.map_get_y_x_post),
     path('map/<int:id>/place', views.map_place),
