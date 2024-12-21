@@ -50,8 +50,9 @@ def repo_create_post(request: HttpRequest):
 @login_required(login_url="/login")
 def repo_list(request: HttpRequest):
     command = {"function_name": "list", "parameters": [{}]}
-    write_to_backend(request, dumps(command))
-    return redirect("/")
+    encoded_reply: bytes = write_to_backend(request, dumps(command))
+    reply = encoded_reply.decode()
+    return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
