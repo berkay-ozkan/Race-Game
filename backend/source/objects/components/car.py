@@ -10,25 +10,25 @@ class Car(Component):
     _DRIVER = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
 
     _MODEL = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
-    _ACCELERATION_RATE = models.FloatField()
-    _FUEL_CONSUMPTION_RATE = models.FloatField()
-    _DECELERATION_RATE = models.FloatField()
-    _STEER_RATE = models.FloatField()
+    _ACCELERATION_RATE = models.FloatField(null=True, )
+    _FUEL_CONSUMPTION_RATE = models.FloatField(null=True, )
+    _DECELERATION_RATE = models.FloatField(null=True, )
+    _STEER_RATE = models.FloatField(null=True, )
 
-    _MAX_SPEED = models.FloatField()
-    _MAX_FUEL = models.FloatField()
+    _MAX_SPEED = models.FloatField(null=True, )
+    _MAX_FUEL = models.FloatField(null=True, )
 
     _user = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
     _position = models.JSONField(null=True)
     _angle = models.FloatField(null=True)
-    _speed = models.FloatField()
-    _fuel = models.FloatField()
+    _speed = models.FloatField(null=True, )
+    _fuel = models.FloatField(null=True, )
 
-    _accelerate = models.BooleanField()
-    _brake = models.BooleanField()
-    _turn_clockwise = models.BooleanField()
-    _turn_counterclockwise = models.BooleanField()
-    _running = models.BooleanField()
+    _accelerate = models.BooleanField(null=True, )
+    _brake = models.BooleanField(null=True, )
+    _turn_clockwise = models.BooleanField(null=True, )
+    _turn_counterclockwise = models.BooleanField(null=True, )
+    _running = models.BooleanField(null=True, )
 
     # Car class variables
     _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
@@ -72,27 +72,40 @@ class Car(Component):
     }
 
     def __init__(self,
-                 acceleration_rate: float,
-                 fuel_consumption_rate: float,
-                 deceleration_rate: float,
-                 steer_rate: float,
-                 max_speed: float,
-                 max_fuel: float,
-                 model: str | None = None) -> None:
-        super().__init__()
+                 id=None,
+                 _MAP=None,
+                 _DRIVER=None,
+                 _MODEL=None,
+                 _ACCELERATION_RATE=None,
+                 _FUEL_CONSUMPTION_RATE=None,
+                 _DECELERATION_RATE=None,
+                 _STEER_RATE=None,
+                 _MAX_SPEED=None,
+                 _MAX_FUEL=None,
+                 _user=None,
+                 _position=None,
+                 _angle=None,
+                 _speed=0,
+                 _fuel=None,
+                 _accelerate=False,
+                 _brake=False,
+                 _turn_clockwise=False,
+                 _turn_counterclockwise=False,
+                 _running=False) -> None:
+        super().__init__(id)
 
-        acceleration_rate = float(acceleration_rate)
-        fuel_consumption_rate = float(fuel_consumption_rate)
-        deceleration_rate = float(deceleration_rate)
-        steer_rate = float(steer_rate)
-        max_speed = float(max_speed)
-        max_fuel = float(max_fuel)
+        acceleration_rate = float(_ACCELERATION_RATE)
+        fuel_consumption_rate = float(_FUEL_CONSUMPTION_RATE)
+        deceleration_rate = float(_DECELERATION_RATE)
+        steer_rate = float(_STEER_RATE)
+        max_speed = float(_MAX_SPEED)
+        max_fuel = float(_MAX_FUEL)
 
         # None until placed, Map afterwards
-        self._MAP = None
-        self._DRIVER: None | str = None
+        self._MAP = _MAP
+        self._DRIVER: None | str = _DRIVER
 
-        self._MODEL = model
+        self._MODEL = _MODEL
         self._ACCELERATION_RATE = acceleration_rate
         self._FUEL_CONSUMPTION_RATE = fuel_consumption_rate
         self._DECELERATION_RATE = deceleration_rate
@@ -101,24 +114,24 @@ class Car(Component):
         self._MAX_SPEED = max_speed
         self._MAX_FUEL = max_fuel
 
-        self._user = None
+        self._user = _user
         # None until placed, (y, x) coordinates afterwards
         # x increases to the right, y increases downward
-        self._position: None | tuple[float, float] = None
+        self._position: None | tuple[float, float] = _position
         # None until placed
         # Measured in radians, follows the counterclockwise
         # angle convention, and a value of 0 corresponds to the right
-        self._angle: None | float = None
-        self._speed: float = 0
-        self._fuel: float = self._MAX_FUEL
+        self._angle: None | float = _angle
+        self._speed: float = _speed
+        self._fuel: float = _fuel
 
-        self._accelerate: bool = False
-        self._brake: bool = False
-        self._turn_clockwise: bool = False
-        self._turn_counterclockwise: bool = False
+        self._accelerate: bool = _accelerate
+        self._brake: bool = _brake
+        self._turn_clockwise: bool = _turn_clockwise
+        self._turn_counterclockwise: bool = _turn_counterclockwise
         self._laps_completed = 0
         self._time = None
-        self._running: bool = False
+        self._running: bool = _running
 
     @Monitor().sync
     def start(self) -> None:
@@ -181,4 +194,4 @@ class Car(Component):
         self._turn_counterclockwise = False
 
         pos_y, pos_x = self._position
-        self._MAP.place(self._id, pos_y, pos_x, self._user)
+        self._MAP.place(self.id, pos_y, pos_x, self._user)

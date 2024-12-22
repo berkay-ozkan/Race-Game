@@ -83,8 +83,8 @@ frr._speed = 63
 fr._DRIVER = "Alo"
 fr._speed = 62
 
-ogr.place(frr._id, 0, 0, 'ots')
-ogr.place(fr._id, 0, 0, 'vusal')
+ogr.place(frr.id, 0, 0, 'ots')
+ogr.place(fr.id, 0, 0, 'vusal')
 frr._angle = 0
 fr._angle = 0
 print(ogr.draw())

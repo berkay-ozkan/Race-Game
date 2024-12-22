@@ -6,15 +6,16 @@ from backend.source.objects.components import Car
 
 class Cell(Component):
     _MAP = models.ForeignKey(to="Map", null=True, on_delete=models.CASCADE)
-    row = models.IntegerField()
-    col = models.IntegerField()
+    row = models.IntegerField(null=True, blank=True)
+    col = models.IntegerField(null=True, blank=True)
 
     _attributes = Component._attributes | {"row": "int", "col": "int"}
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.row: int
-        self.col: int
+    def __init__(self, id=None, _MAP=None, row=None, col=None) -> None:
+        super().__init__(id)
+        self._MAP = _MAP
+        self.row: int = row
+        self.col: int = col
 
     # Subclass instance functions
     @Monitor().sync

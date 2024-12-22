@@ -114,7 +114,11 @@ def repo_delete_post(request: HttpRequest):
 
 @login_required(login_url="/login")
 def component_factory_list(request: HttpRequest):
-    command: dict = {"id": 1, "function_name": "list", "parameters": [{}]}
+    command: dict = {
+        "component_factory": True,
+        "function_name": "list",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -140,7 +144,7 @@ def component_factory_register(request: HttpRequest):
 def component_factory_register_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command: dict = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "register",
         "parameters": [kwargs]
     }
@@ -158,7 +162,7 @@ def component_factory_unregister(request: HttpRequest):
 def component_factory_unregister_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command: dict = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "unregister",
         "parameters": [kwargs]
     }
@@ -170,7 +174,7 @@ def component_factory_unregister_post(request: HttpRequest):
 @login_required(login_url="/login")
 def object_getid(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "getid", "parameters": [{}]}
+    command = {"id": id, "function_name": "get_id", "parameters": [{}]}
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -179,7 +183,12 @@ def object_getid(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def component_description(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "description", "parameters": [{}]}
+    command = {
+        "type": "component",
+        "id": id,
+        "function_name": "description",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -188,7 +197,12 @@ def component_description(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def component_type(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "type", "parameters": [{}]}
+    command = {
+        "type": "component",
+        "id": id,
+        "function_name": "type",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -197,7 +211,12 @@ def component_type(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def component_attributes(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "attributes", "parameters": [{}]}
+    command = {
+        "type": "component",
+        "id": id,
+        "function_name": "attributes",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -218,6 +237,7 @@ def component___setattr___post(request: HttpRequest, **query_parameters: dict):
     if kwargs["type"] == "float":
         kwargs["value"] = float(kwargs["value"])
     command = {
+        "type": "component",
         "id": id,
         "function_name": "__setattr__",
         "parameters": [{
@@ -233,7 +253,12 @@ def component___setattr___post(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def component_representation(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "representation", "parameters": [{}]}
+    command = {
+        "type": "component",
+        "id": id,
+        "function_name": "representation",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return render(request,
@@ -252,6 +277,8 @@ def map___setitem___post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command = {
+        "type":
+        "map",
         "id":
         id,
         "function_name":
@@ -277,6 +304,7 @@ def map___delitem___post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command = {
+        "type": "map",
         "id": id,
         "function_name": "__delitem__",
         "parameters": [{
@@ -299,6 +327,7 @@ def map_remove_post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command = {
+        "type": "map",
         "id": id,
         "function_name": "remove",
         "parameters": [{
@@ -321,6 +350,7 @@ def map_get_y_x_post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command: dict = {
+        "type": "map",
         "id": id,
         "function_name": "get_y_x",
         "parameters": [kwargs]
@@ -341,6 +371,7 @@ def map_place_post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
     command: dict = {
+        "type": "map",
         "id": id,
         "function_name": "place",
         "parameters": [kwargs | {
@@ -362,7 +393,12 @@ def map_view(request: HttpRequest, **query_parameters: dict):
 def map_view_post(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     kwargs = request.POST.dict()
-    command: dict = {"id": id, "function_name": "view", "parameters": [kwargs]}
+    command: dict = {
+        "type": "map",
+        "id": id,
+        "function_name": "view",
+        "parameters": [kwargs]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -371,7 +407,12 @@ def map_view_post(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def map_draw(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "draw", "parameters": [{}]}
+    command = {
+        "type": "map",
+        "id": id,
+        "function_name": "draw",
+        "parameters": [{}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = loads(eval(encoded_reply.decode()))
     return render(request,
@@ -391,7 +432,8 @@ def car_create(request: HttpRequest):
 def car_create_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {
-        "id": 1,
+        "type": "car",
+        "component_factory": True,
         "function_name": "create",
         "parameters": [kwargs | {
             "component_type_name": "car"
@@ -405,7 +447,12 @@ def car_create_post(request: HttpRequest):
 @login_required(login_url="/login")
 def car_model(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "model", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_MODEL", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -414,7 +461,12 @@ def car_model(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_map(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "map", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_MAP", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -423,7 +475,12 @@ def car_map(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_driver(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "driver", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_DRIVER", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -432,7 +489,12 @@ def car_driver(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_pos(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "pos", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_position", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -441,7 +503,12 @@ def car_pos(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_angle(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "angle", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_angle", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -450,7 +517,12 @@ def car_angle(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_topspeed(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "topspeed", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_MAX_SPEED", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -459,7 +531,12 @@ def car_topspeed(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_topfuel(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "topfuel", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_MAX_FUEL", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -468,7 +545,12 @@ def car_topfuel(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_speed(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "speed", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_speed", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -477,7 +559,12 @@ def car_speed(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def car_fuel(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
-    command = {"id": id, "function_name": "fuel", "parameters": [{}]}
+    command = {
+        "type": "car",
+        "id": id,
+        "function_name": "__getattr__",
+        "parameters": ["_fuel", {}]
+    }
     encoded_reply: bytes = write_to_backend(request, dumps(command))
     reply = encoded_reply.decode()
     return HttpResponse(reply)
@@ -486,7 +573,7 @@ def car_fuel(request: HttpRequest, **query_parameters: dict):
 @login_required(login_url="/login")
 def diagonal_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "diagonal"
@@ -500,7 +587,7 @@ def diagonal_create(request: HttpRequest):
 @login_required(login_url="/login")
 def straight_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "straight"
@@ -514,7 +601,7 @@ def straight_create(request: HttpRequest):
 @login_required(login_url="/login")
 def turn90_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "turn90"
@@ -528,7 +615,7 @@ def turn90_create(request: HttpRequest):
 @login_required(login_url="/login")
 def booster_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "booster"
@@ -542,7 +629,7 @@ def booster_create(request: HttpRequest):
 @login_required(login_url="/login")
 def fuel_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "fuel"
@@ -556,7 +643,7 @@ def fuel_create(request: HttpRequest):
 @login_required(login_url="/login")
 def rock_create(request: HttpRequest):
     command = {
-        "id": 1,
+        "component_factory": True,
         "function_name": "create",
         "parameters": [{
             "component_type_name": "rock"

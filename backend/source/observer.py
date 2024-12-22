@@ -15,12 +15,12 @@ class ObserverInformation:
 
 
 class Observer(models.Model):
-    observers = models.JSONField()
+    observers = models.JSONField(null=True)
 
-    def __init__(self, id):
+    def __init__(self, id=None, observers={}):
         super().__init__()
         self.id = id
-        self.observers = {}
+        self.observers = observers
 
     @Monitor().sync
     def register(self, username: str,

@@ -5,15 +5,16 @@ from backend.source.objects.components.car import Car
 
 
 class Road(Cell):
-    rotation = models.IntegerField()
+    rotation = models.IntegerField(null=True, )
 
     _attributes = Cell._attributes | {
         "rotation": "int",
     }
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.rotation: int
+    def __init__(self, id=None, rotation=None) -> None:
+        super().__init__(id=None, _MAP=None, row=None, col=None)
+        self.id = id
+        self.rotation: int = rotation
 
     @Monitor().sync
     def representation(self) -> str:

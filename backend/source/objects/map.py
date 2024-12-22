@@ -12,32 +12,45 @@ from time import time, sleep
 
 
 class Map(Object):
-    _description = models.CharField(max_length=MAX_INPUT_LENGTH)
-    cols = models.IntegerField()
-    rows = models.IntegerField()
-    cell_size = models.IntegerField()
-    bg_color = models.CharField(max_length=7)
+    _description = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
+    cols = models.IntegerField(null=True)
+    rows = models.IntegerField(null=True)
+    cell_size = models.IntegerField(null=True)
+    bg_color = models.CharField(null=True, max_length=7)
     # TODO: grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
     #                                     for _ in range(rows)]
     # TODO: _cars = []
-    _is_view = models.BooleanField()
-    _game_mode_active = models.BooleanField()
+    _is_view = models.BooleanField(null=True, )
+    _game_mode_active = models.BooleanField(null=True, )
     _start_time = models.FloatField(null=True)
-    _tick_interval = models.FloatField()
-    _notification_interval = models.FloatField()
+    _tick_interval = models.FloatField(null=True, )
+    _notification_interval = models.FloatField(null=True, )
     _tick_count = models.IntegerField(null=True)
 
     # TODO: _game_thread = None
     # TODO: _stop_event = Event()
     # TODO: _leaderboards = []
 
-    def __init__(self, description: str, cols: int, rows: int, cell_size: int,
-                 bg_color: str) -> None:
+    def __init__(self,
+                 id=None,
+                 description: str = None,
+                 cols: int = None,
+                 rows: int = None,
+                 cell_size: int = None,
+                 bg_color: str = None,
+                 _is_view=False,
+                 _game_mode_active=False,
+                 _start_time=None,
+                 _tick_interval=1,
+                 _notification_interval=5,
+                 _tick_count=None,
+                 *args) -> None:
+        print(args)
         cols = int(cols)
         rows = int(rows)
         cell_size = int(cell_size)
 
-        super().__init__()
+        super().__init__(id)
         self._description = description
         self.cols = cols
         self.rows = rows
@@ -46,12 +59,12 @@ class Map(Object):
         self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
                                                   for _ in range(rows)]
         self._cars = []
-        self._is_view = False
-        self._game_mode_active = False
-        self._start_time = None
-        self._tick_interval = 1.0
-        self._notification_interval = 5
-        self._tick_count = None
+        self._is_view = _is_view
+        self._game_mode_active = _game_mode_active
+        self._start_time = _start_time
+        self._tick_interval = _tick_interval
+        self._notification_interval = _notification_interval
+        self._tick_count = _tick_count
         self._game_thread = None
         self._stop_event = Event()
         self._leaderboards = []
@@ -70,7 +83,7 @@ class Map(Object):
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     # For getting Cell components
     @Monitor().sync
@@ -97,7 +110,7 @@ class Map(Object):
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
-                    Observer().create_notification(self._id, cell_bounds)
+                    Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def __delitem__(self, pos: tuple[int, int]):
@@ -111,7 +124,7 @@ class Map(Object):
 
         del self.grid[row][col][-1]
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
@@ -150,7 +163,7 @@ class Map(Object):
             self._cars.append(obj)
 
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
@@ -169,7 +182,7 @@ class Map(Object):
                        self.cell_size, self.bg_color)
         map_view.save()
         view_id = map_view.id
-        map_view._id = view_id
+        map_view.id = view_id
         map_view._is_view = True
         y_floor = floor(y / self.cell_size)
         x_floor = floor(x / self.cell_size)
@@ -183,7 +196,7 @@ class Map(Object):
         x_end = x_floor + ceil(width / self.cell_size)
         # A user can only have one view at a time
         Observer().unregister(user)
-        observer_information = ObserverInformation(view_id, self._id,
+        observer_information = ObserverInformation(view_id, self.id,
                                                    ((y, x), (y_end, x_end)))
         Observer().register(user, observer_information)
         return map_view
@@ -246,7 +259,7 @@ class Map(Object):
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
-                Observer().create_notification(self._id, bounds)
+                Observer().create_notification(self.id, bounds)
 
             sleep(self._tick_interval)
 

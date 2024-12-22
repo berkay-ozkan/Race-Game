@@ -10,7 +10,6 @@ class Repo:
     _description = "repo"
 
     def __init__(self):
-        super().__init__()
         self._attachments = {}
         self._objects = {}
         self.components = ComponentFactory()
@@ -22,14 +21,20 @@ class Repo:
         cols = int(cols)
         cellsize = int(cellsize)
 
-        map = Map(description, cols, rows, cellsize, bg_color)
+        map = Map(description=description,
+                  cols=cols,
+                  rows=rows,
+                  cell_size=cellsize,
+                  bg_color=bg_color)
         map.save()
         return map.id
 
     @Monitor().sync
     def list(self) -> dict:
         obj_list = {
-            objId: obj._description
+            objId + 1:
+            obj._description
+            if hasattr(obj, "_description") else "No description"
             for objId, obj in enumerate(Object.objects.all())
         }
         return obj_list

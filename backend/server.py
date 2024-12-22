@@ -4,6 +4,7 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
 django.setup()
 
+from backend.source.objects.component import Component
 from backend.source.object import Object
 from backend.source.objects.map import Map
 from json import loads
@@ -54,7 +55,16 @@ class Replies(Thread):
     def run_command(self, decoded_input: dict) -> str:
         if "id" in decoded_input:
             id = decoded_input["id"]
-            object = Object.objects.get(id=id)
+            type = Object
+            if "type" in decoded_input:
+                type = {
+                    "component": Component,
+                    "map": Map,
+                    "car": Car
+                }[decoded_input["type"]]
+            object = type.objects.get(id=id)
+        elif "component_factory" in decoded_input:
+            object = self.repo.components
         else:
             object = self.repo
 
