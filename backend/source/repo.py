@@ -1,5 +1,5 @@
 from backend.source.component_factory import ComponentFactory
-from backend.source.id_tracker import ID_Tracker
+from backend.source.object import Object
 from backend.source.objects.map import Map
 from backend.source.singleton import singleton
 from backend.source.monitor import Monitor
@@ -11,11 +11,9 @@ class Repo:
 
     def __init__(self):
         super().__init__()
-        ID_Tracker()._add_objects(self)
         self._attachments = {}
         self._objects = {}
         self.components = ComponentFactory()
-        ID_Tracker()._add_objects(self.components)
 
     @Monitor().sync
     def create(self, description: str, rows: int, cols: int, cellsize: int,
@@ -26,14 +24,13 @@ class Repo:
 
         map = Map(description, cols, rows, cellsize, bg_color)
         map.save()
-        id = ID_Tracker()._add_objects(map)
-        return id
+        return map.id
 
     @Monitor().sync
     def list(self) -> dict:
         obj_list = {
             objId: obj._description
-            for objId, obj in enumerate(ID_Tracker()._objects)
+            for objId, obj in enumerate(Object.objects.all())
         }
         return obj_list
 
@@ -46,12 +43,12 @@ class Repo:
 
         self._attachments[obj_id].add(user)
 
-        return ID_Tracker()._objects[obj_id]
+        return Object.objects.get(id=obj_id)
 
     @Monitor().sync
     def list_attached(self, user: str):
         return [
-            ID_Tracker()._objects[obj_id]
+            Object.objects.get(id=obj_id)
             for obj_id, users in self._attachments.items() if user in users
         ]
 
@@ -71,4 +68,4 @@ class Repo:
         obj_id = int(obj_id)
 
         if obj_id not in self._attachments:
-            del ID_Tracker()._objects[obj_id]
+            Object.objects.get(id=obj_id).delete()

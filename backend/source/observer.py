@@ -1,7 +1,7 @@
-from threading import Condition, RLock
-from backend.source.persistent_singleton import persistent_singleton
+from threading import Condition
 from backend.source.singleton import singleton
 from backend.source.monitor import Monitor
+from django.db import models
 
 
 class ObserverInformation:
@@ -14,11 +14,12 @@ class ObserverInformation:
                                 tuple[float, float]] = view_bounds
 
 
-@persistent_singleton
-class Observer:
+class Observer(models.Model):
+    observers = models.JSONField()
 
-    def __init__(self):
+    def __init__(self, id):
         super().__init__()
+        self.id = id
         self.observers = {}
 
     @Monitor().sync

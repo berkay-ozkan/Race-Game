@@ -4,10 +4,9 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
 django.setup()
 
-from inspect import Signature, signature
+from backend.source.object import Object
+from backend.source.objects.map import Map
 from json import loads
-from dill import dump
-from backend.source.id_tracker import ID_Tracker
 from socket import AF_INET, socket, SOCK_STREAM
 from backend.source.objects.components import Car
 from backend.source.objects.components.cells.booster import Booster
@@ -40,7 +39,7 @@ class Notifications(Thread):
 
             if view_id is not None:
                 print("Sending notification")
-                new_state = ID_Tracker()._objects[view_id].draw()
+                new_state = Map.objects.get(id=view_id).draw()
                 write_variable_size(self.sock, new_state)
 
 
@@ -55,7 +54,7 @@ class Replies(Thread):
     def run_command(self, decoded_input: dict) -> str:
         if "id" in decoded_input:
             id = decoded_input["id"]
-            object = ID_Tracker()._objects[id]
+            object = Object.objects.get(id=id)
         else:
             object = self.repo
 
@@ -79,10 +78,8 @@ class Replies(Thread):
             decoded_input = loads(encoded_input.decode())
 
             if decoded_input == "SAVE":
-                with open('ID_Tracker.bin', 'wb') as file:
-                    dump(ID_Tracker(), file)
-                with open('Observer.bin', 'wb') as file:
-                    dump(Observer(), file)
+                for object in Object.objects.all():
+                    object.save()
                 write_variable_size(self.sock, "State saved")
                 continue
 
@@ -114,7 +111,7 @@ def main() -> None:
     s.bind((HOST, PORT))
     s.listen(1)
 
-    observer = Observer()
+    observer = Observer.objects.get_or_create(id=1)
     repo = Repo()
 
     repo.components.register("car", Car)

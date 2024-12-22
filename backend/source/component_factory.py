@@ -1,4 +1,3 @@
-from backend.source.id_tracker import ID_Tracker
 from backend.source.monitor import Monitor
 from backend.source.objects.component import Component
 
@@ -25,7 +24,6 @@ class ComponentFactory:
                 f"Component type '{component_type_name}' is not registered.")
 
         instance = component_class(**kwargs)
-        ID_Tracker()._add_objects(instance)
         instance.save()
 
         #How to notify?

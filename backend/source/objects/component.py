@@ -1,4 +1,3 @@
-from backend.source.id_tracker import ID_Tracker
 from backend.source.monitor import Monitor
 from backend.source.object import Object
 

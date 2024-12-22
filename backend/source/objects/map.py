@@ -7,7 +7,6 @@ from backend.source.objects.component import Component
 from backend.source.objects.components import Car, Cell
 from backend.source.monitor import Monitor
 from backend.source.observer import Observer, ObserverInformation
-from backend.source.id_tracker import ID_Tracker
 from backend.source.socket_helpers import MAX_INPUT_LENGTH
 from time import time, sleep
 
@@ -62,7 +61,7 @@ class Map(Object):
     def __setitem__(self, pos: tuple[int, int], id: int):
         id = int(id)
 
-        cell = ID_Tracker()._objects[id]
+        cell = Cell.objects.get(id=id)
         if self._game_mode_active:
             return
         row = pos[0] - 1
@@ -89,7 +88,7 @@ class Map(Object):
     def remove(self, id: int):
         id = int(id)
 
-        component = ID_Tracker()._objects[id]
+        component = Component.objects.get(id=id)
         if self._game_mode_active:
             return
         for row in range(self.rows):
@@ -138,7 +137,7 @@ class Map(Object):
             return
         self.remove(obj)
 
-        obj = ID_Tracker()._objects[obj]
+        obj = Component.objects.get(id=obj)
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
         self.grid[row][col].append(obj)
@@ -168,7 +167,8 @@ class Map(Object):
         view_description = 'view of ' + self.description
         map_view = Map(view_description, width_ceil, height_ceil,
                        self.cell_size, self.bg_color)
-        view_id = ID_Tracker()._add_objects(map_view)
+        map_view.save()
+        view_id = map_view.id
         map_view._id = view_id
         map_view._is_view = True
         y_floor = floor(y / self.cell_size)
