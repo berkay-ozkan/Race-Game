@@ -10,3 +10,12 @@ class Rock(Cell):
     @Monitor().sync
     def _interact(self, car: Car):
         car._speed = 0
+
+    def __init__(self,
+                 object_id=None,
+                 type=None,
+                 id=None,
+                 _MAP=None,
+                 row=None,
+                 col=None) -> None:
+        super().__init__(id=id, type="rock", _MAP=_MAP, row=row, col=col)

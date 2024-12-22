@@ -12,3 +12,12 @@ class Fuel(Cell):
         car._fuel += 10
         if car._fuel > car._MAX_FUEL:
             car._fuel = car._MAX_FUEL
+
+    def __init__(self,
+                 object_id=None,
+                 type=None,
+                 id=None,
+                 _MAP=None,
+                 row=None,
+                 col=None) -> None:
+        super().__init__(id=id, type="fuel", _MAP=_MAP, row=row, col=col)

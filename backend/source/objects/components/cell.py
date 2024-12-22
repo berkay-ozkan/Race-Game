@@ -11,8 +11,14 @@ class Cell(Component):
 
     _attributes = Component._attributes | {"row": "int", "col": "int"}
 
-    def __init__(self, id=None, _MAP=None, row=None, col=None) -> None:
-        super().__init__(id)
+    def __init__(self,
+                 object_id=None,
+                 type=None,
+                 id=None,
+                 _MAP=None,
+                 row=None,
+                 col=None) -> None:
+        super().__init__(id, type)
         self._MAP = _MAP
         self.row: int = row
         self.col: int = col

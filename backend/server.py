@@ -4,6 +4,7 @@ import os
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
 django.setup()
 
+from backend.source.objects.type_to_class import type_to_class
 from backend.source.objects.component import Component
 from backend.source.object import Object
 from backend.source.objects.map import Map
@@ -40,7 +41,9 @@ class Notifications(Thread):
 
             if view_id is not None:
                 print("Sending notification")
-                new_state = Map.objects.get(id=view_id).draw()
+                object = Map.objects.get(id=view_id)
+                object.save()
+                new_state = object.draw()
                 write_variable_size(self.sock, new_state)
 
 
@@ -63,6 +66,10 @@ class Replies(Thread):
                     "car": Car
                 }[decoded_input["type"]]
             object = type.objects.get(id=id)
+            object.save()
+            if type is Component:
+                object = type_to_class[object.type].objects.get(id=id)
+                object.save()
         elif "component_factory" in decoded_input:
             object = self.repo.components
         else:
@@ -121,7 +128,6 @@ def main() -> None:
     s.bind((HOST, PORT))
     s.listen(1)
 
-    observer = Observer.objects.get_or_create(id=1)
     repo = Repo()
 
     repo.components.register("car", Car)

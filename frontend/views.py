@@ -419,7 +419,9 @@ def map_draw(request: HttpRequest, **query_parameters: dict):
                   "map-draw.html",
                   context={
                       "canvas": reply[0],
-                      "all_players_information": reply[1]
+                      "all_players_information": reply[1],
+                      "bg_color": reply[2],
+                      "cell_size": reply[3]
                   })
 
 

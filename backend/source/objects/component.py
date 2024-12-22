@@ -16,8 +16,8 @@ class Component(Object):
     _representation: str
     _type_name: str
 
-    def __init__(self, id=None) -> None:
-        super().__init__(id)
+    def __init__(self, object_id=None, type=None, id=None) -> None:
+        super().__init__(id, type)
 
     @Monitor().sync
     def description(self) -> str:

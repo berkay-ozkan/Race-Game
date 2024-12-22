@@ -1,10 +1,10 @@
 <html>
 
-<body>
+<body style="background-color: {{ bg_color }};">
     {% for row in canvas %}
     {% for cell in row %}
     {% load static %}
-    <img src="{% static cell %}">
+    <img src="{% static cell %}" width="{{cell_size}}" height="{{cell_size}}">
     {% endfor %}<br>
     {% endfor %}<br>
     <br>

@@ -72,6 +72,8 @@ class Car(Component):
     }
 
     def __init__(self,
+                 object_id=None,
+                 type="car",
                  id=None,
                  _MAP=None,
                  _DRIVER=None,
@@ -92,7 +94,7 @@ class Car(Component):
                  _turn_clockwise=False,
                  _turn_counterclockwise=False,
                  _running=False) -> None:
-        super().__init__(id)
+        super().__init__(id, "car")
 
         acceleration_rate = float(_ACCELERATION_RATE)
         fuel_consumption_rate = float(_FUEL_CONSUMPTION_RATE)

@@ -11,8 +11,15 @@ class Road(Cell):
         "rotation": "int",
     }
 
-    def __init__(self, id=None, rotation=None) -> None:
-        super().__init__(id=None, _MAP=None, row=None, col=None)
+    def __init__(self,
+                 object_id=None,
+                 type=None,
+                 id=None,
+                 _MAP=None,
+                 row=None,
+                 col=None,
+                 rotation=None) -> None:
+        super().__init__(id=id, type=type, _MAP=_MAP, row=row, col=col)
         self.id = id
         self.rotation: int = rotation
 

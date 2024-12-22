@@ -3,6 +3,7 @@ from pickle import dumps
 from threading import Thread, Event
 from django.db import models
 from backend.source.object import Object
+from backend.source.objects.type_to_class import type_to_class
 from backend.source.objects.component import Component
 from backend.source.objects.components import Car, Cell
 from backend.source.monitor import Monitor
@@ -32,8 +33,10 @@ class Map(Object):
     # TODO: _leaderboards = []
 
     def __init__(self,
+                 object_id=None,
+                 type="map",
                  id=None,
-                 description: str = None,
+                 _description: str = None,
                  cols: int = None,
                  rows: int = None,
                  cell_size: int = None,
@@ -45,13 +48,12 @@ class Map(Object):
                  _notification_interval=5,
                  _tick_count=None,
                  *args) -> None:
-        print(args)
         cols = int(cols)
         rows = int(rows)
         cell_size = int(cell_size)
 
-        super().__init__(id)
-        self._description = description
+        super().__init__(id, "map")
+        self._description = _description
         self.cols = cols
         self.rows = rows
         self.cell_size = cell_size
@@ -75,6 +77,9 @@ class Map(Object):
         id = int(id)
 
         cell = Cell.objects.get(id=id)
+        cell.save()
+        cell = type_to_class[cell.type].objects.get(id=id)
+        cell.save()
         if self._game_mode_active:
             return
         row = pos[0] - 1
@@ -83,7 +88,6 @@ class Map(Object):
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
 
     # For getting Cell components
     @Monitor().sync
@@ -102,6 +106,9 @@ class Map(Object):
         id = int(id)
 
         component = Component.objects.get(id=id)
+        component.save()
+        component = type_to_class[component.type].objects.get(id=id)
+        component.save()
         if self._game_mode_active:
             return
         for row in range(self.rows):
@@ -110,7 +117,6 @@ class Map(Object):
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
-                    Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def __delitem__(self, pos: tuple[int, int]):
@@ -124,7 +130,6 @@ class Map(Object):
 
         del self.grid[row][col][-1]
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
@@ -150,7 +155,8 @@ class Map(Object):
             return
         self.remove(obj)
 
-        obj = Component.objects.get(id=obj)
+        obj: Car = Car.objects.get(id=obj)
+        obj.save()
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
         self.grid[row][col].append(obj)
@@ -163,7 +169,6 @@ class Map(Object):
             self._cars.append(obj)
 
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
@@ -195,10 +200,8 @@ class Map(Object):
         y_end = y_floor + ceil(height / self.cell_size)
         x_end = x_floor + ceil(width / self.cell_size)
         # A user can only have one view at a time
-        Observer().unregister(user)
         observer_information = ObserverInformation(view_id, self.id,
                                                    ((y, x), (y_end, x_end)))
-        Observer().register(user, observer_information)
         return map_view
 
     @Monitor().sync
@@ -223,7 +226,8 @@ class Map(Object):
                         )
                     all_players_information.append(player_information)
 
-        return dumps((canvas, all_players_information))
+        return dumps(
+            (canvas, all_players_information, self.bg_color, self.cell_size))
 
     # For starting game mode
     @Monitor().sync
@@ -259,7 +263,6 @@ class Map(Object):
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
-                Observer().create_notification(self.id, bounds)
 
             sleep(self._tick_interval)
 

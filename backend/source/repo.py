@@ -21,7 +21,7 @@ class Repo:
         cols = int(cols)
         cellsize = int(cellsize)
 
-        map = Map(description=description,
+        map = Map(_description=description,
                   cols=cols,
                   rows=rows,
                   cell_size=cellsize,
@@ -48,14 +48,19 @@ class Repo:
 
         self._attachments[obj_id].add(user)
 
-        return Object.objects.get(id=obj_id)
+        object = Object.objects.get(id=obj_id)
+        object.save()
+        return object
 
     @Monitor().sync
     def list_attached(self, user: str):
-        return [
+        result = [
             Object.objects.get(id=obj_id)
             for obj_id, users in self._attachments.items() if user in users
         ]
+        for object in result:
+            object.save()
+        return result
 
     @Monitor().sync
     def detach(self, obj_id: int, user: str):
@@ -73,4 +78,6 @@ class Repo:
         obj_id = int(obj_id)
 
         if obj_id not in self._attachments:
-            Object.objects.get(id=obj_id).delete()
+            object = Object.objects.get(id=obj_id)
+            object.save()
+            object.delete()
