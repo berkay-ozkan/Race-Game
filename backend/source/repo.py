@@ -1,4 +1,4 @@
-from backend.source.objects.component import Component
+from backend.source.component_factory import ComponentFactory
 from backend.source.id_tracker import ID_Tracker
 from backend.source.objects.map import Map
 from backend.source.singleton import singleton
@@ -14,7 +14,7 @@ class Repo:
         ID_Tracker()._add_objects(self)
         self._attachments = {}
         self._objects = {}
-        self.components = Component()
+        self.components = ComponentFactory()
         ID_Tracker()._add_objects(self.components)
 
     @Monitor().sync
@@ -25,6 +25,7 @@ class Repo:
         cellsize = int(cellsize)
 
         map = Map(description, cols, rows, cellsize, bg_color)
+        map.save()
         id = ID_Tracker()._add_objects(map)
         return id
 
