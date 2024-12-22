@@ -2,6 +2,7 @@ from socket import socket
 from struct import calcsize, pack, unpack
 
 INPUT_SIZE_FORMAT = ">I"
+MAX_INPUT_LENGTH = 4294967295  # UNSIGNED_INT_MAX
 
 
 def read_variable_size(socket: socket) -> None | bytes:

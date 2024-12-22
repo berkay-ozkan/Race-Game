@@ -1,9 +1,35 @@
 from backend.source.monitor import Monitor
 from backend.source.objects.component import Component
 from math import cos, sin, floor, ceil
+from django.db import models
+from backend.source.socket_helpers import MAX_INPUT_LENGTH
 
 
 class Car(Component):
+    _MAP = models.ForeignKey(to="Map", null=True, on_delete=models.CASCADE)
+    _DRIVER = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
+
+    _MODEL = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
+    _ACCELERATION_RATE = models.FloatField()
+    _FUEL_CONSUMPTION_RATE = models.FloatField()
+    _DECELERATION_RATE = models.FloatField()
+    _STEER_RATE = models.FloatField()
+
+    _MAX_SPEED = models.FloatField()
+    _MAX_FUEL = models.FloatField()
+
+    _user = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
+    _position = models.JSONField(null=True)
+    _angle = models.FloatField(null=True)
+    _speed = models.FloatField()
+    _fuel = models.FloatField()
+
+    _accelerate = models.BooleanField()
+    _brake = models.BooleanField()
+    _turn_clockwise = models.BooleanField()
+    _turn_counterclockwise = models.BooleanField()
+    _running = models.BooleanField()
+
     # Car class variables
     _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
 

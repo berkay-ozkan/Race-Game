@@ -1,16 +1,36 @@
 from math import ceil, floor
 from pickle import dumps
 from threading import Thread, Event
+from django.db import models
 from backend.source.object import Object
 from backend.source.objects.component import Component
 from backend.source.objects.components import Car, Cell
 from backend.source.monitor import Monitor
 from backend.source.observer import Observer, ObserverInformation
 from backend.source.id_tracker import ID_Tracker
+from backend.source.socket_helpers import MAX_INPUT_LENGTH
 from time import time, sleep
 
 
 class Map(Object):
+    _description = models.CharField(max_length=MAX_INPUT_LENGTH)
+    cols = models.IntegerField()
+    rows = models.IntegerField()
+    cell_size = models.IntegerField()
+    bg_color = models.CharField(max_length=7)
+    # TODO: grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
+    #                                     for _ in range(rows)]
+    # TODO: _cars = []
+    _is_view = models.BooleanField()
+    _game_mode_active = models.BooleanField()
+    _start_time = models.FloatField(null=True)
+    _tick_interval = models.FloatField()
+    _notification_interval = models.FloatField()
+    _tick_count = models.IntegerField(null=True)
+
+    # TODO: _game_thread = None
+    # TODO: _stop_event = Event()
+    # TODO: _leaderboards = []
 
     def __init__(self, description: str, cols: int, rows: int, cell_size: int,
                  bg_color: str) -> None:

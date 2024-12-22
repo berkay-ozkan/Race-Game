@@ -1,9 +1,12 @@
+from django.db import models
 from backend.source.monitor import Monitor
 from backend.source.objects.components import Cell
 from backend.source.objects.components.car import Car
 
 
 class Road(Cell):
+    rotation = models.IntegerField()
+
     _attributes = Cell._attributes | {
         "rotation": "int",
     }

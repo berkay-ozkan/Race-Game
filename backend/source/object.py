@@ -1,7 +1,8 @@
 from backend.source.monitor import Monitor
+from django.db import models
 
 
-class Object:
+class Object(models.Model):
 
     def __init__(self) -> None:
         super().__init__()
