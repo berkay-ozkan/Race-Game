@@ -1,3 +1,9 @@
+import django
+import os
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
+django.setup()
+
 from inspect import Signature, signature
 from json import loads
 from dill import dump
