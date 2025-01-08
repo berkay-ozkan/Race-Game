@@ -54,6 +54,7 @@ class Map(Object):
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     # For getting Cell components
     @Monitor().sync
@@ -93,6 +94,7 @@ class Map(Object):
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
+                    Observer().create_notification(self._id, cell_bounds)
 
     @Monitor().sync
     def __delitem__(self, pos: tuple[int, int]):
@@ -106,6 +108,7 @@ class Map(Object):
 
         del self.get_cells(row, col)[-1]
         cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
@@ -142,6 +145,7 @@ class Map(Object):
         obj._user = user
 
         cell_bounds = self._cell_bounds(row, col)
+        Observer().create_notification(self._id, cell_bounds)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
@@ -174,8 +178,10 @@ class Map(Object):
         y_end = y_floor + ceil(height / self.cell_size)
         x_end = x_floor + ceil(width / self.cell_size)
         # A user can only have one view at a time
-        observer_information = ObserverInformation(view_id, self.id,
+        Observer().unregister(user)
+        observer_information = ObserverInformation(view_id, self._id,
                                                    ((y, x), (y_end, x_end)))
+        Observer().register(user, observer_information)
         return map_view
 
     @Monitor().sync
@@ -238,6 +244,7 @@ class Map(Object):
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
+                Observer().create_notification(self._id, bounds)
 
             sleep(self._tick_interval)
 
