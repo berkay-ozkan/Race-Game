@@ -12,12 +12,3 @@ class Booster(Cell):
         car._speed += 47
         if car._speed > car._MAX_SPEED:
             car._speed = car._MAX_SPEED
-
-    def __init__(self,
-                 object_id=None,
-                 type=None,
-                 id=None,
-                 _MAP=None,
-                 row=None,
-                 col=None) -> None:
-        super().__init__(id=id, type="booster", _MAP=_MAP, row=row, col=col)

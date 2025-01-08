@@ -1,8 +1,14 @@
+from django.db import models
 from backend.source.monitor import Monitor
 from backend.source.object import Object
 
 
 class Component(Object):
+    _MAP = models.ForeignKey(to="Map", null=True, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
     # Subclass class variables
     _attributes: dict[str, str] = {
         # Class variables
@@ -15,9 +21,6 @@ class Component(Object):
     _description: str = "Component factory"
     _representation: str
     _type_name: str
-
-    def __init__(self, object_id=None, type=None, id=None) -> None:
-        super().__init__(id, type)
 
     @Monitor().sync
     def description(self) -> str:

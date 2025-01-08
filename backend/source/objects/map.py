@@ -18,9 +18,6 @@ class Map(Object):
     rows = models.IntegerField(null=True)
     cell_size = models.IntegerField(null=True)
     bg_color = models.CharField(null=True, max_length=7)
-    # TODO: grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
-    #                                     for _ in range(rows)]
-    # TODO: _cars = []
     _is_view = models.BooleanField(null=True, )
     _game_mode_active = models.BooleanField(null=True, )
     _start_time = models.FloatField(null=True)
@@ -28,48 +25,9 @@ class Map(Object):
     _notification_interval = models.FloatField(null=True, )
     _tick_count = models.IntegerField(null=True)
 
-    # TODO: _game_thread = None
-    # TODO: _stop_event = Event()
-    # TODO: _leaderboards = []
-
-    def __init__(self,
-                 object_id=None,
-                 type="map",
-                 id=None,
-                 _description: str = None,
-                 cols: int = None,
-                 rows: int = None,
-                 cell_size: int = None,
-                 bg_color: str = None,
-                 _is_view=False,
-                 _game_mode_active=False,
-                 _start_time=None,
-                 _tick_interval=1,
-                 _notification_interval=5,
-                 _tick_count=None,
-                 *args) -> None:
-        cols = int(cols)
-        rows = int(rows)
-        cell_size = int(cell_size)
-
-        super().__init__(id, "map")
-        self._description = _description
-        self.cols = cols
-        self.rows = rows
-        self.cell_size = cell_size
-        self.bg_color = bg_color
-        self.grid: list[list[list[Component]]] = [[[] for _ in range(cols)]
-                                                  for _ in range(rows)]
-        self._cars = []
-        self._is_view = _is_view
-        self._game_mode_active = _game_mode_active
-        self._start_time = _start_time
-        self._tick_interval = _tick_interval
-        self._notification_interval = _notification_interval
-        self._tick_count = _tick_count
+    def __init__(self, *args, **kwargs):
         self._game_thread = None
         self._stop_event = Event()
-        self._leaderboards = []
 
     # For adding Cell components
     @Monitor().sync
