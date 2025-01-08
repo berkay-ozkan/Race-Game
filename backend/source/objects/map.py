@@ -3,6 +3,12 @@ from pickle import dumps
 from threading import Thread, Event
 from django.db import models
 from backend.source.object import Object
+from backend.source.objects.components.cells.booster import Booster
+from backend.source.objects.components.cells.fuel import Fuel
+from backend.source.objects.components.cells.roads.diagonal import Diagonal
+from backend.source.objects.components.cells.roads.straight import Straight
+from backend.source.objects.components.cells.roads.turn90 import Turn90
+from backend.source.objects.components.cells.rock import Rock
 from backend.source.objects.type_to_class import type_to_class
 from backend.source.objects.component import Component
 from backend.source.objects.components import Car, Cell
@@ -10,6 +16,8 @@ from backend.source.monitor import Monitor
 from backend.source.observer import Observer, ObserverInformation
 from backend.source.socket_helpers import MAX_INPUT_LENGTH
 from time import time, sleep
+
+COMPONENTS = {Car, Booster, Fuel, Rock, Diagonal, Straight, Turn90}
 
 
 class Map(Object):
@@ -42,7 +50,7 @@ class Map(Object):
             return
         row = pos[0] - 1
         col = pos[1] - 1
-        self.grid[row][col].append(cell)
+        cell._MAP = self
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
@@ -53,11 +61,21 @@ class Map(Object):
         row = pos[0] - 1
         col = pos[1] - 1
 
-        for component in reversed(self.grid[row][col]):
+        for component in reversed(self.get_cells(row, col)):
             if isinstance(component, Cell):
                 return component
 
         return None
+
+    def get_cells(self, row: int, col: int):
+        result = []
+        for object_type in COMPONENTS:
+            for object in self.__getattribute__(object_type.__name__.lower() +
+                                                "_set").all():
+                if object.row == row and object.col == col:
+                    # TODO: Preserve order
+                    result.append(object)
+        return result
 
     @Monitor().sync
     def remove(self, id: int):
@@ -71,7 +89,7 @@ class Map(Object):
             return
         for row in range(self.rows):
             for col in range(self.cols):
-                cell = self.grid[row][col]
+                cell = self.get_cells(row, col)
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
@@ -83,10 +101,10 @@ class Map(Object):
         row = pos[0] - 1
         col = pos[1] - 1
 
-        if len(self.grid[row][col] == 0):
+        if len(self.get_cells(row, col)) == 0:
             return
 
-        del self.grid[row][col][-1]
+        del self.get_cells(row, col)[-1]
         cell_bounds = self._cell_bounds(row, col)
 
     # Returns cells at the row and column corresponding to (y, x)
@@ -100,7 +118,7 @@ class Map(Object):
 
         return list(
             filter(lambda component: isinstance(component, Cell),
-                   self.grid[row][col]))
+                   self.get_cells(row, col)))
 
     # For adding Car components
     @Monitor().sync
@@ -117,19 +135,17 @@ class Map(Object):
         obj.save()
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
-        self.grid[row][col].append(obj)
 
         obj._MAP = self
         obj._position = (y, x)
         obj._angle = 0
         obj._user = user
-        if obj not in self._cars:
-            self._cars.append(obj)
 
         cell_bounds = self._cell_bounds(row, col)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
+        # TODO: Replace views with separate classes that defer to their corresponding maps
         y = float(y)
         x = float(x)
         height = float(height)
@@ -166,9 +182,10 @@ class Map(Object):
     def draw(self) -> bytes:
         canvas: list[list[str]] = []
         all_players_information: list[list[str]] = []
-        for row in self.grid:
+        for row in range(self.rows):
             canvas.append([])
-            for cell in row:
+            for col in range(self.cols):
+                cell = self.get_cells(row, col)
                 if len(cell) == 0:
                     canvas[-1].append("empty.png")
                     continue
@@ -193,7 +210,7 @@ class Map(Object):
         if self._game_mode_active:
             return
 
-        for car in self._cars:
+        for car in self.car_set.all():
             car.start()
 
         self._game_mode_active = True
@@ -207,12 +224,12 @@ class Map(Object):
     def game_controller(self):
         while not self._stop_event.is_set():
             self._tick_count += 1
-            for car in self._cars:
+            for car in self.car_set.all():
                 car.tick()
 
             self._leaderboards.clear()
 
-            for car in self._cars:
+            for car in self.car_set.all():
                 player = car._user
                 lap = car._laps_completed
                 car_id = f'car{car.get_id()}'
@@ -233,7 +250,7 @@ class Map(Object):
         self._stop_event.set()
         self._game_thread.join()
 
-        for car in self._cars:
+        for car in self.car_set.all():
             car.stop()
 
         self._game_mode_active = False
