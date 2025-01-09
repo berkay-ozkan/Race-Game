@@ -26,7 +26,6 @@ class Map(Object):
     rows = models.IntegerField(null=True)
     cell_size = models.IntegerField(null=True)
     bg_color = models.CharField(null=True, max_length=7)
-    _is_view = models.BooleanField(null=True, )
     _game_mode_active = models.BooleanField(null=True, )
     _start_time = models.FloatField(null=True)
     _tick_interval = models.FloatField(null=True, )
@@ -54,7 +53,7 @@ class Map(Object):
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     # For getting Cell components
     @Monitor().sync
@@ -62,13 +61,13 @@ class Map(Object):
         row = pos[0] - 1
         col = pos[1] - 1
 
-        for component in reversed(self.get_cells(row, col)):
+        for component in reversed(self._get_cells(row, col)):
             if isinstance(component, Cell):
                 return component
 
         return None
 
-    def get_cells(self, row: int, col: int):
+    def _get_cells(self, row: int, col: int):
         result = []
         for object_type in COMPONENTS:
             for object in self.__getattribute__(object_type.__name__.lower() +
@@ -90,11 +89,11 @@ class Map(Object):
             return
         for row in range(self.rows):
             for col in range(self.cols):
-                cell = self.get_cells(row, col)
+                cell = self._get_cells(row, col)
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
-                    Observer().create_notification(self._id, cell_bounds)
+                    Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def __delitem__(self, pos: tuple[int, int]):
@@ -103,12 +102,12 @@ class Map(Object):
         row = pos[0] - 1
         col = pos[1] - 1
 
-        if len(self.get_cells(row, col)) == 0:
+        if len(self._get_cells(row, col)) == 0:
             return
 
-        del self.get_cells(row, col)[-1]
+        del self._get_cells(row, col)[-1]
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
@@ -121,7 +120,7 @@ class Map(Object):
 
         return list(
             filter(lambda component: isinstance(component, Cell),
-                   self.get_cells(row, col)))
+                   self._get_cells(row, col)))
 
     # For adding Car components
     @Monitor().sync
@@ -145,44 +144,124 @@ class Map(Object):
         obj._user = user
 
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self._id, cell_bounds)
+        Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
-        # TODO: Replace views with separate classes that defer to their corresponding maps
+
+        class View(Object):
+            map = models.ForeignKey(Map, null=True, on_delete=models.CASCADE)
+            y = models.FloatField(null=True)
+            x = models.FloatField(null=True)
+            height = models.FloatField(null=True)
+            width = models.FloatField(null=True)
+            user = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
+            _description = models.CharField(max_length=MAX_INPUT_LENGTH,
+                                            null=True)
+
+            def __init__(self, *args, **kwargs) -> None:
+                super().__init__(*args, **kwargs)
+                self.y_floor = self.map.cell_size * floor(
+                    kwargs["y"] / self.map.cell_size)
+                self.x_floor = self.map.cell_size * floor(
+                    kwargs["x"] / self.map.cell_size)
+                self.y_ceil = self.map.cell_size * ceil(
+                    (kwargs["y"] + kwargs["height"]) / self.map.cell_size)
+                self.x_ceil = self.map.cell_size * ceil(
+                    (kwargs["x"] + kwargs["width"]) / self.map.cell_size)
+
+            def __setitem__(self, pos: tuple[int, int], id: int):
+                adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
+                                self.x_floor + pos[1] * self.map.cell_size)
+                return self.map.__setitem__(adjusted_pos, id)
+
+            def __getitem__(self, pos: tuple[int, int]):
+                adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
+                                self.x_floor + pos[1] * self.map.cell_size)
+                return self.map.__getitem__(adjusted_pos)
+
+            def remove(self, id: int):
+                return self.map.remove(id)
+
+            def __delitem__(self, pos: tuple[int, int]):
+                adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
+                                self.x_floor + pos[1] * self.map.cell_size)
+                return self.map.__delitem__(adjusted_pos)
+
+            def get_y_x(self, y: float, x: float):
+                return self.map.get_y_x(self.y + y, self.x + x)
+
+            def place(self, obj: int, y: float, x: float, user: str):
+                return self.map.place(obj, self.y + y, self.x + x, user)
+
+            def view(self, y: float, x: float, height: float, width: float,
+                     user: str) -> None:
+                print("view of a view cannot be created")
+                return
+
+            def draw(self) -> bytes:
+                canvas: list[list[str]] = []
+                all_players_information: list[list[str]] = []
+                rows = (floor(self.y_floor / self.map.cell_size),
+                        floor(self.y_ceil / self.map.cell_size))
+                cols = (floor(self.x_floor / self.map.cell_size),
+                        floor(self.x_ceil / self.map.cell_size))
+                for row in range(rows[0], rows[1]):
+                    canvas.append([])
+                    for col in range(cols[0], cols[1]):
+                        cell = self.map._get_cells(row, col)
+                        if len(cell) == 0:
+                            canvas[-1].append("empty.png")
+                            continue
+
+                        topmost_component = cell[-1]
+                        canvas[-1].append(topmost_component.representation())
+
+                        if isinstance(topmost_component, Car):
+                            player_information = []
+                            for attribute in topmost_component._attributes:
+                                player_information.append(
+                                    f"{attribute}: {getattr(topmost_component, attribute)}"
+                                )
+                            all_players_information.append(player_information)
+
+                return dumps((canvas, all_players_information,
+                              self.map.bg_color, self.map.cell_size))
+
+            def start(self):
+                return self.map.start()
+
+            def stop(self):
+                return self.map.stop()
+
         y = float(y)
         x = float(x)
         height = float(height)
         width = float(width)
 
-        if (self._is_view == True):
-            print("view of a view cannot be created")
-            return
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
-        view_description = 'view of ' + self.description
-        map_view = Map(view_description, width_ceil, height_ceil,
-                       self.cell_size, self.bg_color)
+        view_description = f"{user}'s view of {self._description}"
+        map_view = View(map=self,
+                        y=y,
+                        x=x,
+                        height=height_ceil,
+                        width=width_ceil,
+                        user=user,
+                        _description=view_description)
         map_view.save()
         view_id = map_view.id
-        map_view.id = view_id
-        map_view._is_view = True
-        y_floor = floor(y / self.cell_size)
-        x_floor = floor(x / self.cell_size)
-        for row in range(height_ceil):
-            for col in range(width_ceil):
-                map_row = y_floor + row
-                map_col = x_floor + col
-                if map_row >= 0 and map_col >= 0 and map_row < self.rows and map_col < self.cols:
-                    map_view.grid[row][col] = self.grid[map_row][map_col]
-        y_end = y_floor + ceil(height / self.cell_size)
-        x_end = x_floor + ceil(width / self.cell_size)
+        y_floor = self.cell_size * floor(y / self.cell_size)
+        x_floor = self.cell_size * floor(x / self.cell_size)
+        y_ceil = self.cell_size * ceil((y + height) / self.cell_size)
+        x_ceil = self.cell_size * ceil((x + width) / self.cell_size)
         # A user can only have one view at a time
         Observer().unregister(user)
-        observer_information = ObserverInformation(view_id, self._id,
-                                                   ((y, x), (y_end, x_end)))
+        observer_information = ObserverInformation(view_id, self.id,
+                                                   ((y_floor, x_floor),
+                                                    (y_ceil, x_ceil)))
         Observer().register(user, observer_information)
-        return map_view
+        return map_view.id
 
     @Monitor().sync
     def draw(self) -> bytes:
@@ -191,7 +270,7 @@ class Map(Object):
         for row in range(self.rows):
             canvas.append([])
             for col in range(self.cols):
-                cell = self.get_cells(row, col)
+                cell = self._get_cells(row, col)
                 if len(cell) == 0:
                     canvas[-1].append("empty.png")
                     continue
@@ -244,7 +323,7 @@ class Map(Object):
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
-                Observer().create_notification(self._id, bounds)
+                Observer().create_notification(self.id, bounds)
 
             sleep(self._tick_interval)
 
