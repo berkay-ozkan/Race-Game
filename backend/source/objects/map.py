@@ -33,6 +33,7 @@ class Map(Object):
     _tick_count = models.IntegerField(null=True)
 
     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._game_thread = None
         self._stop_event = Event()
 
