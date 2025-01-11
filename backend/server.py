@@ -94,12 +94,6 @@ class Replies(Thread):
 
             decoded_input = loads(encoded_input.decode())
 
-            if decoded_input == "SAVE":
-                for object in Object.objects.all():
-                    object.save()
-                write_variable_size(self.sock, "State saved")
-                continue
-
             try:
                 result = self.run_command(decoded_input)
             except Exception as exception:
