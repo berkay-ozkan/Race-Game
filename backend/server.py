@@ -1,15 +1,23 @@
-import django
-import os
+from django import setup
+from json import loads
+from os import environ
+from subprocess import Popen, PIPE
+from sys import argv, exit, path
+from threading import Thread
+from websockets.sync.server import serve, ServerConnection
+from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
-django.setup()
+pwd = Popen(["pwd"], stdout=PIPE)
+pwd.wait()
+project_path = pwd.stdout.readline().decode().strip()
+path.append(project_path)
+environ.setdefault('DJANGO_SETTINGS_MODULE', 'CENG445RaceGame.settings')
+setup()
 
-from backend.source.objects.type_to_class import type_to_class
-from backend.source.objects.component import Component
+from backend.source.component_factory import ComponentFactory
 from backend.source.object import Object
 from backend.source.objects.map import Map
-from json import loads
-from socket import AF_INET, socket, SOCK_STREAM
+from backend.source.objects.component import Component
 from backend.source.objects.components import Car
 from backend.source.objects.components.cells.booster import Booster
 from backend.source.objects.components.cells.fuel import Fuel
@@ -17,18 +25,17 @@ from backend.source.objects.components.cells.roads.diagonal import Diagonal
 from backend.source.objects.components.cells.roads.straight import Straight
 from backend.source.objects.components.cells.roads.turn90 import Turn90
 from backend.source.objects.components.cells.rock import Rock
+from backend.source.objects.type_to_class import type_to_class
 from backend.source.observer import Observer
 from backend.source.repo import Repo
 from backend.source.socket_helpers import read_variable_size, write_variable_size
-from sys import argv, exit
-from threading import Thread
 
 
 class Notifications(Thread):
 
-    def __init__(self, sock: socket, username: str, observer: Observer):
+    def __init__(self, sock, username: str, observer: Observer):
         super().__init__()
-        self.sock: socket = sock
+        self.sock = sock
         self.username: str = username
         self.observer: Observer = observer
 
@@ -49,9 +56,9 @@ class Notifications(Thread):
 
 class Replies(Thread):
 
-    def __init__(self, sock: socket, username: str, repo: Repo):
+    def __init__(self, sock, username: str, repo: Repo):
         super().__init__()
-        self.sock: socket = sock
+        self.sock = sock
         self.username: str = username
         self.repo: Repo = repo
 
@@ -111,6 +118,26 @@ class Replies(Thread):
         return function_name.startswith('_')
 
 
+def agent(connection: ServerConnection):
+    peer = connection.remote_address
+    print("Connected by", peer)
+
+    username = connection.recv()
+
+    try:
+        while True:
+            input = connection.recv()
+            # you can reply by connection.send(str)
+    except ConnectionClosedOK:
+        # peaceful termination
+        pass
+    except ConnectionClosedError:
+        # client generated an error
+        pass
+
+    connection.close()
+
+
 def main() -> None:
     if len(argv) != 3:
         print("usage: ", argv[0], "--port", "[PORT]")
@@ -118,12 +145,8 @@ def main() -> None:
 
     HOST = ""
     PORT = int(argv[2])
-    s = socket(AF_INET, SOCK_STREAM)
-    s.bind((HOST, PORT))
-    s.listen(1)
 
     repo = Repo()
-
     repo.components.register("car", Car)
     repo.components.register("diagonal", Diagonal)
     repo.components.register("straight", Straight)
@@ -132,15 +155,8 @@ def main() -> None:
     repo.components.register("fuel", Fuel)
     repo.components.register("rock", Rock)
 
-    while True:
-        conn, addr = s.accept()
-        print("Connected by", addr)
-
-        encoded_input = read_variable_size(conn)
-        username = encoded_input.decode().strip()  # type: ignore[union-attr]
-
-        a = Replies(conn, username, repo)
-        a.start()
+    server = serve(agent, HOST, PORT)
+    server.serve_forever()
 
 
 if __name__ == "__main__":
