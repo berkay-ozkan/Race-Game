@@ -33,14 +33,12 @@ from backend.source.socket_helpers import read_variable_size, write_variable_siz
 
 class Notifications(Thread):
 
-    def __init__(self, sock, username: str, observer: Observer):
+    def __init__(self, connection: ServerConnection, username: str,
+                 observer: Observer) -> None:
         super().__init__()
-        self.sock = sock
+        self.connection: ServerConnection = connection
         self.username: str = username
         self.observer: Observer = observer
-
-        self.current = 0
-        self.notexit = True
 
     def run(self):
         while True:
@@ -51,66 +49,68 @@ class Notifications(Thread):
                 object = Map.objects.get(id=view_id)
                 object.save()
                 new_state = object.draw()
-                write_variable_size(self.sock, new_state)
+                self.connection.send(new_state)
 
 
 class Replies(Thread):
 
-    def __init__(self, sock, username: str, repo: Repo):
+    def __init__(self, connection: ServerConnection, username: str,
+                 repo: Repo) -> None:
         super().__init__()
-        self.sock = sock
+        self.connection: ServerConnection = connection
         self.username: str = username
         self.repo: Repo = repo
 
     def run_command(self, decoded_input: dict) -> str:
-        object: Repo | ComponentFactory | Object
-        if "id" in decoded_input:
-            id = decoded_input["id"]
-            type = Object
-            if "type" in decoded_input:
-                type = {
-                    "component": Component,
-                    "map": Map,
-                    "car": Car
-                }[decoded_input["type"]]
-            object = type.objects.get(id=id)
-            object.save()
-            if type is Component:
-                object = type_to_class[object.type].objects.get(id=id)
+        try:
+            object: Repo | ComponentFactory | Object
+            if "id" in decoded_input:
+                id = decoded_input["id"]
+                type = Object
+                if "type" in decoded_input:
+                    type = {
+                        "component": Component,
+                        "map": Map,
+                        "car": Car
+                    }[decoded_input["type"]]
+                object = type.objects.get(id=id)
                 object.save()
-        elif "component_factory" in decoded_input:
-            object = self.repo.components
-        else:
-            object = self.repo
+                if type is Component:
+                    object = type_to_class[object.type].objects.get(id=id)
+                    object.save()
+            elif "component_factory" in decoded_input:
+                object = self.repo.components
+            else:
+                object = self.repo
 
-        function_name: str = decoded_input["function_name"]
-        if Replies.is_internal(function_name):
-            return "Calling internal functions is not supported"
-        function = getattr(object, function_name)
-        parameters = decoded_input["parameters"]
+            function_name: str = decoded_input["function_name"]
+            if Replies.is_internal(function_name):
+                return "Calling internal functions is not supported"
+            function = getattr(object, function_name)
+            parameters = decoded_input["parameters"]
 
-        result = function(*parameters[:-1], **parameters[-1])
-        if result is not None:
-            return str(result)
-        return "Command executed"
+            result = function(*parameters[:-1], **parameters[-1])
+            if result is not None:
+                return str(result)
+            return "Command executed"
+        except Exception as exception:
+            return str(exception)
 
     def run(self):
-        while True:
-            encoded_input = read_variable_size(self.sock)
-            if encoded_input is None:
-                break
-
-            decoded_input = loads(encoded_input.decode())
-
-            try:
-                result = self.run_command(decoded_input)
-            except Exception as exception:
-                result = str(exception)
-
-            write_variable_size(self.sock, result)
+        try:
+            while True:
+                input = self.connection.recv()
+                result = self.run_command(input)
+                self.connection.send(result)
+        except ConnectionClosedOK:
+            # peaceful termination
+            pass
+        except ConnectionClosedError:
+            # client generated an error
+            pass
 
         print(self.username, "closed the connection.")
-        self.sock.close()
+        self.connection.close()
 
     @staticmethod
     def is_internal(function_name: str) -> bool:
@@ -119,24 +119,21 @@ class Replies(Thread):
         return function_name.startswith('_')
 
 
-def agent(connection: ServerConnection):
-    peer = connection.remote_address
-    print("Connected by", peer)
+class Agent:
 
-    username = connection.recv()
+    def __init__(self, observer: Observer, repo: Repo) -> None:
+        self.observer: Observer = observer
+        self.repo: Repo = repo
 
-    try:
-        while True:
-            input = connection.recv()
-            # you can reply by connection.send(str)
-    except ConnectionClosedOK:
-        # peaceful termination
-        pass
-    except ConnectionClosedError:
-        # client generated an error
-        pass
+    def handle(self, connection: ServerConnection) -> None:
+        peer = connection.remote_address
+        print("Connected by", peer)
 
-    connection.close()
+        username = connection.recv()
+        print("Username set to", username)
+
+        Notifications(connection, username, self.observer).start()
+        Replies(connection, username, self.repo).start()
 
 
 def main() -> None:
@@ -147,7 +144,9 @@ def main() -> None:
     HOST = ""
     PORT = int(argv[2])
 
+    observer = Observer()
     repo = Repo()
+
     repo.components.register("car", Car)
     repo.components.register("diagonal", Diagonal)
     repo.components.register("straight", Straight)
@@ -156,7 +155,8 @@ def main() -> None:
     repo.components.register("fuel", Fuel)
     repo.components.register("rock", Rock)
 
-    server = serve(agent, HOST, PORT)
+    agent = Agent(observer, repo)
+    server = serve(agent.handle, HOST, PORT)
     server.serve_forever()
 
 
