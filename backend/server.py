@@ -63,6 +63,7 @@ class Replies(Thread):
         self.repo: Repo = repo
 
     def run_command(self, decoded_input: dict) -> str:
+        object: Repo | ComponentFactory | Object
         if "id" in decoded_input:
             id = decoded_input["id"]
             type = Object
