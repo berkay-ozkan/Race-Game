@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 from sys import argv, exit, path
 from threading import Thread
 from websockets.sync.server import serve, ServerConnection
-from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
+from websockets.exceptions import ConnectionClosedOK
 
 pwd = Popen(["pwd"], stdout=PIPE)
 pwd.wait()
@@ -28,7 +28,6 @@ from backend.source.objects.components.cells.rock import Rock
 from backend.source.objects.type_to_class import type_to_class
 from backend.source.observer import Observer
 from backend.source.repo import Repo
-from backend.source.socket_helpers import read_variable_size, write_variable_size
 
 
 class Notifications(Thread):
@@ -52,11 +51,10 @@ class Notifications(Thread):
                 self.connection.send(new_state)
 
 
-class Replies(Thread):
+class Replies:
 
     def __init__(self, connection: ServerConnection, username: str,
                  repo: Repo) -> None:
-        super().__init__()
         self.connection: ServerConnection = connection
         self.username: str = username
         self.repo: Repo = repo
@@ -99,14 +97,11 @@ class Replies(Thread):
     def run(self):
         try:
             while True:
-                input = self.connection.recv()
+                encoded_input = self.connection.recv()
+                input = loads(encoded_input)
                 result = self.run_command(input)
                 self.connection.send(result)
         except ConnectionClosedOK:
-            # peaceful termination
-            pass
-        except ConnectionClosedError:
-            # client generated an error
             pass
 
         print(self.username, "closed the connection.")
@@ -129,11 +124,9 @@ class Agent:
         peer = connection.remote_address
         print("Connected by", peer)
 
-        username = connection.recv()
-        print("Username set to", username)
+        username = "Placeholder"
 
-        Notifications(connection, username, self.observer).start()
-        Replies(connection, username, self.repo).start()
+        Replies(connection, username, self.repo).run()
 
 
 def main() -> None:
@@ -156,8 +149,8 @@ def main() -> None:
     repo.components.register("rock", Rock)
 
     agent = Agent(observer, repo)
-    server = serve(agent.handle, HOST, PORT)
-    server.serve_forever()
+    with serve(agent.handle, HOST, PORT) as server:
+        server.serve_forever()
 
 
 if __name__ == "__main__":

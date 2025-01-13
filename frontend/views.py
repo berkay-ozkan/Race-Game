@@ -43,16 +43,14 @@ def repo_create(request: HttpRequest):
 def repo_create_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "create", "parameters": [kwargs]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
 @login_required(login_url="/login")
 def repo_list(request: HttpRequest):
     command = {"function_name": "list", "parameters": [{}]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -65,8 +63,7 @@ def repo_list_attached(request: HttpRequest):
 def repo_list_attached_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "list_attached", "parameters": [kwargs]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -79,8 +76,7 @@ def repo_attach(request: HttpRequest):
 def repo_attach_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "attach", "parameters": [kwargs]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -93,8 +89,7 @@ def repo_detach(request: HttpRequest):
 def repo_detach_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "detach", "parameters": [kwargs]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -107,8 +102,7 @@ def repo_delete(request: HttpRequest):
 def repo_delete_post(request: HttpRequest):
     kwargs = request.POST.dict()
     command = {"function_name": "delete", "parameters": [kwargs]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -119,8 +113,7 @@ def component_factory_list(request: HttpRequest):
         "function_name": "list",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -148,8 +141,7 @@ def component_factory_register_post(request: HttpRequest):
         "function_name": "register",
         "parameters": [kwargs]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -166,8 +158,7 @@ def component_factory_unregister_post(request: HttpRequest):
         "function_name": "unregister",
         "parameters": [kwargs]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -175,8 +166,7 @@ def component_factory_unregister_post(request: HttpRequest):
 def object_getid(request: HttpRequest, **query_parameters: dict):
     id: int = int(query_parameters["id"])
     command = {"id": id, "function_name": "get_id", "parameters": [{}]}
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -189,8 +179,7 @@ def component_description(request: HttpRequest, **query_parameters: dict):
         "function_name": "description",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -203,8 +192,7 @@ def component_type(request: HttpRequest, **query_parameters: dict):
         "function_name": "type",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -217,8 +205,7 @@ def component_attributes(request: HttpRequest, **query_parameters: dict):
         "function_name": "attributes",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -245,8 +232,7 @@ def component___setattr___post(request: HttpRequest, **query_parameters: dict):
             "value": kwargs["value"]
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -259,8 +245,7 @@ def component_representation(request: HttpRequest, **query_parameters: dict):
         "function_name": "representation",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return render(request,
                   "component-representation.html",
                   context={"reply": reply})
@@ -288,8 +273,7 @@ def map___setitem___post(request: HttpRequest, **query_parameters: dict):
             "id": kwargs["id"]
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -311,8 +295,7 @@ def map___delitem___post(request: HttpRequest, **query_parameters: dict):
             "pos": (int(kwargs["y"]), int(kwargs["x"]))
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -334,8 +317,7 @@ def map_remove_post(request: HttpRequest, **query_parameters: dict):
             "id": kwargs["id"]
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -355,8 +337,7 @@ def map_get_y_x_post(request: HttpRequest, **query_parameters: dict):
         "function_name": "get_y_x",
         "parameters": [kwargs]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -378,8 +359,7 @@ def map_place_post(request: HttpRequest, **query_parameters: dict):
             "user": request.user.username
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -399,8 +379,7 @@ def map_view_post(request: HttpRequest, **query_parameters: dict):
         "function_name": "view",
         "parameters": [kwargs]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -413,8 +392,8 @@ def map_draw(request: HttpRequest, **query_parameters: dict):
         "function_name": "draw",
         "parameters": [{}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = loads(eval(encoded_reply.decode()))
+    encoded_reply: str = write_to_backend(request, dumps(command))
+    reply: tuple = loads(eval(encoded_reply))
     return render(request,
                   "map-draw.html",
                   context={
@@ -441,8 +420,7 @@ def car_create_post(request: HttpRequest):
             "component_type_name": "car"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -455,8 +433,7 @@ def car_model(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_MODEL", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -469,8 +446,7 @@ def car_map(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_MAP", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -483,8 +459,7 @@ def car_driver(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_DRIVER", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -497,8 +472,7 @@ def car_pos(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_position", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -511,8 +485,7 @@ def car_angle(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_angle", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -525,8 +498,7 @@ def car_topspeed(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_MAX_SPEED", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -539,8 +511,7 @@ def car_topfuel(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_MAX_FUEL", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -553,8 +524,7 @@ def car_speed(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_speed", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -567,8 +537,7 @@ def car_fuel(request: HttpRequest, **query_parameters: dict):
         "function_name": "__getattr__",
         "parameters": ["_fuel", {}]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -581,8 +550,7 @@ def diagonal_create(request: HttpRequest):
             "component_type_name": "diagonal"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -595,8 +563,7 @@ def straight_create(request: HttpRequest):
             "component_type_name": "straight"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -609,8 +576,7 @@ def turn90_create(request: HttpRequest):
             "component_type_name": "turn90"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -623,8 +589,7 @@ def booster_create(request: HttpRequest):
             "component_type_name": "booster"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -637,8 +602,7 @@ def fuel_create(request: HttpRequest):
             "component_type_name": "fuel"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
 
 
@@ -651,6 +615,5 @@ def rock_create(request: HttpRequest):
             "component_type_name": "rock"
         }]
     }
-    encoded_reply: bytes = write_to_backend(request, dumps(command))
-    reply = encoded_reply.decode()
+    reply: str = write_to_backend(request, dumps(command))
     return HttpResponse(reply)
