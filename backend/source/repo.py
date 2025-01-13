@@ -81,3 +81,14 @@ class Repo:
             object = Object.objects.get(id=obj_id)
             object.save()
             object.delete()
+
+    @Monitor().sync
+    def list_drawables(self) -> dict:
+        map_and_views: dict[int, tuple[str, dict[int, str]]] = {
+            map.id: (map._description, {
+                view.id: view._description
+                for view in map.view_set.all()
+            })
+            for map in Map.objects.all()
+        }
+        return map_and_views
