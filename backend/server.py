@@ -1,5 +1,5 @@
 from django import setup
-from json import loads
+from json import dumps, loads
 from os import environ
 from subprocess import Popen, PIPE
 from sys import argv, exit, path
@@ -89,7 +89,7 @@ class Replies:
 
             result = function(*parameters[:-1], **parameters[-1])
             if result is not None:
-                return str(result)
+                return dumps(result)
             return "Command executed"
         except Exception as exception:
             return str(exception)
