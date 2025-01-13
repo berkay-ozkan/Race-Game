@@ -22,12 +22,12 @@ def login_post(request: HttpRequest):
         user.save()
 
     login(request, user)
-    return redirect("")
+    return redirect("/")
 
 
 def logout_view(request: HttpRequest):
     logout(request)
-    return redirect("")
+    return redirect("/login")
 
 
 @login_required(login_url="/login")
