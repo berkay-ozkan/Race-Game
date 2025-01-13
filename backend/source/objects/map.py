@@ -34,13 +34,13 @@ class Map(Object):
         def __init__(self, *args, **kwargs) -> None:
             super().__init__(*args, **kwargs)
             self.y_floor = self.map.cell_size * floor(
-                kwargs["y"] / self.map.cell_size)
+                self.y / self.map.cell_size)
             self.x_floor = self.map.cell_size * floor(
-                kwargs["x"] / self.map.cell_size)
+                self.x / self.map.cell_size)
             self.y_ceil = self.map.cell_size * ceil(
-                (kwargs["y"] + kwargs["height"]) / self.map.cell_size)
+                (self.y + self.height) / self.map.cell_size)
             self.x_ceil = self.map.cell_size * ceil(
-                (kwargs["x"] + kwargs["width"]) / self.map.cell_size)
+                (self.x + self.width) / self.map.cell_size)
 
         def __setitem__(self, pos: tuple[int, int], id: int):
             adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
