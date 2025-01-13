@@ -1,11 +1,10 @@
-from pickle import loads
 from end_to_end_integration import write_to_backend
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-from json import dumps
+from json import dumps, loads
 
 
 def login_view(request):
@@ -32,4 +31,7 @@ def logout_view(request: HttpRequest):
 
 @login_required(login_url="/login")
 def game(request: HttpRequest):
-    return HttpResponse(None)
+    command: dict = {"function_name": "list_drawables", "parameters": [{}]}
+    encoded_reply: str = write_to_backend(request, dumps(command))
+    reply: dict = loads(encoded_reply)
+    return render(request, "game.html", context={"map_and_views": reply})

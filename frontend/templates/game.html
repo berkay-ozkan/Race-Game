@@ -1,0 +1,16 @@
+<html>
+
+<body>
+    <ul>
+        {% for map_id, map_info in map_and_views.items %}
+        <li>Map {{ map_id }}: {{ map_info.0 }}</li>
+        <ul>
+            {% for view_id, view_description in map_info.1.items %}
+            <li>View {{ view_id }}: {{ view_description }}</li>
+            {% endfor %}
+        </ul>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
