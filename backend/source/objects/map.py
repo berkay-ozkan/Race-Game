@@ -139,7 +139,8 @@ class Map(Object):
         cell.row = row
         cell.col = col
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
+        # TODO: Uncomment this when notifications are reenabled
+        # Observer().create_notification(self.id, cell_bounds)
 
     # For getting Cell components
     @Monitor().sync
@@ -179,7 +180,8 @@ class Map(Object):
                 if component in cell:
                     cell.remove(component)
                     cell_bounds = self._cell_bounds(row, col)
-                    Observer().create_notification(self.id, cell_bounds)
+                    # TODO: Uncomment this when notifications are reenabled
+                    # Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def __delitem__(self, pos: tuple[int, int]):
@@ -193,7 +195,8 @@ class Map(Object):
 
         del self._get_cells(row, col)[-1]
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
+        # TODO: Uncomment this when notifications are reenabled
+        # Observer().create_notification(self.id, cell_bounds)
 
     # Returns cells at the row and column corresponding to (y, x)
     @Monitor().sync
@@ -230,7 +233,8 @@ class Map(Object):
         obj._user = user
 
         cell_bounds = self._cell_bounds(row, col)
-        Observer().create_notification(self.id, cell_bounds)
+        # TODO: Uncomment this when notifications are reenabled
+        # Observer().create_notification(self.id, cell_bounds)
 
     @Monitor().sync
     def view(self, y: float, x: float, height: float, width: float, user: str):
@@ -256,11 +260,13 @@ class Map(Object):
         y_ceil = self.cell_size * ceil((y + height) / self.cell_size)
         x_ceil = self.cell_size * ceil((x + width) / self.cell_size)
         # A user can only have one view at a time
-        Observer().unregister(user)
+        # TODO: Uncomment this when notifications are reenabled
+        # Observer().unregister(user)
         observer_information = ObserverInformation(view_id, self.id,
                                                    ((y_floor, x_floor),
                                                     (y_ceil, x_ceil)))
-        Observer().register(user, observer_information)
+        # TODO: Uncomment this when notifications are reenabled
+        # Observer().register(user, observer_information)
         return map_view.id
 
     @Monitor().sync
@@ -323,7 +329,8 @@ class Map(Object):
 
             if self._tick_count % self._notification_interval == 0:
                 bounds = self._bounds()
-                Observer().create_notification(self.id, bounds)
+                # TODO: Uncomment this when notifications are reenabled
+                # Observer().create_notification(self.id, bounds)
 
             sleep(self._tick_interval)
 
