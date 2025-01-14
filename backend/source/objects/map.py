@@ -1,5 +1,4 @@
 from math import ceil, floor
-from pickle import dumps
 from threading import Thread, Event
 from django.db import models
 from backend.source.object import Object
@@ -97,8 +96,8 @@ class Map(Object):
                             )
                         all_players_information.append(player_information)
 
-            return dumps((canvas, all_players_information, self.map.bg_color,
-                          self.map.cell_size))
+            return (canvas, all_players_information, self.map.bg_color,
+                    self.map.cell_size)
 
         def start(self):
             return self.map.start()
@@ -292,8 +291,7 @@ class Map(Object):
                         )
                     all_players_information.append(player_information)
 
-        return dumps(
-            (canvas, all_players_information, self.bg_color, self.cell_size))
+        return (canvas, all_players_information, self.bg_color, self.cell_size)
 
     # For starting game mode
     @Monitor().sync
