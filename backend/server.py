@@ -69,6 +69,7 @@ class Replies:
                     type = {
                         "component": Component,
                         "map": Map,
+                        "view": Map.View,
                         "car": Car
                     }[decoded_input["type"]]
                 object = type.objects.get(id=id)
