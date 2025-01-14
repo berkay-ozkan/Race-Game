@@ -1,3 +1,4 @@
+{% load static %}
 <html>
 
 <head>
@@ -6,17 +7,24 @@
         #game {
             display: flex;
             justify-content: center;
+            align-items: flex-start;
         }
 
         #toolbox {
-            width: 30px;
-            height: 30px;
-            background-color: red;
+            display: grid;
+            grid-template-columns: var(--cell-size) var(--cell-size);
+            grid-template-rows: var(--cell-size) var(--cell-size);
             cursor: grab;
         }
 
         #view {
             border: 1px solid black;
+            background-color: var(--view-background-color);
+        }
+
+        img.cell {
+            width: var(--cell-size);
+            height: var(--cell-size);
         }
     </style>
 </head>
@@ -24,115 +32,177 @@
 <body>
     <ul>
         {% for map_id, map_info in map_and_views.items %}
-        <li>Map {{ map_id }}: {{ map_info.0 }} <button>Draw</button></li>
+        <li>Map {{ map_id }}: {{ map_info.0 }} <button map_id="{{map_id}}">Draw</button></li>
         <ul>
             {% for view_id, view_description in map_info.1.items %}
-            <li>View {{ view_id }}: {{ view_description }} <button>Draw</button></li>
+            <li>View {{ view_id }}: {{ view_description }} <button view_id="{{view_id}}">Draw</button></li>
             {% endfor %}
         </ul>
         {% endfor %}
     </ul>
 
     <div id="game">
-        <div id="toolbox" draggable="true"></div>
+        <div id="toolbox">
+            <div id="booster" draggable="true">
+                <img src="{% static 'images/booster.png' %}" class="cell">
+            </div>
+            <div id="car" draggable="true">
+                <img src="{% static 'images/car.png' %}" class="cell">
+            </div>
+            <div id="fuel" draggable="true">
+                <img src="{% static 'images/fuel.png' %}" class="cell">
+            </div>
+            <div id="rock" draggable="true">
+                <img src="{% static 'images/rock.png' %}" class="cell">
+            </div>
+        </div>
         <div id="view"></div>
     </div>
 
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <script>
-        const width = 500;
-        const height = 500;
-        const cellSize = 30;
+        const websocket = new WebSocket("ws://localhost:12345/");
 
-        const stage = new Konva.Stage({
-            container: "view",
-            width: 500,
-            height: 500,
-        });
+        // Add handlers to draw buttons
+        document.querySelectorAll("button").forEach((button) => {
+            function drawCommandGenerator(map, id) {
+                function draw() {
+                    websocket.send(JSON.stringify({
+                        "type": map ? "map" : "view",
+                        "id": id,
+                        "function_name": "draw",
+                        "parameters": [{}]
+                    }));
+                }
+                return draw
+            }
 
-        const gridLayer = new Konva.Layer();
-        const padding = cellSize;
-        for (var i = 0; i < width / padding; i++) {
-            gridLayer.add(new Konva.Line({
-                points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, height],
-                stroke: '#ddd',
-                strokeWidth: 1,
-            }));
-        }
-        gridLayer.add(new Konva.Line({ points: [0, 0, 10, 10] }));
-        for (var j = 0; j < height / padding; j++) {
-            gridLayer.add(new Konva.Line({
-                points: [0, Math.round(j * padding), width, Math.round(j * padding)],
-                stroke: '#ddd',
-                strokeWidth: 0.5,
-            }));
-        }
-        stage.add(gridLayer);
+            const mapId = button.attributes.getNamedItem("map_id");
+            if (mapId) {
+                button.addEventListener("click", drawCommandGenerator(true, parseInt(mapId.value)));
+            }
+            const viewId = button.attributes.getNamedItem("view_id");
+            if (viewId) {
+                button.addEventListener("click", drawCommandGenerator(false, parseInt(viewId.value)));
+            }
+        })
 
-        const tileLayer = new Konva.Layer();
-        const shadow = new Konva.Rect({
-            width: cellSize,
-            height: cellSize,
-            fill: '#808080',
-            opacity: 0.5,
-            stroke: '#404040',
-            strokeWidth: 3
-        });
-        shadow.hide();
-        tileLayer.add(shadow);
-        stage.add(tileLayer);
+        websocket.onmessage = ({ data }) => {
+            const mapInfo = JSON.parse(data);
 
-        function newRectangle(x, y) {
-            let rectangle = new Konva.Rect({
-                x: Math.round(x / cellSize) * cellSize,
-                y: Math.round(y / cellSize) * cellSize,
+            const backgroundColor = mapInfo[2];
+            const cellSize = mapInfo[3];
+
+            // Propagate the info to CSS variables
+            document.documentElement.style.setProperty("--view-background-color", backgroundColor);
+            document.documentElement.style.setProperty("--cell-size", cellSize + "px");
+
+            const width = 500;
+            const height = 500;
+
+            const stage = new Konva.Stage({
+                container: "view",
+                width: width,
+                height: height,
+            });
+
+            const gridLayer = new Konva.Layer();
+            const padding = cellSize;
+            for (var i = 0; i < width / padding; i++) {
+                gridLayer.add(new Konva.Line({
+                    points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, height],
+                    stroke: '#ddd',
+                    strokeWidth: 1,
+                }));
+            }
+            gridLayer.add(new Konva.Line({ points: [0, 0, 10, 10] }));
+            for (var j = 0; j < height / padding; j++) {
+                gridLayer.add(new Konva.Line({
+                    points: [0, Math.round(j * padding), width, Math.round(j * padding)],
+                    stroke: '#ddd',
+                    strokeWidth: 1,
+                }));
+            }
+            stage.add(gridLayer);
+
+            const tileLayer = new Konva.Layer();
+            const shadow = new Konva.Rect({
                 width: cellSize,
                 height: cellSize,
-                fill: '#000',
-                stroke: '#ddd',
-                strokeWidth: 1,
-                draggable: true
+                fill: '#808080',
+                opacity: 0.5,
+                stroke: '#404040',
+                strokeWidth: 3
             });
-            rectangle.on('dragstart', (e) => {
-                shadow.show();
-                shadow.moveToTop();
-                rectangle.moveToTop();
-            });
-            rectangle.on('dragend', (e) => {
-                rectangle.position({
-                    x: Math.round(rectangle.x() / cellSize) * cellSize,
-                    y: Math.round(rectangle.y() / cellSize) * cellSize
-                });
-                stage.batchDraw();
-                shadow.hide();
-            });
-            rectangle.on('dragmove', (e) => {
-                shadow.position({
-                    x: Math.round(rectangle.x() / cellSize) * cellSize,
-                    y: Math.round(rectangle.y() / cellSize) * cellSize
-                });
-                stage.batchDraw();
-            });
-            tileLayer.add(rectangle);
-        }
+            shadow.hide();
+            tileLayer.add(shadow);
+            stage.add(tileLayer);
 
-        // Handle drag events
-        document
-            .getElementById("toolbox")
-            .addEventListener("dragstart", function (e) {
-                e.dataTransfer.setData("text/plain", "dragging");
+            function newCell(type, x, y) {
+                const image = new Image();
+                image.onload = function () {
+                    const cell = new Konva.Image({
+                        x: Math.round(x / cellSize) * cellSize,
+                        y: Math.round(y / cellSize) * cellSize,
+                        image: image,
+                        width: cellSize,
+                        height: cellSize,
+                        draggable: true
+                    });
+
+                    cell.on('dragstart', (e) => {
+                        shadow.show();
+                        shadow.moveToTop();
+                        cell.moveToTop();
+                    });
+                    cell.on('dragend', (e) => {
+                        cell.position({
+                            x: Math.round(cell.x() / cellSize) * cellSize,
+                            y: Math.round(cell.y() / cellSize) * cellSize
+                        });
+                        stage.batchDraw();
+                        shadow.hide();
+                    });
+                    cell.on('dragmove', (e) => {
+                        shadow.position({
+                            x: Math.round(cell.x() / cellSize) * cellSize,
+                            y: Math.round(cell.y() / cellSize) * cellSize
+                        });
+                        stage.batchDraw();
+                    });
+                    tileLayer.add(cell);
+                };
+                const typeToImage = {
+                    "booster": "{% static 'images/booster.png' %}",
+                    "car": "{% static 'images/car.png' %}",
+                    "fuel": "{% static 'images/fuel.png' %}",
+                    "rock": "{% static 'images/rock.png' %}"
+                }
+                image.src = typeToImage[type];
+            }
+
+            const objectTypes = ["booster", "car", "fuel", "rock"];
+            objectTypes.forEach((objectType) => {
+                document
+                    .getElementById(objectType)
+                    .addEventListener("dragstart", function (e) {
+                        e.dataTransfer.setData("type", objectType);
+                    });
             });
 
-        stage.container().addEventListener("dragover", function (e) {
-            e.preventDefault(); // Necessary for the drop event to work
-        });
+            // Necessary for the drop event to work
+            stage.container().addEventListener("dragover", function (e) {
+                e.preventDefault();
+            });
 
-        stage.container().addEventListener("drop", function (e) {
-            e.preventDefault();
-            stage.setPointersPositions(e);
-            const pos = stage.getPointerPosition();
-            newRectangle(pos.x - cellSize / 2, pos.y - cellSize / 2);
-        });
+            stage.container().addEventListener("drop", function (e) {
+                e.preventDefault();
+                const type = e.dataTransfer.getData("type");
+                stage.setPointersPositions(e);
+                const pos = stage.getPointerPosition();
+                newCell(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
+            });
+        };
     </script>
 </body>
 
