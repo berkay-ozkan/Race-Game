@@ -86,11 +86,15 @@
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <script>
         const websocket = new WebSocket("ws://localhost:12345/");
+        let currViewId;
+        let currViewIsMap;
 
         // Add handlers to draw buttons
         document.querySelectorAll("button").forEach((button) => {
             function drawCommandGenerator(map, id) {
                 function draw() {
+                    currViewIsMap = map;
+                    currViewId = id;
                     websocket.send(JSON.stringify({
                         "type": map ? "map" : "view",
                         "id": id,
@@ -171,6 +175,13 @@
                     x = Math.round(x / cellSize) * cellSize;
                     y = Math.round(y / cellSize) * cellSize;
                 }
+
+                websocket.send(JSON.stringify({
+                    "type": currViewIsMap ? "map" : "view",
+                    "id": currViewId,
+                    "function_name": "create_component",
+                    "parameters": [type, y, x, {}]
+                }));
 
                 const image = new Image();
                 image.onload = function () {
