@@ -1,6 +1,7 @@
 from math import ceil, floor
 from threading import Thread, Event
 from django.db import models
+from backend.source.component_factory import ComponentFactory
 from backend.source.object import Object
 from backend.source.objects.components.cells.booster import Booster
 from backend.source.objects.components.cells.fuel import Fuel
@@ -358,3 +359,21 @@ class Map(Object):
         bounds = ((row * self.cell_size, col * self.cell_size),
                   ((row + 1) * self.cell_size, (col + 1) * self.cell_size))
         return bounds
+
+    def create_component(self, component_type_name: str, y: float, x: float):
+        component = ComponentFactory().create(component_type_name)
+        component_id = component.id
+
+        if (component_type_name == "car"):
+            self.place(component, y, x, None)
+        else:
+            row = y / self.cell_size
+            col = x / self.cell_size
+            component._MAP = self
+            component.row = row
+            component.col = col
+            # TODO: Uncomment this when notifications are reenabled
+            # cell_bounds = self._cell_bounds(row, col)
+            # Observer().create_notification(self.id, cell_bounds)
+
+        return component_id
