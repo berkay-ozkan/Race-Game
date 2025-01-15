@@ -367,11 +367,12 @@ class Map(Object):
         if (component_type_name == "car"):
             self.place(component, y, x, None)
         else:
-            row = y / self.cell_size
-            col = x / self.cell_size
+            row = y // self.cell_size
+            col = x // self.cell_size
             component._MAP = self
             component.row = row
             component.col = col
+            component.save()
             # TODO: Uncomment this when notifications are reenabled
             # cell_bounds = self._cell_bounds(row, col)
             # Observer().create_notification(self.id, cell_bounds)
