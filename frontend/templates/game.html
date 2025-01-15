@@ -189,8 +189,18 @@
                             "type": currViewIsMap ? "map" : "view",
                             "id": currViewId,
                             "function_name": "create_component",
-                            "parameters": [type, y, x, {}]
+                            // Note that Y and X are reversed on the server side!
+                            "parameters": [type, x, y, {}]
                         }));
+
+                        addComponent(type, x, y);
+                    }
+                    function addComponent(type, x, y) {
+                        const isCell = type != "car";
+                        if (isCell) {
+                            x = Math.round(x / cellSize) * cellSize;
+                            y = Math.round(y / cellSize) * cellSize;
+                        }
 
                         const image = new Image();
                         image.onload = function () {
@@ -244,6 +254,17 @@
                             "turn90-3": "{% static 'images/turn90-3.png' %}",
                         }
                         image.src = typeToImage[type];
+                    }
+
+                    const canvas = mapInfo[0];
+                    console.log(canvas);
+                    for (let row = 0; row < canvas.length; row++) {
+                        for (let column = 0; column < canvas[row].length; column++) {
+                            const type = canvas[row][column];
+                            if (type) {
+                                addComponent(type, row * cellSize, column * cellSize);
+                            }
+                        }
                     }
 
                     const objectTypes = ["booster", "car", "fuel", "rock", "straight-0", "straight-1", "diagonal-0", "diagonal-1", "turn90-0", "turn90-1", "turn90-2", "turn90-3"];
