@@ -83,11 +83,11 @@ class Map(Object):
                 for col in range(cols[0], cols[1]):
                     cell = self.map._get_cells(row, col)
                     if len(cell) == 0:
-                        canvas[-1].append("empty.png")
+                        canvas[-1].append(None)
                         continue
 
                     topmost_component = cell[-1]
-                    canvas[-1].append(topmost_component.representation())
+                    canvas[-1].append(topmost_component.representation()[:-4])
 
                     if isinstance(topmost_component, Car):
                         player_information = []
@@ -270,7 +270,7 @@ class Map(Object):
         return map_view.id
 
     @Monitor().sync
-    def draw(self) -> bytes:
+    def draw(self) -> tuple:
         canvas: list[list[str]] = []
         all_players_information: list[list[str]] = []
         for row in range(self.rows):
@@ -278,11 +278,11 @@ class Map(Object):
             for col in range(self.cols):
                 cell = self._get_cells(row, col)
                 if len(cell) == 0:
-                    canvas[-1].append("empty.png")
+                    canvas[-1].append(None)
                     continue
 
                 topmost_component = cell[-1]
-                canvas[-1].append(topmost_component.representation())
+                canvas[-1].append(topmost_component.representation()[:-4])
 
                 if isinstance(topmost_component, Car):
                     player_information = []
