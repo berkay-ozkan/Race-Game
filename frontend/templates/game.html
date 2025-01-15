@@ -138,39 +138,47 @@
             tileLayer.add(shadow);
             stage.add(tileLayer);
 
-            function newCell(type, x, y) {
+            function newComponent(type, x, y) {
+                const isCell = type != "car";
+                if (isCell) {
+                    x = Math.round(x / cellSize) * cellSize;
+                    y = Math.round(y / cellSize) * cellSize;
+                }
+
                 const image = new Image();
                 image.onload = function () {
-                    const cell = new Konva.Image({
-                        x: Math.round(x / cellSize) * cellSize,
-                        y: Math.round(y / cellSize) * cellSize,
+                    const component = new Konva.Image({
+                        x: x,
+                        y: y,
                         image: image,
                         width: cellSize,
                         height: cellSize,
                         draggable: true
                     });
 
-                    cell.on('dragstart', (e) => {
-                        shadow.show();
-                        shadow.moveToTop();
-                        cell.moveToTop();
-                    });
-                    cell.on('dragend', (e) => {
-                        cell.position({
-                            x: Math.round(cell.x() / cellSize) * cellSize,
-                            y: Math.round(cell.y() / cellSize) * cellSize
+                    if (isCell) {
+                        component.on('dragstart', (e) => {
+                            shadow.show();
+                            shadow.moveToTop();
+                            component.moveToTop();
                         });
-                        stage.batchDraw();
-                        shadow.hide();
-                    });
-                    cell.on('dragmove', (e) => {
-                        shadow.position({
-                            x: Math.round(cell.x() / cellSize) * cellSize,
-                            y: Math.round(cell.y() / cellSize) * cellSize
+                        component.on('dragend', (e) => {
+                            component.position({
+                                x: Math.round(component.x() / cellSize) * cellSize,
+                                y: Math.round(component.y() / cellSize) * cellSize
+                            });
+                            stage.batchDraw();
+                            shadow.hide();
                         });
-                        stage.batchDraw();
-                    });
-                    tileLayer.add(cell);
+                        component.on('dragmove', (e) => {
+                            shadow.position({
+                                x: Math.round(component.x() / cellSize) * cellSize,
+                                y: Math.round(component.y() / cellSize) * cellSize
+                            });
+                            stage.batchDraw();
+                        });
+                    }
+                    tileLayer.add(component);
                 };
                 const typeToImage = {
                     "booster": "{% static 'images/booster.png' %}",
@@ -200,7 +208,7 @@
                 const type = e.dataTransfer.getData("type");
                 stage.setPointersPositions(e);
                 const pos = stage.getPointerPosition();
-                newCell(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
+                newComponent(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
             });
         };
     </script>
