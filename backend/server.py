@@ -90,7 +90,7 @@ class Replies:
 
             result = function(*parameters[:-1], **parameters[-1])
             if result is not None:
-                return dumps(result)
+                return result
             return "Command executed"
         except Exception as exception:
             return str(exception)
@@ -101,7 +101,14 @@ class Replies:
                 encoded_input = self.connection.recv()
                 input = loads(encoded_input)
                 result = self.run_command(input)
-                self.connection.send(result)
+                self.connection.send(
+                    dumps({
+                        "command": {
+                            "type": input.get("type"),
+                            "function_name": input["function_name"]
+                        },
+                        "result": result
+                    }))
         except ConnectionClosedOK:
             pass
 

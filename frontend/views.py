@@ -33,5 +33,5 @@ def logout_view(request: HttpRequest):
 def game(request: HttpRequest):
     command: dict = {"function_name": "list_drawables", "parameters": [{}]}
     encoded_reply: str = write_to_backend(request, dumps(command))
-    reply: dict = loads(encoded_reply)
+    reply: dict = loads(encoded_reply)["result"]
     return render(request, "game.html", context={"map_and_views": reply})
