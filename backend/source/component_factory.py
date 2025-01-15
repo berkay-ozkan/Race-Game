@@ -1,7 +1,9 @@
 from backend.source.monitor import Monitor
 from backend.source.objects.component import Component
+from backend.source.singleton import singleton
 
 
+@singleton
 class ComponentFactory:
     _registered_subclasses: dict = {}
 
