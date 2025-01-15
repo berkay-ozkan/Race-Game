@@ -162,6 +162,9 @@
             tileLayer.add(shadow);
             stage.add(tileLayer);
 
+            const playerLayer = new Konva.Layer();
+            stage.add(playerLayer);
+
             function newComponent(type, x, y) {
                 const isCell = type != "car";
                 if (isCell) {
@@ -202,7 +205,9 @@
                             stage.batchDraw();
                         });
                     }
-                    tileLayer.add(component);
+
+                    const layer = isCell ? tileLayer : playerLayer;
+                    layer.add(component);
                 };
                 const typeToImage = {
                     "booster": "{% static 'images/booster.png' %}",
