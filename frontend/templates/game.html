@@ -55,6 +55,30 @@
             <div id="rock" draggable="true">
                 <img src="{% static 'images/rock.png' %}" class="cell">
             </div>
+            <div id="straight-0" draggable="true">
+                <img src="{% static 'images/straight-0.png' %}" class="cell">
+            </div>
+            <div id="straight-1" draggable="true">
+                <img src="{% static 'images/straight-1.png' %}" class="cell">
+            </div>
+            <div id="diagonal-0" draggable="true">
+                <img src="{% static 'images/diagonal-0.png' %}" class="cell">
+            </div>
+            <div id="diagonal-1" draggable="true">
+                <img src="{% static 'images/diagonal-1.png' %}" class="cell">
+            </div>
+            <div id="turn90-0" draggable="true">
+                <img src="{% static 'images/turn90-0.png' %}" class="cell">
+            </div>
+            <div id="turn90-1" draggable="true">
+                <img src="{% static 'images/turn90-1.png' %}" class="cell">
+            </div>
+            <div id="turn90-3" draggable="true">
+                <img src="{% static 'images/turn90-3.png' %}" class="cell">
+            </div>
+            <div id="turn90-2" draggable="true">
+                <img src="{% static 'images/turn90-2.png' %}" class="cell">
+            </div>
         </div>
         <div id="view"></div>
     </div>
@@ -184,12 +208,20 @@
                     "booster": "{% static 'images/booster.png' %}",
                     "car": "{% static 'images/car.png' %}",
                     "fuel": "{% static 'images/fuel.png' %}",
-                    "rock": "{% static 'images/rock.png' %}"
+                    "rock": "{% static 'images/rock.png' %}",
+                    "straight-0": "{% static 'images/straight-0.png' %}",
+                    "straight-1": "{% static 'images/straight-1.png' %}",
+                    "diagonal-0": "{% static 'images/diagonal-0.png' %}",
+                    "diagonal-1": "{% static 'images/diagonal-1.png' %}",
+                    "turn90-0": "{% static 'images/turn90-0.png' %}",
+                    "turn90-1": "{% static 'images/turn90-1.png' %}",
+                    "turn90-2": "{% static 'images/turn90-2.png' %}",
+                    "turn90-3": "{% static 'images/turn90-3.png' %}",
                 }
                 image.src = typeToImage[type];
             }
 
-            const objectTypes = ["booster", "car", "fuel", "rock"];
+            const objectTypes = ["booster", "car", "fuel", "rock", "straight-0", "straight-1", "diagonal-0", "diagonal-1", "turn90-0", "turn90-1", "turn90-2", "turn90-3"];
             objectTypes.forEach((objectType) => {
                 document
                     .getElementById(objectType)
