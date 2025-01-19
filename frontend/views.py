@@ -30,8 +30,55 @@ def logout_view(request: HttpRequest):
 
 
 @login_required(login_url="/login")
-def game(request: HttpRequest):
-    command: dict = {"function_name": "list_drawables", "parameters": [{}]}
+def repo_create(request: HttpRequest):
+    return render(request, "repo-create.html")
+
+
+@login_required(login_url="/login")
+def repo_create_post(request: HttpRequest):
+    kwargs: dict = request.POST.dict()
+    command: dict = {"function_name": "create", "parameters": [kwargs]}
     encoded_reply: str = write_to_backend(request, dumps(command))
-    reply: dict = loads(encoded_reply)["result"]
-    return render(request, "game.html", context={"map_and_views": reply})
+    reply = loads(encoded_reply)["result"]
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def map_view(request: HttpRequest, id: int):
+    return render(request, "map-view.html", context={"id": id})
+
+
+@login_required(login_url="/login")
+def map_view_post(request: HttpRequest, id: int):
+    kwargs = request.POST.dict()
+    command: dict = {
+        "type": "map",
+        "id": id,
+        "function_name": "view",
+        "parameters": [kwargs | {
+            "user": request.user.username
+        }]
+    }
+    encoded_reply: str = write_to_backend(request, dumps(command))
+    reply = loads(encoded_reply)["result"]
+    return HttpResponse(reply)
+
+
+@login_required(login_url="/login")
+def game(request: HttpRequest, id: int):
+    command: dict = {
+        "type": "map",
+        "id": id,
+        "function_name": "draw",
+        "parameters": [{}]
+    }
+    encoded_reply: str = write_to_backend(request, dumps(command))
+    reply = loads(encoded_reply)["result"]
+    return render(request,
+                  "game.html",
+                  context={
+                      "id": id,
+                      "canvas": dumps(reply[0]),
+                      "backgroundColor": reply[2],
+                      "cellSize": reply[3]
+                  })

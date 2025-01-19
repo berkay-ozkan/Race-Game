@@ -13,35 +13,24 @@
 
         #toolbox {
             display: grid;
-            grid-template-columns: var(--cell-size) var(--cell-size);
-            grid-template-rows: var(--cell-size) var(--cell-size);
+            grid-template-columns: {{ cellSize }}px {{ cellSize }}px;
+            grid-template-rows: {{ cellSize }}px {{ cellSize }}px;
             cursor: grab;
         }
 
         #view {
             border: 1px solid black;
-            background-color: var(--view-background-color);
+            background-color: {{ backgroundColor }};
         }
 
         img.cell {
-            width: var(--cell-size);
-            height: var(--cell-size);
+            width: {{ cellSize }}px;
+            height: {{ cellSize }}px;
         }
     </style>
 </head>
 
 <body>
-    <ul>
-        {% for map_id, map_info in map_and_views.items %}
-        <li>Map {{ map_id }}: {{ map_info.0 }} <button map_id="{{map_id}}">Draw</button></li>
-        <ul>
-            {% for view_id, view_description in map_info.1.items %}
-            <li>View {{ view_id }}: {{ view_description }} <button view_id="{{view_id}}">Draw</button></li>
-            {% endfor %}
-        </ul>
-        {% endfor %}
-    </ul>
-
     <div id="game">
         <div id="toolbox">
             <div id="booster" draggable="true">
@@ -86,211 +75,174 @@
 
     <script src="https://unpkg.com/konva@9/konva.min.js"></script>
     <script>
-        const websocket = new WebSocket("ws://localhost:12345/");
-        let currViewId;
-        let currViewIsMap;
+        const currViewId = {{ id }};
+        const currViewIsMap = true;
 
-        // Add handlers to draw buttons
-        document.querySelectorAll("button").forEach((button) => {
-            function drawCommandGenerator(map, id) {
-                function draw() {
-                    currViewIsMap = map;
-                    currViewId = id;
-                    websocket.send(JSON.stringify({
-                        "type": map ? "map" : "view",
-                        "id": id,
-                        "function_name": "draw",
-                        "parameters": [{}]
-                    }));
+        const canvas = {{ canvas | safe }};
+        const rowCount = canvas.length;
+        const columnCount = canvas[0].length;
+        const backgroundColor = "{{ backgroundColor }}";
+        const cellSize = {{ cellSize }};
+
+        const width = columnCount * cellSize;
+        const height = rowCount * cellSize;
+
+        const stage = new Konva.Stage({
+            container: "view",
+            width: width,
+            height: height,
+        });
+
+        const gridLayer = new Konva.Layer();
+        for (var column = 0; column < columnCount; column++) {
+            gridLayer.add(new Konva.Line({
+                points: [Math.round(column * cellSize) + 0.5, 0, Math.round(column * cellSize) + 0.5, height],
+                stroke: '#ddd',
+                strokeWidth: 1,
+            }));
+        }
+        gridLayer.add(new Konva.Line({ points: [0, 0, 10, 10] }));
+        for (var row = 0; row < rowCount; row++) {
+            gridLayer.add(new Konva.Line({
+                points: [0, Math.round(row * cellSize), width, Math.round(row * cellSize)],
+                stroke: '#ddd',
+                strokeWidth: 1,
+            }));
+        }
+        stage.add(gridLayer);
+
+        const tileLayer = new Konva.Layer();
+        const shadow = new Konva.Rect({
+            width: cellSize,
+            height: cellSize,
+            fill: '#808080',
+            opacity: 0.5,
+            stroke: '#404040',
+            strokeWidth: 3
+        });
+        shadow.hide();
+        tileLayer.add(shadow);
+        stage.add(tileLayer);
+
+        const playerLayer = new Konva.Layer();
+        stage.add(playerLayer);
+
+        function newComponent(type, x, y) {
+            const isCell = type != "car";
+            if (isCell) {
+                x = Math.round(x / cellSize) * cellSize;
+                y = Math.round(y / cellSize) * cellSize;
+            }
+
+            websocket.send(JSON.stringify({
+                "type": currViewIsMap ? "map" : "view",
+                "id": currViewId,
+                "function_name": "create_component",
+                // Note that Y and X are reversed on the server side!
+                "parameters": [type, x, y, {}]
+            }));
+
+            addComponent(type, x, y);
+        }
+        function addComponent(type, x, y) {
+            const isCell = type != "car";
+            if (isCell) {
+                x = Math.round(x / cellSize) * cellSize;
+                y = Math.round(y / cellSize) * cellSize;
+            }
+
+            const image = new Image();
+            image.onload = function () {
+                const component = new Konva.Image({
+                    x: x,
+                    y: y,
+                    image: image,
+                    width: cellSize,
+                    height: cellSize,
+                    draggable: true
+                });
+
+                if (isCell) {
+                    component.on('dragstart', (e) => {
+                        shadow.show();
+                        shadow.moveToTop();
+                        component.moveToTop();
+                    });
+                    component.on('dragend', (e) => {
+                        component.position({
+                            x: Math.round(component.x() / cellSize) * cellSize,
+                            y: Math.round(component.y() / cellSize) * cellSize
+                        });
+                        stage.batchDraw();
+                        shadow.hide();
+                    });
+                    component.on('dragmove', (e) => {
+                        shadow.position({
+                            x: Math.round(component.x() / cellSize) * cellSize,
+                            y: Math.round(component.y() / cellSize) * cellSize
+                        });
+                        stage.batchDraw();
+                    });
                 }
-                return draw
-            }
 
-            const mapId = button.attributes.getNamedItem("map_id");
-            if (mapId) {
-                button.addEventListener("click", drawCommandGenerator(true, parseInt(mapId.value)));
+                const layer = isCell ? tileLayer : playerLayer;
+                layer.add(component);
+            };
+            const typeToImage = {
+                "booster": "{% static 'images/booster.png' %}",
+                "car": "{% static 'images/car.png' %}",
+                "fuel": "{% static 'images/fuel.png' %}",
+                "rock": "{% static 'images/rock.png' %}",
+                "straight-0": "{% static 'images/straight-0.png' %}",
+                "straight-1": "{% static 'images/straight-1.png' %}",
+                "diagonal-0": "{% static 'images/diagonal-0.png' %}",
+                "diagonal-1": "{% static 'images/diagonal-1.png' %}",
+                "turn90-0": "{% static 'images/turn90-0.png' %}",
+                "turn90-1": "{% static 'images/turn90-1.png' %}",
+                "turn90-2": "{% static 'images/turn90-2.png' %}",
+                "turn90-3": "{% static 'images/turn90-3.png' %}",
             }
-            const viewId = button.attributes.getNamedItem("view_id");
-            if (viewId) {
-                button.addEventListener("click", drawCommandGenerator(false, parseInt(viewId.value)));
-            }
-        })
+            image.src = typeToImage[type];
+        }
 
+        for (let row = 0; row < canvas.length; row++) {
+            for (let column = 0; column < canvas[row].length; column++) {
+                const type = canvas[row][column];
+                if (type) {
+                    addComponent(type, row * cellSize, column * cellSize);
+                }
+            }
+        }
+
+        const objectTypes = ["booster", "car", "fuel", "rock", "straight-0", "straight-1", "diagonal-0", "diagonal-1", "turn90-0", "turn90-1", "turn90-2", "turn90-3"];
+        objectTypes.forEach((objectType) => {
+            document
+                .getElementById(objectType)
+                .addEventListener("dragstart", function (e) {
+                    e.dataTransfer.setData("type", objectType);
+                });
+        });
+
+        // Necessary for the drop event to work
+        stage.container().addEventListener("dragover", function (e) {
+            e.preventDefault();
+        });
+
+        stage.container().addEventListener("drop", function (e) {
+            e.preventDefault();
+            const type = e.dataTransfer.getData("type");
+            stage.setPointersPositions(e);
+            const pos = stage.getPointerPosition();
+            newComponent(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
+        });
+
+
+
+        const websocket = new WebSocket("ws://localhost:12345/");
         websocket.onmessage = ({ data }) => {
             const answer = JSON.parse(data);
             const commandInfo = answer["command"];
-            switch ((commandInfo["type"], commandInfo["function_name"])) {
-                case ("view", "draw"):
-                    {
-
-                    }
-                case ("map", "draw"):
-                    const mapInfo = answer["result"];
-
-                    const backgroundColor = mapInfo[2];
-                    const cellSize = mapInfo[3];
-
-                    // Propagate the info to CSS variables
-                    document.documentElement.style.setProperty("--view-background-color", backgroundColor);
-                    document.documentElement.style.setProperty("--cell-size", cellSize + "px");
-
-                    const width = 500;
-                    const height = 500;
-
-                    const stage = new Konva.Stage({
-                        container: "view",
-                        width: width,
-                        height: height,
-                    });
-
-                    const gridLayer = new Konva.Layer();
-                    const padding = cellSize;
-                    for (var i = 0; i < width / padding; i++) {
-                        gridLayer.add(new Konva.Line({
-                            points: [Math.round(i * padding) + 0.5, 0, Math.round(i * padding) + 0.5, height],
-                            stroke: '#ddd',
-                            strokeWidth: 1,
-                        }));
-                    }
-                    gridLayer.add(new Konva.Line({ points: [0, 0, 10, 10] }));
-                    for (var j = 0; j < height / padding; j++) {
-                        gridLayer.add(new Konva.Line({
-                            points: [0, Math.round(j * padding), width, Math.round(j * padding)],
-                            stroke: '#ddd',
-                            strokeWidth: 1,
-                        }));
-                    }
-                    stage.add(gridLayer);
-
-                    const tileLayer = new Konva.Layer();
-                    const shadow = new Konva.Rect({
-                        width: cellSize,
-                        height: cellSize,
-                        fill: '#808080',
-                        opacity: 0.5,
-                        stroke: '#404040',
-                        strokeWidth: 3
-                    });
-                    shadow.hide();
-                    tileLayer.add(shadow);
-                    stage.add(tileLayer);
-
-                    const playerLayer = new Konva.Layer();
-                    stage.add(playerLayer);
-
-                    function newComponent(type, x, y) {
-                        const isCell = type != "car";
-                        if (isCell) {
-                            x = Math.round(x / cellSize) * cellSize;
-                            y = Math.round(y / cellSize) * cellSize;
-                        }
-
-                        websocket.send(JSON.stringify({
-                            "type": currViewIsMap ? "map" : "view",
-                            "id": currViewId,
-                            "function_name": "create_component",
-                            // Note that Y and X are reversed on the server side!
-                            "parameters": [type, x, y, {}]
-                        }));
-
-                        addComponent(type, x, y);
-                    }
-                    function addComponent(type, x, y) {
-                        const isCell = type != "car";
-                        if (isCell) {
-                            x = Math.round(x / cellSize) * cellSize;
-                            y = Math.round(y / cellSize) * cellSize;
-                        }
-
-                        const image = new Image();
-                        image.onload = function () {
-                            const component = new Konva.Image({
-                                x: x,
-                                y: y,
-                                image: image,
-                                width: cellSize,
-                                height: cellSize,
-                                draggable: true
-                            });
-
-                            if (isCell) {
-                                component.on('dragstart', (e) => {
-                                    shadow.show();
-                                    shadow.moveToTop();
-                                    component.moveToTop();
-                                });
-                                component.on('dragend', (e) => {
-                                    component.position({
-                                        x: Math.round(component.x() / cellSize) * cellSize,
-                                        y: Math.round(component.y() / cellSize) * cellSize
-                                    });
-                                    stage.batchDraw();
-                                    shadow.hide();
-                                });
-                                component.on('dragmove', (e) => {
-                                    shadow.position({
-                                        x: Math.round(component.x() / cellSize) * cellSize,
-                                        y: Math.round(component.y() / cellSize) * cellSize
-                                    });
-                                    stage.batchDraw();
-                                });
-                            }
-
-                            const layer = isCell ? tileLayer : playerLayer;
-                            layer.add(component);
-                        };
-                        const typeToImage = {
-                            "booster": "{% static 'images/booster.png' %}",
-                            "car": "{% static 'images/car.png' %}",
-                            "fuel": "{% static 'images/fuel.png' %}",
-                            "rock": "{% static 'images/rock.png' %}",
-                            "straight-0": "{% static 'images/straight-0.png' %}",
-                            "straight-1": "{% static 'images/straight-1.png' %}",
-                            "diagonal-0": "{% static 'images/diagonal-0.png' %}",
-                            "diagonal-1": "{% static 'images/diagonal-1.png' %}",
-                            "turn90-0": "{% static 'images/turn90-0.png' %}",
-                            "turn90-1": "{% static 'images/turn90-1.png' %}",
-                            "turn90-2": "{% static 'images/turn90-2.png' %}",
-                            "turn90-3": "{% static 'images/turn90-3.png' %}",
-                        }
-                        image.src = typeToImage[type];
-                    }
-
-                    const canvas = mapInfo[0];
-                    console.log(canvas);
-                    for (let row = 0; row < canvas.length; row++) {
-                        for (let column = 0; column < canvas[row].length; column++) {
-                            const type = canvas[row][column];
-                            if (type) {
-                                addComponent(type, row * cellSize, column * cellSize);
-                            }
-                        }
-                    }
-
-                    const objectTypes = ["booster", "car", "fuel", "rock", "straight-0", "straight-1", "diagonal-0", "diagonal-1", "turn90-0", "turn90-1", "turn90-2", "turn90-3"];
-                    objectTypes.forEach((objectType) => {
-                        document
-                            .getElementById(objectType)
-                            .addEventListener("dragstart", function (e) {
-                                e.dataTransfer.setData("type", objectType);
-                            });
-                    });
-
-                    // Necessary for the drop event to work
-                    stage.container().addEventListener("dragover", function (e) {
-                        e.preventDefault();
-                    });
-
-                    stage.container().addEventListener("drop", function (e) {
-                        e.preventDefault();
-                        const type = e.dataTransfer.getData("type");
-                        stage.setPointersPositions(e);
-                        const pos = stage.getPointerPosition();
-                        newComponent(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
-                    });
-
-                    break;
-            }
+            switch ((commandInfo["type"], commandInfo["function_name"])) { }
         };
     </script>
 </body>

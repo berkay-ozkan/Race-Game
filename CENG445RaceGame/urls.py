@@ -25,5 +25,9 @@ urlpatterns = [
     path("login/post", views.login_post),
     path("logout", views.logout_view),
     # Game interface
-    path("", views.game)
+    path("repo/create", views.repo_create),
+    path("repo/create/post", views.repo_create_post),
+    path("map/<int:id>", views.game),
+    path("map/<int:id>/view", views.map_view),
+    path("map/<int:id>/view/post", views.map_view_post)
 ]
