@@ -17,3 +17,9 @@ class Cell(Component):
     @Monitor().sync
     def _interact(self, car: Car) -> None:
         raise NotImplementedError
+
+    @Monitor().sync
+    def move(self, row: int, col: int) -> None:
+        self.row = row
+        self.col = col
+        self.save()

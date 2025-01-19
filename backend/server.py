@@ -70,7 +70,11 @@ class Replies:
                         "component": Component,
                         "map": Map,
                         "view": Map.View,
-                        "car": Car
+                        "car": Car,
+                        "booster": Booster,
+                        "car": Car,
+                        "fuel": Fuel,
+                        "rock": Rock,
                     }[decoded_input["type"]]
                 object = type.objects.get(id=id)
                 object.save()

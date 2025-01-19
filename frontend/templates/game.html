@@ -182,8 +182,9 @@
                     width: cellSize,
                     height: cellSize,
                     draggable: true,
-                    id: component_id
                 });
+                component.type = type;
+                component.id = component_id;
 
                 if (isCell) {
                     component.on('dragstart', (e) => {
@@ -191,20 +192,35 @@
                         shadow.moveToTop();
                         component.moveToTop();
                     });
-                    component.on('dragend', (e) => {
-                        component.position({
-                            x: Math.round(component.x() / cellSize) * cellSize,
-                            y: Math.round(component.y() / cellSize) * cellSize
-                        });
-                        stage.batchDraw();
-                        shadow.hide();
-                    });
                     component.on('dragmove', (e) => {
                         shadow.position({
                             x: Math.round(component.x() / cellSize) * cellSize,
                             y: Math.round(component.y() / cellSize) * cellSize
                         });
                         stage.batchDraw();
+                    });
+                    component.on('dragend', (e) => {
+                        const newCol = Math.round(component.x() / cellSize);
+                        const newRow = Math.round(component.y() / cellSize);
+
+                        websocket.send(JSON.stringify({
+                            "type": component.type,
+                            "id": component.id,
+                            "function_name": "move",
+                            "parameters": [{
+                                // Note that rows and columns are reversed on the server side!
+                                "row": newCol,
+                                "col": newRow
+                            }]
+                        }));
+
+                        component.position({
+                            x: newCol * cellSize,
+                            y: newRow * cellSize
+                        });
+
+                        stage.batchDraw();
+                        shadow.hide();
                     });
                 }
 
