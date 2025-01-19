@@ -222,6 +222,15 @@
                         stage.batchDraw();
                         shadow.hide();
                     });
+                    component.on("contextmenu", (e) => {
+                        websocket.send(JSON.stringify({
+                            "type": component.type,
+                            "id": component.id,
+                            "function_name": "remove",
+                            "parameters": [{}]
+                        }));
+                        component.remove();
+                    })
                 }
 
                 const layer = isCell ? tileLayer : playerLayer;

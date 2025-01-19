@@ -40,3 +40,8 @@ class Component(Object):
 
     def __str__(self) -> str:
         return str(self.id)
+
+    @Monitor().sync
+    def remove(self) -> None:
+        self._MAP = None
+        self.save()
