@@ -127,6 +127,25 @@
         const playerLayer = new Konva.Layer();
         stage.add(playerLayer);
 
+        
+
+        const websocket = new WebSocket("ws://localhost:12345/");
+        websocket.onmessage = ({ data }) => {
+            const answer = JSON.parse(data);
+            const commandInfo = answer["command"];
+            const parameters = commandInfo["parameters"][commandInfo["parameters"].length];
+            switch ((commandInfo["type"], commandInfo["function_name"])) {
+                case ("map", "create_component"):
+                    const type = parameters["component_type_name"];
+                    // Note that Y and X are reversed on the server side!
+                    const y = parameters["x"];
+                    const x = parameters["y"];
+                    const componentId = answer;
+                    addComponent(type, x, y, componentId);
+                    break
+            }
+        };
+
         function newComponent(type, x, y) {
             const isCell = type != "car";
             if (isCell) {
@@ -138,13 +157,16 @@
                 "type": currViewIsMap ? "map" : "view",
                 "id": currViewId,
                 "function_name": "create_component",
-                // Note that Y and X are reversed on the server side!
-                "parameters": [type, x, y, {}]
+                "parameters": [{
+                    "component_type_name": type,
+                    // Note that Y and X are reversed on the server side!
+                    "y": x,
+                    "x": y
+                }]
             }));
-
-            addComponent(type, x, y);
         }
-        function addComponent(type, x, y) {
+
+        function addComponent(type, x, y, component_id) {
             const isCell = type != "car";
             if (isCell) {
                 x = Math.round(x / cellSize) * cellSize;
@@ -159,7 +181,8 @@
                     image: image,
                     width: cellSize,
                     height: cellSize,
-                    draggable: true
+                    draggable: true,
+                    id: component_id
                 });
 
                 if (isCell) {
@@ -207,9 +230,11 @@
 
         for (let row = 0; row < canvas.length; row++) {
             for (let column = 0; column < canvas[row].length; column++) {
-                const type = canvas[row][column];
-                if (type) {
-                    addComponent(type, row * cellSize, column * cellSize);
+                const componentInfo = canvas[row][column];
+                if (componentInfo) {
+                    const type = componentInfo[0];
+                    const component_id = componentInfo[1];
+                    addComponent(type, row * cellSize, column * cellSize, component_id);
                 }
             }
         }
@@ -235,15 +260,6 @@
             const pos = stage.getPointerPosition();
             newComponent(type, pos.x - cellSize / 2, pos.y - cellSize / 2);
         });
-
-
-
-        const websocket = new WebSocket("ws://localhost:12345/");
-        websocket.onmessage = ({ data }) => {
-            const answer = JSON.parse(data);
-            const commandInfo = answer["command"];
-            switch ((commandInfo["type"], commandInfo["function_name"])) { }
-        };
     </script>
 </body>
 

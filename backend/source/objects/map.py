@@ -282,7 +282,8 @@ class Map(Object):
                     continue
 
                 topmost_component = cell[-1]
-                canvas[-1].append(topmost_component.representation()[:-4])
+                canvas[-1].append((topmost_component.representation()[:-4],
+                                   topmost_component.id))
 
                 if isinstance(topmost_component, Car):
                     player_information = []

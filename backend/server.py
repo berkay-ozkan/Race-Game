@@ -105,7 +105,8 @@ class Replies:
                     dumps({
                         "command": {
                             "type": input.get("type"),
-                            "function_name": input["function_name"]
+                            "function_name": input["function_name"],
+                            "parameters": input["parameters"]
                         },
                         "result": result
                     }))
