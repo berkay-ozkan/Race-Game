@@ -132,8 +132,9 @@
         const websocket = new WebSocket("ws://localhost:12345/");
         websocket.onmessage = ({ data }) => {
             const answer = JSON.parse(data);
+            console.log(answer);
             const commandInfo = answer["command"];
-            const parameters = commandInfo["parameters"][commandInfo["parameters"].length];
+            const parameters = commandInfo["parameters"][commandInfo["parameters"].length - 1];
             switch ((commandInfo["type"], commandInfo["function_name"])) {
                 case ("map", "create_component"):
                     const type = parameters["component_type_name"];

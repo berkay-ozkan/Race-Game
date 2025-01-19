@@ -165,13 +165,7 @@ class Map(Object):
         return result
 
     @Monitor().sync
-    def remove(self, id: int):
-        id = int(id)
-
-        component = Component.objects.get(id=id)
-        component.save()
-        component = type_to_class[component.type].objects.get(id=id)
-        component.save()
+    def remove(self, component):
         if self._game_mode_active:
             return
         for row in range(self.rows):
@@ -213,8 +207,7 @@ class Map(Object):
 
     # For adding Car components
     @Monitor().sync
-    def place(self, obj: int, y: float, x: float, user: str):
-        obj = int(obj)
+    def place(self, obj: Car, y: float, x: float, user: str):
         y = float(y)
         x = float(x)
 
@@ -222,8 +215,6 @@ class Map(Object):
             return
         self.remove(obj)
 
-        obj: Car = Car.objects.get(id=obj)
-        obj.save()
         row = floor(y / self.cell_size)
         col = floor(x / self.cell_size)
 
