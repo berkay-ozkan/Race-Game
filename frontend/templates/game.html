@@ -132,7 +132,6 @@
         const websocket = new WebSocket("ws://localhost:12345/");
         websocket.onmessage = ({ data }) => {
             const answer = JSON.parse(data);
-            console.log(answer);
             const commandInfo = answer["command"];
             const parameters = commandInfo["parameters"][commandInfo["parameters"].length - 1];
             switch ((commandInfo["type"], commandInfo["function_name"])) {
@@ -264,6 +263,12 @@
                 }
             }
         }
+
+        const playerInformation = {{ playerInformation|safe }};
+        playerInformation.forEach(player => {
+            // Note that Y and X are reversed on the server side!
+            addComponent("car", player["position"][0], player["position"][1], player["id"])
+        });
 
         const objectTypes = ["booster", "car", "fuel", "rock", "straight-0", "straight-1", "diagonal-0", "diagonal-1", "turn90-0", "turn90-1", "turn90-2", "turn90-3"];
         objectTypes.forEach((objectType) => {

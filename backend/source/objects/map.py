@@ -17,7 +17,7 @@ from backend.source.observer import Observer, ObserverInformation
 from backend.source.socket_helpers import MAX_INPUT_LENGTH
 from time import time, sleep
 
-COMPONENTS = {Car, Booster, Fuel, Rock, Diagonal, Straight, Turn90}
+CELLS = {Booster, Fuel, Rock, Diagonal, Straight, Turn90}
 
 
 class Map(Object):
@@ -156,7 +156,7 @@ class Map(Object):
 
     def _get_cells(self, row: int, col: int):
         result = []
-        for object_type in COMPONENTS:
+        for object_type in CELLS:
             for object in self.__getattribute__(object_type.__name__.lower() +
                                                 "_set").all():
                 if object.row == row and object.col == col:
@@ -222,6 +222,7 @@ class Map(Object):
         obj._position = (y, x)
         obj._angle = 0
         obj._user = user
+        obj.save()
 
         cell_bounds = self._cell_bounds(row, col)
         # TODO: Uncomment this when notifications are reenabled
@@ -263,7 +264,7 @@ class Map(Object):
     @Monitor().sync
     def draw(self) -> tuple:
         canvas: list[list[str]] = []
-        all_players_information: list[list[str]] = []
+        all_players_information: list[dict] = []
         for row in range(self.rows):
             canvas.append([])
             for col in range(self.cols):
@@ -276,13 +277,15 @@ class Map(Object):
                 canvas[-1].append((topmost_component.representation()[:-4],
                                    topmost_component.id))
 
-                if isinstance(topmost_component, Car):
-                    player_information = []
-                    for attribute in topmost_component._attributes:
-                        player_information.append(
-                            f"{attribute}: {getattr(topmost_component, attribute)}"
-                        )
-                    all_players_information.append(player_information)
+        for car in self.car_set.all():
+            player_information = {
+                "id": car.id,
+                "position": car._position,
+                "angle": car._angle,
+                "speed": car._speed,
+                "user": car._user
+            }
+            all_players_information.append(player_information)
 
         return (canvas, all_players_information, self.bg_color, self.cell_size)
 

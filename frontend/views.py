@@ -79,6 +79,7 @@ def game(request: HttpRequest, id: int):
                   context={
                       "id": id,
                       "canvas": dumps(reply[0]),
+                      "playerInformation": dumps(reply[1]),
                       "backgroundColor": reply[2],
                       "cellSize": reply[3]
                   })
