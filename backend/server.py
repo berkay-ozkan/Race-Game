@@ -26,37 +26,39 @@ from backend.source.objects.components.cells.roads.straight import Straight
 from backend.source.objects.components.cells.roads.turn90 import Turn90
 from backend.source.objects.components.cells.rock import Rock
 from backend.source.objects.type_to_class import type_to_class
-from backend.source.observer import Observer
+from backend.source.observer import Observer, ObserverInformation
 from backend.source.repo import Repo
 
 
 class Notifications(Thread):
 
-    def __init__(self, connection: ServerConnection, username: str,
+    def __init__(self, connection: ServerConnection, observerInfo,
                  observer: Observer) -> None:
         super().__init__()
         self.connection: ServerConnection = connection
-        self.username: str = username
+        observer.register(
+            observerInfo[0],
+            ObserverInformation(view_id=observerInfo[1],
+                                map_id=observerInfo[1],
+                                view_bounds=observerInfo[2]))
+        self.username = observerInfo[0]
         self.observer: Observer = observer
 
     def run(self):
         while True:
-            view_id = self.observer.wait(self.username)
+            notification = self.observer.wait(self.username)
 
-            if view_id is not None:
+            if notification is not None:
                 print("Sending notification")
-                object = Map.objects.get(id=view_id)
-                object.save()
-                new_state = object.draw()
-                self.connection.send(new_state)
+                self.connection.send(dumps(notification))
 
 
 class Replies:
 
-    def __init__(self, connection: ServerConnection, username: str,
+    def __init__(self, connection: ServerConnection, observer: Observer,
                  repo: Repo) -> None:
         self.connection: ServerConnection = connection
-        self.username: str = username
+        self.observer: Observer = observer
         self.repo: Repo = repo
 
     def run_command(self, decoded_input: dict) -> str:
@@ -104,6 +106,12 @@ class Replies:
             while True:
                 encoded_input = self.connection.recv()
                 input = loads(encoded_input)
+                if "username" in input:
+                    Notifications(self.connection,
+                                  (input["username"], input["map_id"],
+                                   input["view_bounds"]),
+                                  self.observer).start()
+                    continue
                 result = self.run_command(input)
                 self.connection.send(
                     dumps({
@@ -117,7 +125,7 @@ class Replies:
         except ConnectionClosedOK:
             pass
 
-        print(self.username, "closed the connection.")
+        print("Connection closed.")
         self.connection.close()
 
     @staticmethod
@@ -137,9 +145,7 @@ class Agent:
         peer = connection.remote_address
         print("Connected by", peer)
 
-        username = "Placeholder"
-
-        Replies(connection, username, self.repo).run()
+        Replies(connection, self.observer, self.repo).run()
 
 
 def main() -> None:
@@ -150,7 +156,8 @@ def main() -> None:
     HOST = ""
     PORT = int(argv[2])
 
-    observer = Observer()
+    observer = Observer(observers={})
+    observer.save()
     repo = Repo()
 
     repo.components.register("car", Car)

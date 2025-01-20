@@ -130,19 +130,56 @@
         
 
         const websocket = new WebSocket("ws://localhost:12345/");
+        websocket.onopen = () => {
+            // Set up notifications
+            websocket.send(JSON.stringify({
+                "username": "{{ username }}",
+                "map_id": currViewId,
+                // TODO: Check bounds
+                "view_bounds": [[0, 0], [width, height]]
+            }));
+        }
         websocket.onmessage = ({ data }) => {
             const answer = JSON.parse(data);
-            const commandInfo = answer["command"];
-            const parameters = commandInfo["parameters"][commandInfo["parameters"].length - 1];
-            switch ((commandInfo["type"], commandInfo["function_name"])) {
-                case ("map", "create_component"):
-                    const type = parameters["component_type_name"];
-                    // Note that Y and X are reversed on the server side!
-                    const y = parameters["x"];
-                    const x = parameters["y"];
-                    const componentId = answer;
-                    addComponent(type, x, y, componentId);
-                    break
+
+            if ("command" in answer) {
+                const commandInfo = answer["command"];
+                const parameters = commandInfo["parameters"][commandInfo["parameters"].length - 1];
+                switch ((commandInfo["type"], commandInfo["function_name"])) {
+                    case ("map", "create_component"):
+                        const type = parameters["component_type_name"];
+                        // Note that Y and X are reversed on the server side!
+                        const y = parameters["x"];
+                        const x = parameters["y"];
+                        const componentId = answer;
+                        addComponent(type, x, y, componentId);
+                        break
+                }
+            }
+            else {
+                const notificationInfo = answer["notification"];
+                switch (notificationInfo["type"]) {
+                    case "map_place":
+                    {
+                        const type = "car";
+                        // Note that Y and X are reversed on the server side!
+                        const y = notificationInfo["data"]["x"];
+                        const x = notificationInfo["data"]["y"];
+                        const componentId = notificationInfo["data"]["id"];
+                        addComponent(type, x, y, componentId);
+                        break
+                    }
+                    case "map_create_component_cell":
+                    {
+                        const type = notificationInfo["data"]["type"];
+                        // Note that Y and X are reversed on the server side!
+                        const y = notificationInfo["data"]["x"];
+                        const x = notificationInfo["data"]["y"];
+                        const componentId = notificationInfo["data"]["id"];
+                        addComponent(type, x, y, componentId);
+                        break
+                    }
+                }
             }
         };
 
@@ -222,16 +259,16 @@
                         stage.batchDraw();
                         shadow.hide();
                     });
-                    component.on("contextmenu", (e) => {
-                        websocket.send(JSON.stringify({
-                            "type": component.type,
-                            "id": component.id,
-                            "function_name": "remove",
-                            "parameters": [{}]
-                        }));
-                        component.remove();
-                    })
                 }
+                component.on("contextmenu", (e) => {
+                    websocket.send(JSON.stringify({
+                        "type": component.type,
+                        "id": component.id,
+                        "function_name": "remove",
+                        "parameters": [{}]
+                    }));
+                    component.remove();
+                })
 
                 const layer = isCell ? tileLayer : playerLayer;
                 layer.add(component);

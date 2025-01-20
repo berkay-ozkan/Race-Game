@@ -14,13 +14,9 @@ class ObserverInformation:
                                 tuple[float, float]] = view_bounds
 
 
+@singleton
 class Observer(models.Model):
     observers = models.JSONField(null=True)
-
-    def __init__(self, id=None, observers={}):
-        super().__init__()
-        self.id = id
-        self.observers = observers
 
     @Monitor().sync
     def register(self, username: str,
@@ -28,28 +24,37 @@ class Observer(models.Model):
         ''' A new condition is created per observer and it is
         notified when interest set of the observer changes'''
         condition = Condition(Monitor().mlocks[self])
-        self.observers[username] = (observer_information, condition)
+        self.observers[username] = (observer_information, condition, [])
+        self.save()
         return condition
 
     @Monitor().sync
     def unregister(self, username: str):
         if username in self.observers:
             del self.observers[username]
+            self.save()
 
     @Monitor().sync
     def wait(self, username: str):
         if username in self.observers:
             self.observers[username][1].wait()
-            return self.observers[username][0].view_id
+            if self.observers[username][2]:
+                notification_information = self.observers[username][2][0]
+                del self.observers[username][2][0]
+                return notification_information
 
     @Monitor().sync
     def create_notification(self, map_id: int,
                             affected_bounds: tuple[tuple[float, float],
-                                                   tuple[float, float]]):
-        for observer_information, condition in self.observers.values():
+                                                   tuple[float, float]],
+                            notification_information):
+        for user in self.observers:
+            observer_information = self.observers[user][0]
+            condition = self.observers[user][1]
             if map_id == observer_information.map_id and Observer(
             )._rectangles_intersect(observer_information.view_bounds,
                                     affected_bounds):
+                self.observers[user][2].append(notification_information)
                 condition.notify()
 
     @staticmethod
