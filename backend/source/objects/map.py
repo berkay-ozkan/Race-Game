@@ -121,7 +121,7 @@ class Map(Object):
     bg_color = models.CharField(null=True, max_length=7)
     _game_mode_active = models.BooleanField(null=True, )
     _start_time = models.FloatField(null=True)
-    _tick_interval = models.FloatField(null=True, )
+    _tick_interval = models.FloatField(null=True, default=1)
     _notification_interval = models.FloatField(null=True, )
     _tick_count = models.IntegerField(null=True)
 
@@ -317,20 +317,28 @@ class Map(Object):
     def game_controller(self):
         while not self._stop_event.is_set():
             self._tick_count += 1
+
             for car in self.car_set.all():
                 car.tick()
 
-            self._leaderboards.clear()
+                player_state = {
+                    "id": car.id,
+                    "position": car._position,
+                    "angle": car._angle,
+                    "speed": car._speed
+                }
 
-            for car in self.car_set.all():
-                player = car._user
-                lap = car._laps_completed
-                car_id = f'car{car.get_id()}'
-                leaderboard_entry = (player, lap, car_id)
-                self._leaderboards.append(leaderboard_entry)
+                y = car._position[0]
+                x = car._position[1]
+                cell_bounds = [[y, x],
+                               [y + self.cell_size, x + self.cell_size]]
 
-            if self._tick_count % self._notification_interval == 0:
-                bounds = self._bounds()
+                Observer().create_notification(
+                    self.id, cell_bounds,
+                    {"notification": {
+                        "type": "tick",
+                        "data": player_state
+                    }})
 
             sleep(self._tick_interval)
 

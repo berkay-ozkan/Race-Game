@@ -9,25 +9,25 @@ class Car(Component):
     _DRIVER = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
 
     _MODEL = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
-    _ACCELERATION_RATE = models.FloatField(null=True, )
-    _FUEL_CONSUMPTION_RATE = models.FloatField(null=True, )
-    _DECELERATION_RATE = models.FloatField(null=True, )
-    _STEER_RATE = models.FloatField(null=True, )
+    _ACCELERATION_RATE = models.FloatField(null=True, default=1)
+    _FUEL_CONSUMPTION_RATE = models.FloatField(null=True, default=1)
+    _DECELERATION_RATE = models.FloatField(null=True, default=1)
+    _STEER_RATE = models.FloatField(null=True, default=1)
 
-    _MAX_SPEED = models.FloatField(null=True, )
-    _MAX_FUEL = models.FloatField(null=True, )
+    _MAX_SPEED = models.FloatField(null=True, default=10)
+    _MAX_FUEL = models.FloatField(null=True, default=2400)
 
     _user = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
     _position = models.JSONField(null=True)
     _angle = models.FloatField(null=True)
-    _speed = models.FloatField(null=True, )
-    _fuel = models.FloatField(null=True, )
+    _speed = models.FloatField(null=True, default=0)
+    _fuel = models.FloatField(null=True, default=2400)
 
-    _accelerate = models.BooleanField(null=True, )
-    _brake = models.BooleanField(null=True, )
-    _turn_clockwise = models.BooleanField(null=True, )
-    _turn_counterclockwise = models.BooleanField(null=True, )
-    _running = models.BooleanField(null=True, )
+    _accelerate = models.BooleanField(null=True, default=False)
+    _brake = models.BooleanField(null=True, default=False)
+    _turn_clockwise = models.BooleanField(null=True, default=False)
+    _turn_counterclockwise = models.BooleanField(null=True, default=False)
+    _running = models.BooleanField(null=True, default=True)
 
     # Car class variables
     _EMPTY_CELL_SPEED_MULTIPLIER: float = 0.1
