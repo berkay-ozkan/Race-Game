@@ -23,3 +23,4 @@ class Cell(Component):
         self.row = row
         self.col = col
         self.save()
+        self._MAP.notify_component_movement(self)

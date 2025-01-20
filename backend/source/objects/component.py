@@ -43,5 +43,6 @@ class Component(Object):
 
     @Monitor().sync
     def remove(self) -> None:
+        self._MAP.notify_component_removal(self)
         self._MAP = None
         self.save()

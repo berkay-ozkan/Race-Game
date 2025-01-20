@@ -15,8 +15,8 @@ class ObserverInformation:
 
 
 @singleton
-class Observer(models.Model):
-    observers = models.JSONField(null=True)
+class Observer:
+    observers = {}
 
     @Monitor().sync
     def register(self, username: str,
@@ -25,14 +25,12 @@ class Observer(models.Model):
         notified when interest set of the observer changes'''
         condition = Condition(Monitor().mlocks[self])
         self.observers[username] = (observer_information, condition, [])
-        self.save()
         return condition
 
     @Monitor().sync
     def unregister(self, username: str):
         if username in self.observers:
             del self.observers[username]
-            self.save()
 
     @Monitor().sync
     def wait(self, username: str):

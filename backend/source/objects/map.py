@@ -23,7 +23,9 @@ CELLS = {Booster, Fuel, Rock, Diagonal, Straight, Turn90}
 class Map(Object):
 
     class View(Object):
-        map = models.ForeignKey("Map", null=True, on_delete=models.CASCADE)
+        original_map = models.ForeignKey("Map",
+                                         null=True,
+                                         on_delete=models.CASCADE)
         y = models.FloatField(null=True)
         x = models.FloatField(null=True)
         height = models.FloatField(null=True)
@@ -33,38 +35,44 @@ class Map(Object):
 
         def __init__(self, *args, **kwargs) -> None:
             super().__init__(*args, **kwargs)
-            self.y_floor = self.map.cell_size * floor(
-                self.y / self.map.cell_size)
-            self.x_floor = self.map.cell_size * floor(
-                self.x / self.map.cell_size)
-            self.y_ceil = self.map.cell_size * ceil(
-                (self.y + self.height) / self.map.cell_size)
-            self.x_ceil = self.map.cell_size * ceil(
-                (self.x + self.width) / self.map.cell_size)
+            self.y_floor = self.original_map.cell_size * floor(
+                self.y / self.original_map.cell_size)
+            self.x_floor = self.original_map.cell_size * floor(
+                self.x / self.original_map.cell_size)
+            self.y_ceil = self.original_map.cell_size * ceil(
+                (self.y + self.height) / self.original_map.cell_size)
+            self.x_ceil = self.original_map.cell_size * ceil(
+                (self.x + self.width) / self.original_map.cell_size)
 
         def __setitem__(self, pos: tuple[int, int], id: int):
-            adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
-                            self.x_floor + pos[1] * self.map.cell_size)
-            return self.map.__setitem__(adjusted_pos, id)
+            adjusted_pos = (self.y_floor +
+                            pos[0] * self.original_map.cell_size,
+                            self.x_floor +
+                            pos[1] * self.original_map.cell_size)
+            return self.original_map.__setitem__(adjusted_pos, id)
 
         def __getitem__(self, pos: tuple[int, int]):
-            adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
-                            self.x_floor + pos[1] * self.map.cell_size)
-            return self.map.__getitem__(adjusted_pos)
+            adjusted_pos = (self.y_floor +
+                            pos[0] * self.original_map.cell_size,
+                            self.x_floor +
+                            pos[1] * self.original_map.cell_size)
+            return self.original_map.__getitem__(adjusted_pos)
 
         def remove(self, id: int):
-            return self.map.remove(id)
+            return self.original_map.remove(id)
 
         def __delitem__(self, pos: tuple[int, int]):
-            adjusted_pos = (self.y_floor + pos[0] * self.map.cell_size,
-                            self.x_floor + pos[1] * self.map.cell_size)
-            return self.map.__delitem__(adjusted_pos)
+            adjusted_pos = (self.y_floor +
+                            pos[0] * self.original_map.cell_size,
+                            self.x_floor +
+                            pos[1] * self.original_map.cell_size)
+            return self.original_map.__delitem__(adjusted_pos)
 
         def get_y_x(self, y: float, x: float):
-            return self.map.get_y_x(self.y + y, self.x + x)
+            return self.original_map.get_y_x(self.y + y, self.x + x)
 
         def place(self, obj: int, y: float, x: float, user: str):
-            return self.map.place(obj, self.y + y, self.x + x, user)
+            return self.original_map.place(obj, self.y + y, self.x + x, user)
 
         def view(self, y: float, x: float, height: float, width: float,
                  user: str) -> None:
@@ -74,14 +82,14 @@ class Map(Object):
         def draw(self) -> bytes:
             canvas: list[list[str]] = []
             all_players_information: list[list[str]] = []
-            rows = (floor(self.y_floor / self.map.cell_size),
-                    floor(self.y_ceil / self.map.cell_size))
-            cols = (floor(self.x_floor / self.map.cell_size),
-                    floor(self.x_ceil / self.map.cell_size))
+            rows = (floor(self.y_floor / self.original_map.cell_size),
+                    floor(self.y_ceil / self.original_map.cell_size))
+            cols = (floor(self.x_floor / self.original_map.cell_size),
+                    floor(self.x_ceil / self.original_map.cell_size))
             for row in range(rows[0], rows[1]):
                 canvas.append([])
                 for col in range(cols[0], cols[1]):
-                    cell = self.map._get_cells(row, col)
+                    cell = self.original_map._get_cells(row, col)
                     if len(cell) == 0:
                         canvas[-1].append(None)
                         continue
@@ -97,14 +105,14 @@ class Map(Object):
                             )
                         all_players_information.append(player_information)
 
-            return (canvas, all_players_information, self.map.bg_color,
-                    self.map.cell_size)
+            return (canvas, all_players_information,
+                    self.original_map.bg_color, self.original_map.cell_size)
 
         def start(self):
-            return self.map.start()
+            return self.original_map.start()
 
         def stop(self):
-            return self.map.stop()
+            return self.original_map.stop()
 
     _description = models.CharField(max_length=MAX_INPUT_LENGTH, null=True)
     cols = models.IntegerField(null=True)
@@ -240,7 +248,7 @@ class Map(Object):
         height_ceil = ceil(height / self.cell_size)
         width_ceil = ceil(width / self.cell_size)
         view_description = f"{user}'s view of {self._description}"
-        map_view = Map.View(map=self,
+        map_view = Map.View(original_map=self,
                             y=y,
                             x=x,
                             height=height_ceil,
@@ -381,3 +389,43 @@ class Map(Object):
                 })
 
         return component_id
+
+    def notify_component_movement(self, component):
+        if any(isinstance(component, cell_type) for cell_type in CELLS):
+            cell_bounds = self._cell_bounds(component.row, component.col)
+            y = cell_bounds[0][0]
+            x = cell_bounds[0][1]
+        else:
+            y = component._position[0]
+            x = component._position[1]
+            cell_bounds = [[y, x], [y + self.cell_size, x + self.cell_size]]
+
+        Observer().create_notification(
+            self.id, cell_bounds, {
+                "notification": {
+                    "type": "cell_move",
+                    "data": {
+                        "id": component.id,
+                        "x": x,
+                        "y": y
+                    }
+                }
+            })
+
+    def notify_component_removal(self, component):
+        if any(isinstance(component, cell_type) for cell_type in CELLS):
+            cell_bounds = self._cell_bounds(component.row, component.col)
+        else:
+            y = component._position[0]
+            x = component._position[1]
+            cell_bounds = [[y, x], [y + self.cell_size, x + self.cell_size]]
+
+        Observer().create_notification(
+            self.id, cell_bounds, {
+                "notification": {
+                    "type": "component_remove",
+                    "data": {
+                        "id": component.id,
+                    }
+                }
+            })

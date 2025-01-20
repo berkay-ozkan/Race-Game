@@ -1,3 +1,4 @@
+from traceback import print_exc
 from django import setup
 from json import dumps, loads
 from os import environ
@@ -99,6 +100,7 @@ class Replies:
                 return result
             return "Command executed"
         except Exception as exception:
+            print_exc()
             return str(exception)
 
     def run(self):
@@ -156,8 +158,7 @@ def main() -> None:
     HOST = ""
     PORT = int(argv[2])
 
-    observer = Observer(observers={})
-    observer.save()
+    observer = Observer()
     repo = Repo()
 
     repo.components.register("car", Car)
